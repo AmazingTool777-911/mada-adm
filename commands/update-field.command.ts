@@ -27,7 +27,7 @@ import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import { DbType, DEFAULT_DB_TYPE, DEFAULT_PG_SCHEMA } from "@scope/consts/db";
+import { resolveCommonGlobalCliConfig } from "@scope/helpers/cli";
 import {
   injectCommunesDML,
   injectDbConnection,
@@ -345,9 +345,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
     let db!: DbConnection;
 
     try {
-      const dbType = (options.dbType ?? DEFAULT_DB_TYPE) as DbType;
-      const pgSchema = options.pg?.schema ?? options.pgSchema ??
-        DEFAULT_PG_SCHEMA;
+      const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
       db = injectDbConnection(dbType);
       const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {
@@ -692,9 +690,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
         Deno.exit(1);
       }
 
-      const dbType = (options.dbType ?? DEFAULT_DB_TYPE) as DbType;
-      const pgSchema = options.pg?.schema ?? options.pgSchema ??
-        DEFAULT_PG_SCHEMA;
+      const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
       db = injectDbConnection(dbType);
       const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {

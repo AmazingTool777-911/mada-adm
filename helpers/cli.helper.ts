@@ -33,13 +33,28 @@ import type {
  * @returns A fully resolved global CLI configuration with no `undefined` values for
  *   defaulted fields.
  */
+export function resolveCommonGlobalCliConfig(args: GlobalCliConfig): {
+  dbType: DbType;
+  pgSchema: string;
+} {
+  return {
+    dbType: (args.dbType ?? DEFAULT_DB_TYPE) as DbType,
+    pgSchema: args.pg?.schema ?? args.pgSchema ?? DEFAULT_PG_SCHEMA,
+  };
+}
+
+/**
+ * Resolves the raw global CLI configuration into a fully-typed, default-applied
+ * resolved configuration.
+ */
 export function resolveGlobalCliConfig(
   args: GlobalCliConfig,
 ): GlobalCliConfigResolved {
+  const common = resolveCommonGlobalCliConfig(args);
   return {
-    dbType: (args.dbType ?? DEFAULT_DB_TYPE) as DbType,
+    dbType: common.dbType,
     cliDebug: !!(args.cliDebug ?? false),
-    pgSchema: args.pg?.schema ?? args.pgSchema ?? DEFAULT_PG_SCHEMA,
+    pgSchema: common.pgSchema,
     pg: {
       url: args.pg?.url ?? args.pgUrl,
       host: args.pg?.host ?? args.pgHost ?? "localhost",

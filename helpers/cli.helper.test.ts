@@ -13,7 +13,41 @@ import {
   DEFAULT_MAX_RETRIES,
   DEFAULT_PROCESSING_WORKERS_COUNT,
 } from "@scope/lib/workers-mediators";
-import { resolveGlobalCliConfig, resolveIndexCliConfig } from "./cli.helper.ts";
+import {
+  resolveCommonGlobalCliConfig,
+  resolveGlobalCliConfig,
+  resolveIndexCliConfig,
+} from "./cli.helper.ts";
+
+Deno.test("resolveCommonGlobalCliConfig", async (t) => {
+  await t.step("applies all defaults when args is empty", () => {
+    const { dbType, pgSchema } = resolveCommonGlobalCliConfig({});
+    assertEquals(dbType, DbType.SQLite);
+    assertEquals(pgSchema, "public");
+  });
+
+  await t.step("prefers CLI flag over shadow env keys for pg.schema", () => {
+    const { pgSchema } = resolveCommonGlobalCliConfig({
+      pg: { schema: "flag-schema" },
+      pgSchema: "env-schema",
+    });
+    assertEquals(pgSchema, "flag-schema");
+  });
+
+  await t.step("falls back to shadow env key for pgSchema", () => {
+    const { pgSchema } = resolveCommonGlobalCliConfig({
+      pgSchema: "env-schema",
+    });
+    assertEquals(pgSchema, "env-schema");
+  });
+
+  await t.step("prefers CLI flag for dbType", () => {
+    const { dbType } = resolveCommonGlobalCliConfig({
+      dbType: "postgres",
+    });
+    assertEquals(dbType, DbType.Postgres);
+  });
+});
 
 Deno.test("resolveGlobalCliConfig", async (t) => {
   await t.step("applies all defaults when args is empty", () => {

@@ -104,6 +104,10 @@ export class MySQLDbConnection implements DbConnection {
         user: config.username,
         password: config.password,
         database: config.database,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 0,
+        waitForConnections: true,
+        connectionLimit: 10,
       };
 
       if (sslConfig) {

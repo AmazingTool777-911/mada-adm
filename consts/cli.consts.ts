@@ -95,6 +95,9 @@ export const MYSQL_KEY_FILE_DESCRIPTION: string =
 export const MYSQL_KEY_PATH_DESCRIPTION: string =
   "Full path to the client key file. Used when --mysql.key-file is not set.";
 
+export const MYSQL_CONNECTION_LIMIT_DESCRIPTION: string =
+  "Maximum number of connections in the MySQL pool (default 10).";
+
 // ── SQLite descriptions ─────────────────────────────────────────────────────
 
 export const SQLITE_DB_FILE_DESCRIPTION: string =

@@ -186,6 +186,8 @@ export interface MySQLConnectionConfig {
   keyFile?: string;
   /** Full pathname to the client key file, used when `keyFile` is not set. */
   keyPath?: string;
+  /** Maximum number of connections in the pool. */
+  connectionLimit?: number;
 }
 
 /**

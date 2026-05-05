@@ -76,6 +76,8 @@ export interface MySQLDbConnectionCliConfig {
   keyFile?: string;
   /** Full path to the client key file. */
   keyPath?: string;
+  /** Maximum number of connections in the pool. */
+  connectionLimit?: number;
 }
 
 /**
@@ -199,6 +201,8 @@ export type GlobalCliConfig = {
   mysqlKeyFile?: string;
   /** Environment variable mapped for MYSQL_KEY_PATH. */
   mysqlKeyPath?: string;
+  /** Environment variable mapped for MYSQL_CONNECTION_LIMIT. */
+  mysqlConnectionLimit?: number;
   /** Environment variable mapped for SQLITE_DB_FILE. */
   sqliteDbFile?: string;
   /** Environment variable mapped for SQLITE_DB_PATH. */
@@ -325,6 +329,8 @@ export type GlobalCliConfigResolved = {
     keyFile?: string;
     /** Full path to the client key file. */
     keyPath?: string;
+    /** Maximum number of connections in the pool. */
+    connectionLimit: number;
   };
   /** Resolved SQLite connection configuration. */
   sqlite: SQLiteDbConnectionCliConfig;
@@ -371,6 +377,8 @@ export type IndexActionCliConfigResolved = {
     keyFile?: string;
     /** Full path to the client key file. */
     keyPath?: string;
+    /** Maximum number of connections in the pool. */
+    connectionLimit: number;
   };
   /** Resolved SQLite connection configuration. */
   sqlite: SQLiteDbConnectionCliConfig;

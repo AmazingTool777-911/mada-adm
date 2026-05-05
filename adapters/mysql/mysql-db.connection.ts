@@ -107,7 +107,7 @@ export class MySQLDbConnection implements DbConnection {
         enableKeepAlive: true,
         keepAliveInitialDelay: 0,
         waitForConnections: true,
-        connectionLimit: 10,
+        connectionLimit: config.connectionLimit,
       };
 
       if (sslConfig) {

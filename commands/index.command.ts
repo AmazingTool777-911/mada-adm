@@ -20,6 +20,7 @@ import {
   MYSQL_CA_CERT_PATH_DESCRIPTION,
   MYSQL_CERT_FILE_DESCRIPTION,
   MYSQL_CERT_PATH_DESCRIPTION,
+  MYSQL_CONNECTION_LIMIT_DESCRIPTION,
   MYSQL_DATABASE_DESCRIPTION,
   MYSQL_HOST_DESCRIPTION,
   MYSQL_KEY_FILE_DESCRIPTION,
@@ -285,6 +286,13 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           depends: ["mysql.ssl"],
         },
       )
+      .globalOption(
+        "--mysql.connection-limit <limit:number>",
+        MYSQL_CONNECTION_LIMIT_DESCRIPTION,
+        {
+          depends: ["mysql.host"],
+        },
+      )
       .group("SQLite configuration")
       .globalOption(
         "--sqlite.db-file <filename:string>",
@@ -346,6 +354,10 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalEnv(
         "MYSQL_KEY_PATH=<path:string>",
         MYSQL_KEY_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_CONNECTION_LIMIT=<limit:number>",
+        MYSQL_CONNECTION_LIMIT_DESCRIPTION,
       )
       .globalEnv("SQLITE_DB_FILE <filename:string>", SQLITE_DB_FILE_DESCRIPTION)
       .globalEnv("SQLITE_DB_PATH <path:string>", SQLITE_DB_PATH_DESCRIPTION)

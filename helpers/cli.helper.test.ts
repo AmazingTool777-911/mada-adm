@@ -77,6 +77,7 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
     assertEquals(result.mysql.certPath, undefined);
     assertEquals(result.mysql.keyFile, undefined);
     assertEquals(result.mysql.keyPath, undefined);
+    assertEquals(result.mysql.connectionLimit, 10);
     assertEquals(result.sqlite.dbFile, undefined);
     assertEquals(result.sqlite.dbPath, undefined);
   });
@@ -112,6 +113,27 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
     assertEquals(result.pgSchema, "env-schema");
     assertEquals(result.pg.ssl, true);
   });
+
+  await t.step(
+    "CLI flag --mysql.connection-limit takes precedence over env-var shadow keys",
+    () => {
+      const result = resolveGlobalCliConfig({
+        mysql: { connectionLimit: 20 },
+        mysqlConnectionLimit: 30,
+      });
+      assertEquals(result.mysql.connectionLimit, 20);
+    },
+  );
+
+  await t.step(
+    "env-var shadow key MYSQL_CONNECTION_LIMIT falls back when flag is absent",
+    () => {
+      const result = resolveGlobalCliConfig({
+        mysqlConnectionLimit: 50,
+      });
+      assertEquals(result.mysql.connectionLimit, 50);
+    },
+  );
 
   await t.step(
     "--pg.schema takes precedence over PG_SCHEMA env-var shadow",

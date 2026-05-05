@@ -80,6 +80,9 @@ export function resolveGlobalCliConfig(
       certPath: args.mysql?.certPath ?? args.mysqlCertPath,
       keyFile: args.mysql?.keyFile ?? args.mysqlKeyFile,
       keyPath: args.mysql?.keyPath ?? args.mysqlKeyPath,
+      connectionLimit: args.mysql?.connectionLimit ??
+        args.mysqlConnectionLimit ??
+        10,
     },
     sqlite: {
       dbFile: args.sqlite?.dbFile ?? args.sqliteDbFile,

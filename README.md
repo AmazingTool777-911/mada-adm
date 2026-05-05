@@ -240,24 +240,24 @@ commands. All options are optional.
 
 #### MySQL Configuration
 
-| CLI Flag               | Environment Variable  | Description                                                           | Default     |
-| :--------------------- | :-------------------- | :-------------------------------------------------------------------- | :---------- |
-| `--mysql.url`          | `MYSQL_URL`           | The URL to connect to the MySQL database.                             | -           |
-| `--mysql.host`         | `MYSQL_HOST`          | Hostname or IP address of the MySQL server.                           | `localhost` |
-| `--mysql.port`         | `MYSQL_PORT`          | Port number of the MySQL server.                                      | `3306`      |
-| `--mysql.user`         | `MYSQL_USER`          | Username for authenticating with the MySQL server.                    | `root`      |
-| `--mysql.password`     | `MYSQL_PASSWORD`      | Password for authenticating with the MySQL server.                    | `""`        |
-| `--mysql.database`     | `MYSQL_DATABASE`      | Name of the database to be used.                                      | `mysql`     |
-| `--mysql.ssl`          | `MYSQL_SSL`           | Whether to use SSL for the connection.                                | `false`     |
-| `--mysql.ca-cert-file` | `MYSQL_CA_CERT_FILE`  | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
-| `--mysql.ca-cert-path` | `MYSQL_CA_CERT_PATH`  | Full path to the CA cert file.                                        | -           |
+| CLI Flag               | Environment Variable | Description                                                           | Default     |
+| :--------------------- | :------------------- | :-------------------------------------------------------------------- | :---------- |
+| `--mysql.url`          | `MYSQL_URL`          | The URL to connect to the MySQL database.                             | -           |
+| `--mysql.host`         | `MYSQL_HOST`         | Hostname or IP address of the MySQL server.                           | `localhost` |
+| `--mysql.port`         | `MYSQL_PORT`         | Port number of the MySQL server.                                      | `3306`      |
+| `--mysql.user`         | `MYSQL_USER`         | Username for authenticating with the MySQL server.                    | `root`      |
+| `--mysql.password`     | `MYSQL_PASSWORD`     | Password for authenticating with the MySQL server.                    | `""`        |
+| `--mysql.database`     | `MYSQL_DATABASE`     | Name of the database to be used.                                      | `mysql`     |
+| `--mysql.ssl`          | `MYSQL_SSL`          | Whether to use SSL for the connection.                                | `false`     |
+| `--mysql.ca-cert-file` | `MYSQL_CA_CERT_FILE` | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
+| `--mysql.ca-cert-path` | `MYSQL_CA_CERT_PATH` | Full path to the CA cert file.                                        | -           |
 
 #### SQLite Configuration
 
-| CLI Flag           | Environment Variable | Description                                                               | Default       |
-| :----------------- | :------------------- | :------------------------------------------------------------------------ | :------------ |
-| `--sqlite.db-file` | `SQLITE_DB_FILE`     | Filename of the SQLite database within `db/.sqlite`. **(Deno only)**      | `mada-adm.db` |
-| `--sqlite.db-path` | `SQLITE_DB_PATH`     | Full absolute or relative path to the SQLite database file.               | -             |
+| CLI Flag           | Environment Variable | Description                                                          | Default       |
+| :----------------- | :------------------- | :------------------------------------------------------------------- | :------------ |
+| `--sqlite.db-file` | `SQLITE_DB_FILE`     | Filename of the SQLite database within `db/.sqlite`. **(Deno only)** | `mada-adm.db` |
+| `--sqlite.db-path` | `SQLITE_DB_PATH`     | Full absolute or relative path to the SQLite database file.          | -             |
 
 > **Note on File Paths:** Options ending in `-file` (e.g., `--sqlite.db-file`,
 > `--pg.ca-cert-file`) resolve paths relative to the internal project structure.
@@ -455,8 +455,7 @@ features are available alongside the CLI:
 
 ### Coming Soon
 
-- **Database Adapters**: Native support for MongoDB within the seeding
-  pipeline.
+- **Database Adapters**: Native support for MongoDB within the seeding pipeline.
 - **Data Catalog**: A comprehensive, public-facing catalog of administrative
   metadata.
 

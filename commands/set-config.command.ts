@@ -1,7 +1,6 @@
 import { Command } from "@cliffy/command";
 import { Confirm, Input, prompt } from "@cliffy/prompt";
 import { colors } from "@cliffy/ansi/colors";
-import { Table } from "@cliffy/table";
 import {
   SET_CONFIG_COMMAND_DESCRIPTION,
   SET_CONFIG_COMMAND_NAME,
@@ -9,7 +8,10 @@ import {
 import type { GlobalCliConfig } from "@scope/types/cli";
 import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { DbConnection } from "@scope/types/db";
-import { resolveCommonGlobalCliConfig } from "@scope/helpers/cli";
+import {
+  displayMadaAdmConfig,
+  resolveCommonGlobalCliConfig,
+} from "@scope/helpers/cli";
 import {
   injectCommunesDDL,
   injectDbConnection,
@@ -32,45 +34,6 @@ import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
  * configuration changes.
  */
 export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
-  /**
-   * Prints the Mada ADM configuration in a human-readable table.
-   *
-   * @param title - The section title to display above the table.
-   * @param values - The configuration values to render.
-   */
-  private printAdmConfig(title: string, values: MadaAdmConfigValues): void {
-    const table = new Table(
-      [
-        "Tables prefix",
-        values.tablesPrefix
-          ? colors.green(values.tablesPrefix)
-          : colors.gray("None"),
-      ],
-      [
-        "Parent tables' foreign keys are repeated",
-        values.isFkRepeated ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A parent province's name is repeated across sub-tables",
-        values.isProvinceRepeated ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A parent province's foreign key is repeated across sub-tables",
-        values.isProvinceFkRepeated ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A table stores the spatial GeoJSON boundaries of its corresponding ADM",
-        values.hasGeojson ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A table stores its ADM level index (0 to 4)",
-        values.hasAdmLevel ? colors.green("Yes") : colors.red("No"),
-      ],
-    );
-    console.log(colors.blue(`\n⚙️  ${title}:`));
-    console.log(table.toString());
-  }
-
   /**
    * Initializes the set-config sub-command with its name, description, and
    * interactive action handler.
@@ -135,7 +98,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
       }
 
       if (prevAdmConfigValues) {
-        this.printAdmConfig(
+        displayMadaAdmConfig(
           "Found existing Mada ADM configuration",
           prevAdmConfigValues,
         );
@@ -222,7 +185,10 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
 
       // ── 4. Display the updated config ─────────────────────────────────────
 
-      this.printAdmConfig("Updated Mada ADM Configuration", newAdmConfigValues);
+      displayMadaAdmConfig(
+        "Updated Mada ADM Configuration",
+        newAdmConfigValues,
+      );
 
       // ── 5. Optionally rebuild ADM tables ──────────────────────────────────
 
@@ -340,27 +306,44 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
               { pgSchema },
             );
 
-            console.log(
-              colors.yellow(
-                `\n🏗️  Creating new ADM tables with the updated configuration...`,
-              ),
-            );
-            await db.transaction(async (txCtx) => {
-              for (
-                const ddl of [
-                  newProvincesDDL,
-                  newRegionsDDL,
-                  newDistrictsDDL,
-                  newCommunesDDL,
-                  newFokontanysDDL,
-                ]
-              ) {
-                await ddl.create(txCtx);
-              }
-            });
-            console.log(
-              colors.bold.green(`✅ New ADM tables created successfully.`),
-            );
+            // Check if any of the new tables already exist
+            const someNewTablesExist = (await Promise.all([
+              newProvincesDDL.exists(),
+              newRegionsDDL.exists(),
+              newDistrictsDDL.exists(),
+              newCommunesDDL.exists(),
+              newFokontanysDDL.exists(),
+            ])).some((exists) => exists);
+
+            if (someNewTablesExist) {
+              console.log(
+                colors.yellow(
+                  `\nℹ️  Some ADM tables for the new configuration already exist. Skipping creation and leaving existing tables intact.`,
+                ),
+              );
+            } else {
+              console.log(
+                colors.yellow(
+                  `\n🏗️  Creating new ADM tables with the updated configuration...`,
+                ),
+              );
+              await db.transaction(async (txCtx) => {
+                for (
+                  const ddl of [
+                    newProvincesDDL,
+                    newRegionsDDL,
+                    newDistrictsDDL,
+                    newCommunesDDL,
+                    newFokontanysDDL,
+                  ]
+                ) {
+                  await ddl.create(txCtx);
+                }
+              });
+              console.log(
+                colors.bold.green(`✅ New ADM tables created successfully.`),
+              );
+            }
           }
         }
       }

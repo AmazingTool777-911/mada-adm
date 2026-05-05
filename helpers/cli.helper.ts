@@ -1,3 +1,5 @@
+import { colors } from "@cliffy/ansi/colors";
+import { Table } from "@cliffy/table";
 import {
   type DbType,
   DEFAULT_DB_TYPE,
@@ -22,6 +24,7 @@ import type {
   IndexActionCliConfig,
   IndexActionCliConfigResolved,
 } from "@scope/types/cli";
+import type { MadaAdmConfigValues } from "@scope/types/models";
 
 /**
  * Resolves the raw global CLI configuration into a fully-typed, default-applied
@@ -141,4 +144,46 @@ export function resolveIndexCliConfig(
     processingWorkersCount: args.processingWorkersCount ??
       DEFAULT_PROCESSING_WORKERS_COUNT,
   };
+}
+
+/**
+ * Prints the Mada ADM configuration in a human-readable table.
+ *
+ * @param title - The section title to display above the table.
+ * @param values - The configuration values to render.
+ */
+export function displayMadaAdmConfig(
+  title: string,
+  values: MadaAdmConfigValues,
+): void {
+  const table = new Table(
+    [
+      "Tables prefix",
+      values.tablesPrefix
+        ? colors.green(values.tablesPrefix)
+        : colors.gray("None"),
+    ],
+    [
+      "Parent tables' foreign keys are repeated",
+      values.isFkRepeated ? colors.green("Yes") : colors.red("No"),
+    ],
+    [
+      "A parent province's name is repeated across sub-tables",
+      values.isProvinceRepeated ? colors.green("Yes") : colors.red("No"),
+    ],
+    [
+      "A parent province's foreign key is repeated across sub-tables",
+      values.isProvinceFkRepeated ? colors.green("Yes") : colors.red("No"),
+    ],
+    [
+      "A table stores the spatial GeoJSON boundaries of its corresponding ADM",
+      values.hasGeojson ? colors.green("Yes") : colors.red("No"),
+    ],
+    [
+      "A table stores its ADM level index (0 to 4)",
+      values.hasAdmLevel ? colors.green("Yes") : colors.red("No"),
+    ],
+  );
+  console.log(colors.blue(`\n⚙️  ${title}:`));
+  console.log(table.toString());
 }

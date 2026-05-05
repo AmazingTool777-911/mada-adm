@@ -100,9 +100,10 @@ export class BaseAdmTableSqliteDML {
 			JOIN v ON ${
       attributes.map((attr) => {
         const isTargetColumn = attr === admLevelTitle;
-        const lhs = isTargetColumn ? `lower(t.${attr})` : `t.${attr}`;
-        const rhs = isTargetColumn ? `lower(v.${attr})` : `v.${attr}`;
-        return `${lhs} = ${rhs}`;
+        if (isTargetColumn) {
+          return `t.${attr} = v.${attr} COLLATE NOCASE`;
+        }
+        return `t.${attr} = v.${attr}`;
       }).join(" AND ")
     }
 		`;
@@ -157,9 +158,10 @@ export class BaseAdmTableSqliteDML {
 			WHERE ${
       attributes.map((attr) => {
         const isTargetColumn = attr === admLevelTitle;
-        const lhs = isTargetColumn ? `lower(${attr})` : attr;
-        const rhs = isTargetColumn ? "lower(?)" : "?";
-        return `${lhs} = ${rhs}`;
+        if (isTargetColumn) {
+          return `${attr} = ? COLLATE NOCASE`;
+        }
+        return `${attr} = ?`;
       }).join(" AND ")
     }
 		`;
@@ -234,7 +236,7 @@ export class BaseAdmTableSqliteDML {
   protected _deleteDuplicates(admLevel: AdmLevelCode): void {
     const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
     const tableName = this.getTableName(`${admLevelTitle}s`);
-    const partitionKeys: string[] = [`lower(${admLevelTitle})`];
+    const partitionKeys: string[] = [`${admLevelTitle} COLLATE NOCASE`];
     const regionAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
       AdmLevelCode.REGION,
     )!;
@@ -244,7 +246,7 @@ export class BaseAdmTableSqliteDML {
         const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
           ADM_LEVEL_CODES_INDEXED[i],
         )!;
-        partitionKeys.push(`lower(${parentAdmLevelTitle})`);
+        partitionKeys.push(parentAdmLevelTitle);
       }
     }
     const sql = `

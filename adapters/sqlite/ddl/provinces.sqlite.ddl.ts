@@ -53,7 +53,7 @@ export class ProvincesSqliteDDL extends BaseAdmTableDDL {
     const query = `
       CREATE TABLE IF NOT EXISTS ${this.tableName} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        province VARCHAR(255) NOT NULL,${admLevelColumn}
+        province VARCHAR(255) COLLATE NOCASE NOT NULL,${admLevelColumn}
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),
         updated_at DATETIME NOT NULL DEFAULT (datetime('now'))
       );
@@ -86,8 +86,8 @@ export class ProvincesSqliteDDL extends BaseAdmTableDDL {
 
     // Standard index for faster lookups
     this.db.client.exec(`
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_province_lower 
-      ON ${this.tableName} (lower(province));
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_province 
+      ON ${this.tableName} (province COLLATE NOCASE);
     `);
   }
 

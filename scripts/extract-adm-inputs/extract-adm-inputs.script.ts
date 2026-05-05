@@ -260,11 +260,11 @@ try {
     console.log(`   SSL:      ${pgParams.ssl ?? "false"}`);
 
     const connection: PostgresConnectionConfig = {
-      host: pgParams.host,
-      port: pgParams.port,
-      username: pgParams.user,
-      password: pgParams.password,
-      database: pgParams.database,
+      host: pgParams.host!,
+      port: pgParams.port!,
+      username: pgParams.user!,
+      password: pgParams.password!,
+      database: pgParams.database!,
       ssl: pgParams.ssl,
       caCertFile: pgParams.caCertFile,
       caCertPath: pgParams.caCertPath,
@@ -293,13 +293,13 @@ try {
   // 4. Optionally Establish Redis Connection
   if (!disableRedis) {
     const redisConfig = redisCliArgs.url ? redisCliArgs.url : {
-      host: redisCliArgs.host,
-      port: redisCliArgs.port,
+      host: redisCliArgs.host!,
+      port: redisCliArgs.port!,
       username: redisCliArgs.user,
       password: redisCliArgs.password,
       db: redisCliArgs.db,
       ssl: redisCliArgs.ssl,
-    };
+    } as const;
 
     if (typeof redisConfig === "string") {
       console.log("\n🔴 Connecting to Redis via URL...");
@@ -448,7 +448,7 @@ try {
         config,
         currentAdmLevel: AdmLevelCode.PROVINCE,
         pgConnection: pgConnectionParams.connection,
-        pgSchema: pgParams.schema,
+        pgSchema: pgParams.schema!,
         jobTimestamp,
       };
 

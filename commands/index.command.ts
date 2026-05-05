@@ -4,7 +4,6 @@ import { Confirm, Input, prompt } from "@cliffy/prompt";
 import { Command } from "@cliffy/command";
 import { colors } from "@cliffy/ansi/colors";
 import { ansi } from "@cliffy/ansi";
-import { Table } from "@cliffy/table";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
 import { injectMadaAdmConfigDML, injectProvincesDML } from "@scope/db/dml";
 import {
@@ -127,6 +126,7 @@ import {
   isRegionValues,
 } from "@scope/helpers/models";
 import {
+  displayMadaAdmConfig,
   resolveGlobalCliConfig,
   resolveIndexCliConfig,
 } from "@scope/helpers/cli";
@@ -742,7 +742,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       }
       let shouldResetAdmConfig = true;
       if (prevAdmConfigValues) {
-        this.printAdmConfig(
+        displayMadaAdmConfig(
           "Found existing Mada ADM configuration",
           prevAdmConfigValues,
         );
@@ -897,7 +897,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           hasAdmLevel: result.hasAdmLevel as boolean,
         };
         await madaAdmConfigDML.createOrUpdate(activeAdmConfigValues);
-        this.printAdmConfig(
+        displayMadaAdmConfig(
           "Active Mada ADM Configuration",
           activeAdmConfigValues,
         );
@@ -910,7 +910,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           hasGeojson: prevAdmConfigValues!.hasGeojson,
           hasAdmLevel: prevAdmConfigValues!.hasAdmLevel,
         };
-        this.printAdmConfig(
+        displayMadaAdmConfig(
           "Using existing Mada ADM Configuration",
           activeAdmConfigValues,
         );
@@ -1324,45 +1324,6 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       await this.#db.close();
       console.log(`🔌 Closing database connection...`);
     }
-  }
-
-  /**
-   * Prints the Mada ADM configuration in a human-readable format.
-   *
-   * @param title - The title of the configuration section.
-   * @param values - The configuration values to print.
-   */
-  private printAdmConfig(title: string, values: MadaAdmConfigValues): void {
-    const table = new Table(
-      [
-        "Tables prefix",
-        values.tablesPrefix
-          ? colors.green(values.tablesPrefix)
-          : colors.gray("None"),
-      ],
-      [
-        "Parent tables' foreign keys are repeated",
-        values.isFkRepeated ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A parent province's name is repeated across sub-tables",
-        values.isProvinceRepeated ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A parent province's foreign key is repeated across sub-tables",
-        values.isProvinceFkRepeated ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A table stores the spatial GeoJSON boundaries of its corresponding ADM",
-        values.hasGeojson ? colors.green("Yes") : colors.red("No"),
-      ],
-      [
-        "A table stores its ADM level index (0 to 4)",
-        values.hasAdmLevel ? colors.green("Yes") : colors.red("No"),
-      ],
-    );
-    console.log(colors.blue(`\n⚙️  ${title}:`));
-    console.log(table.toString());
   }
 }
 

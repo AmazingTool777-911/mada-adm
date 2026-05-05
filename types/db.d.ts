@@ -1,4 +1,5 @@
 import type { Transaction } from "@db/postgres";
+import type { PoolConnection } from "mysql2/promise";
 import type { DbType } from "@scope/consts/db";
 import type { AdmLevelCode } from "@scope/consts/models";
 import type { MaybePromise } from "./utils.d.ts";
@@ -52,12 +53,18 @@ export type SQLiteTransactionContext = {
   dbType: DbType.SQLite;
 };
 
+export type MySQLTransactionContext = {
+  dbType: DbType.MySQL;
+  connection: PoolConnection;
+};
+
 /**
  * Represents the transaction context for a specific database type.
  */
 export type DbTransactionContext =
   | PostgresTransactionContext
-  | SQLiteTransactionContext;
+  | SQLiteTransactionContext
+  | MySQLTransactionContext;
 
 /**
  * Represents a database connection.
@@ -143,12 +150,62 @@ export interface SQLiteConnectionParams {
 }
 
 /**
+ * Detailed configuration for a MySQL database connection.
+ */
+export interface MySQLConnectionConfig {
+  /** The hostname or IP address of the database server. */
+  host: string;
+  /** The port number the database server is listening on. */
+  port: number;
+  /** The username to use for authentication. */
+  username: string;
+  /** The password to use for authentication. */
+  password: string;
+  /** The name of the database to connect to. */
+  database: string;
+  /** Whether to use SSL for the connection. */
+  ssl?: boolean;
+  /**
+   * Filename of a CA certificate located under the shared `db/.ca-certificates/`
+   * directory. Takes precedence over `caCertPath` when both are provided.
+   */
+  caCertFile?: string;
+  /** Full pathname to the CA certificate file, used when `caCertFile` is not set. */
+  caCertPath?: string;
+  /**
+   * Filename of a client certificate located under the shared `db/.ca-certificates/`
+   * directory. Takes precedence over `certPath` when both are provided.
+   */
+  certFile?: string;
+  /** Full pathname to the client certificate file, used when `certFile` is not set. */
+  certPath?: string;
+  /**
+   * Filename of a client key located under the shared `db/.ca-certificates/`
+   * directory. Takes precedence over `keyPath` when both are provided.
+   */
+  keyFile?: string;
+  /** Full pathname to the client key file, used when `keyFile` is not set. */
+  keyPath?: string;
+}
+
+/**
+ * Connection parameters specifically for a MySQL database.
+ */
+export interface MySQLConnectionParams {
+  /** The type of database, fixed to MySQL. */
+  dbType: DbType.MySQL;
+  /** Either a connection string (URL) or a configuration object. */
+  connection: string | MySQLConnectionConfig;
+}
+
+/**
  * Union type of all supported database connection parameters.
  * Initially supports only PostgreSQL.
  */
 export type DbConnectionParams =
   | PostgresConnectionParams
-  | SQLiteConnectionParams;
+  | SQLiteConnectionParams
+  | MySQLConnectionParams;
 
 export interface TableDDL {
   /** The physical database table name. */

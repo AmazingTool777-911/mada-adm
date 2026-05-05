@@ -4,6 +4,7 @@
   "exports": {
     ".": "./index.ts",
     "./postgres": "./postgres/index.ts",
-    "./sqlite": "./sqlite/index.ts"
+    "./sqlite": "./sqlite/index.ts",
+    "./mysql": "./mysql/index.ts"
   }
 }

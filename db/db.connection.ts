@@ -3,6 +3,10 @@ import {
   PostgresDbConnection,
 } from "@scope/adapters/postgres";
 import {
+  injectMySQLDbConnection,
+  MySQLDbConnection,
+} from "@scope/adapters/mysql";
+import {
   injectSqliteDbConnection,
   SqliteDbConnection,
 } from "@scope/adapters/sqlite";
@@ -21,6 +25,8 @@ export function injectDbConnection(dbType: DbType): DbConnection {
   switch (dbType) {
     case DbType.Postgres:
       return injectPostgresDbConnection();
+    case DbType.MySQL:
+      return injectMySQLDbConnection();
     case DbType.SQLite:
       return injectSqliteDbConnection();
     default:
@@ -77,6 +83,32 @@ export async function attemptDbConnection(
         dbType: DbType.SQLite,
         dbPath: config.sqlite.dbPath,
         dbFile: config.sqlite.dbFile,
+      };
+      break;
+    }
+    case DbType.MySQL: {
+      if (!(connection instanceof MySQLDbConnection)) {
+        throw new Error(
+          "Invalid connection instance: Expected MySQLDbConnection for MySQL database type.",
+        );
+      }
+      const mysql = config.mysql;
+      params = {
+        dbType: DbType.MySQL,
+        connection: mysql.url ? mysql.url : {
+          host: mysql.host,
+          port: mysql.port,
+          username: mysql.user,
+          password: mysql.password,
+          database: mysql.database ?? "",
+          ssl: mysql.ssl,
+          caCertFile: mysql.ssl ? mysql.caCertFile : undefined,
+          caCertPath: mysql.ssl ? mysql.caCertPath : undefined,
+          certFile: mysql.ssl ? mysql.certFile : undefined,
+          certPath: mysql.ssl ? mysql.certPath : undefined,
+          keyFile: mysql.ssl ? mysql.keyFile : undefined,
+          keyPath: mysql.ssl ? mysql.keyPath : undefined,
+        },
       };
       break;
     }

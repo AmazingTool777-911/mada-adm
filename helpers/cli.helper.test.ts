@@ -64,6 +64,19 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
     assertEquals(result.pg.url, undefined);
     assertEquals(result.pg.caCertFile, undefined);
     assertEquals(result.pg.caCertPath, undefined);
+    assertEquals(result.mysql.host, "localhost");
+    assertEquals(result.mysql.port, 3306);
+    assertEquals(result.mysql.user, "root");
+    assertEquals(result.mysql.password, "");
+    assertEquals(result.mysql.database, undefined);
+    assertEquals(result.mysql.ssl, false);
+    assertEquals(result.mysql.url, undefined);
+    assertEquals(result.mysql.caCertFile, undefined);
+    assertEquals(result.mysql.caCertPath, undefined);
+    assertEquals(result.mysql.certFile, undefined);
+    assertEquals(result.mysql.certPath, undefined);
+    assertEquals(result.mysql.keyFile, undefined);
+    assertEquals(result.mysql.keyPath, undefined);
     assertEquals(result.sqlite.dbFile, undefined);
     assertEquals(result.sqlite.dbPath, undefined);
   });
@@ -156,6 +169,39 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
       assertEquals(result.pg.caCertFile, "flag-ca.crt");
     },
   );
+
+  await t.step(
+    "CLI flag --mysql.* takes precedence over env-var shadow keys",
+    () => {
+      const result = resolveGlobalCliConfig({
+        mysql: { host: "mysql-flag-host", port: 9999 },
+        mysqlHost: "mysql-env-host",
+        mysqlPort: 1111,
+      });
+      assertEquals(result.mysql.host, "mysql-flag-host");
+      assertEquals(result.mysql.port, 9999);
+    },
+  );
+
+  await t.step(
+    "env-var shadow key falls back for mysql when flag is absent",
+    () => {
+      const result = resolveGlobalCliConfig({
+        mysqlHost: "env-host",
+        mysqlPort: 3307,
+        mysqlUser: "env-user",
+        mysqlPassword: "env-pass",
+        mysqlDatabase: "env-db",
+        mysqlSsl: true,
+      });
+      assertEquals(result.mysql.host, "env-host");
+      assertEquals(result.mysql.port, 3307);
+      assertEquals(result.mysql.user, "env-user");
+      assertEquals(result.mysql.password, "env-pass");
+      assertEquals(result.mysql.database, "env-db");
+      assertEquals(result.mysql.ssl, true);
+    },
+  );
 });
 
 Deno.test("resolveIndexCliConfig", async (t) => {
@@ -165,6 +211,7 @@ Deno.test("resolveIndexCliConfig", async (t) => {
     assertEquals(result.dbType, DbType.SQLite);
     assertEquals(result.cliDebug, false);
     assertEquals(result.pgSchema, "public");
+    assertEquals(result.mysql.host, "localhost");
     assertEquals(result.sqlite.dbFile, undefined);
     // Redis defaults
     assertEquals(result.disableRedis, false);

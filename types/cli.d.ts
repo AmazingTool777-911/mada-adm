@@ -37,6 +37,48 @@ export interface PostgresDbConnectionCliConfig {
 }
 
 /**
+ * Raw MySQL configuration options as parsed from CLI flags or environment
+ * variables. Every field is optional because no defaults are applied at parse time.
+ */
+export interface MySQLDbConnectionCliConfig {
+  /** Full MySQL connection URL. When set, individual config fields are ignored. */
+  url?: string;
+  /** Hostname or IP address of the MySQL server. */
+  host?: string;
+  /** TCP port the MySQL server listens on. */
+  port?: number;
+  /** Username to authenticate with. */
+  user?: string;
+  /** Password for the database user. */
+  password?: string;
+  /** Name of the target database. */
+  database?: string;
+  /** Whether to enable SSL for the connection. */
+  ssl?: boolean;
+  /**
+   * Filename of the CA certificate located under the shared `db/.ca-certificates/`
+   * directory.
+   */
+  caCertFile?: string;
+  /** Full path to the CA certificate file. */
+  caCertPath?: string;
+  /**
+   * Filename of the client certificate located under the shared `db/.ca-certificates/`
+   * directory.
+   */
+  certFile?: string;
+  /** Full path to the client certificate file. */
+  certPath?: string;
+  /**
+   * Filename of the client key located under the shared `db/.ca-certificates/`
+   * directory.
+   */
+  keyFile?: string;
+  /** Full path to the client key file. */
+  keyPath?: string;
+}
+
+/**
  * SQLite configuration options derived from CLI or environment variables.
  */
 export interface SQLiteDbConnectionCliConfig {
@@ -105,6 +147,8 @@ export type GlobalCliConfig = {
   cliDebug?: boolean;
   /** Structured PostgreSQL options from `--pg.*` flags. */
   pg?: PostgresDbConnectionCliConfig;
+  /** Structured MySQL options from `--mysql.*` flags. */
+  mysql?: MySQLDbConnectionCliConfig;
   /** Structured SQLite options from `--sqlite.*` flags. */
   sqlite?: SQLiteDbConnectionCliConfig;
 
@@ -129,6 +173,32 @@ export type GlobalCliConfig = {
   pgCaCertFile?: string;
   /** Environment variable mapped for PG_CA_CERT_PATH. */
   pgCaCertPath?: string;
+  /** Environment variable mapped for MYSQL_URL. */
+  mysqlUrl?: string;
+  /** Environment variable mapped for MYSQL_HOST. */
+  mysqlHost?: string;
+  /** Environment variable mapped for MYSQL_PORT. */
+  mysqlPort?: number;
+  /** Environment variable mapped for MYSQL_USER. */
+  mysqlUser?: string;
+  /** Environment variable mapped for MYSQL_PASSWORD. */
+  mysqlPassword?: string;
+  /** Environment variable mapped for MYSQL_DATABASE. */
+  mysqlDatabase?: string;
+  /** Environment variable mapped for MYSQL_SSL. */
+  mysqlSsl?: boolean;
+  /** Environment variable mapped for MYSQL_CA_CERT_FILE. */
+  mysqlCaCertFile?: string;
+  /** Environment variable mapped for MYSQL_CA_CERT_PATH. */
+  mysqlCaCertPath?: string;
+  /** Environment variable mapped for MYSQL_CERT_FILE. */
+  mysqlCertFile?: string;
+  /** Environment variable mapped for MYSQL_CERT_PATH. */
+  mysqlCertPath?: string;
+  /** Environment variable mapped for MYSQL_KEY_FILE. */
+  mysqlKeyFile?: string;
+  /** Environment variable mapped for MYSQL_KEY_PATH. */
+  mysqlKeyPath?: string;
   /** Environment variable mapped for SQLITE_DB_FILE. */
   sqliteDbFile?: string;
   /** Environment variable mapped for SQLITE_DB_PATH. */
@@ -227,6 +297,35 @@ export type GlobalCliConfigResolved = {
     /** Full path to the CA certificate file. */
     caCertPath?: string;
   };
+  /** Resolved MySQL connection configuration. */
+  mysql: {
+    /** Full MySQL connection URL. When set, individual config fields are ignored. */
+    url?: string;
+    /** Hostname or IP address of the MySQL server. */
+    host: string;
+    /** TCP port the MySQL server listens on. */
+    port: number;
+    /** Username to authenticate with. */
+    user: string;
+    /** Password for the database user. */
+    password: string;
+    /** Name of the target database. */
+    database?: string;
+    /** Whether to enable SSL for the connection. */
+    ssl: boolean;
+    /** Filename of the CA certificate under `db/.ca-certificates/`. */
+    caCertFile?: string;
+    /** Full path to the CA certificate file. */
+    caCertPath?: string;
+    /** Filename of the client certificate under `db/.ca-certificates/`. */
+    certFile?: string;
+    /** Full path to the client certificate file. */
+    certPath?: string;
+    /** Filename of the client key under `db/.ca-certificates/`. */
+    keyFile?: string;
+    /** Full path to the client key file. */
+    keyPath?: string;
+  };
   /** Resolved SQLite connection configuration. */
   sqlite: SQLiteDbConnectionCliConfig;
 };
@@ -244,6 +343,35 @@ export type IndexActionCliConfigResolved = {
   cliDebug: boolean;
   /** The PostgreSQL schema name. */
   pgSchema: string;
+  /** Resolved MySQL connection configuration. */
+  mysql: {
+    /** Full MySQL connection URL. When set, individual config fields are ignored. */
+    url?: string;
+    /** Hostname or IP address of the MySQL server. */
+    host: string;
+    /** TCP port the MySQL server listens on. */
+    port: number;
+    /** Username to authenticate with. */
+    user: string;
+    /** Password for the database user. */
+    password: string;
+    /** Name of the target database. */
+    database?: string;
+    /** Whether to enable SSL for the connection. */
+    ssl: boolean;
+    /** Filename of the CA certificate under `db/.ca-certificates/`. */
+    caCertFile?: string;
+    /** Full path to the CA certificate file. */
+    caCertPath?: string;
+    /** Filename of the client certificate under `db/.ca-certificates/`. */
+    certFile?: string;
+    /** Full path to the client certificate file. */
+    certPath?: string;
+    /** Filename of the client key under `db/.ca-certificates/`. */
+    keyFile?: string;
+    /** Full path to the client key file. */
+    keyPath?: string;
+  };
   /** Resolved SQLite connection configuration. */
   sqlite: SQLiteDbConnectionCliConfig;
   /** Resolved Redis connection configuration. */
@@ -302,7 +430,7 @@ export type IndexActionCliConfigResolved = {
  */
 export type DbConnectionCliConfig = Pick<
   GlobalCliConfigResolved,
-  "dbType" | "pg" | "sqlite"
+  "dbType" | "pg" | "mysql" | "sqlite"
 >;
 
 /**

@@ -54,6 +54,47 @@ export const PG_CA_CERT_FILE_DESCRIPTION: string =
 export const PG_CA_CERT_PATH_DESCRIPTION: string =
   "Full path to the CA certificate file. Used when --pg.ca-cert-file is not set.";
 
+// ── MySQL descriptions ───────────────────────────────────────────────────────
+
+export const MYSQL_URL_DESCRIPTION: string =
+  "The URL to connect to the MySQL database.";
+
+export const MYSQL_HOST_DESCRIPTION: string =
+  "Hostname or IP address of the MySQL server.";
+
+export const MYSQL_PORT_DESCRIPTION: string =
+  "Port number of the MySQL server.";
+
+export const MYSQL_USER_DESCRIPTION: string =
+  "Username for authenticating with the MySQL server.";
+
+export const MYSQL_PASSWORD_DESCRIPTION: string =
+  "Password for authenticating with the MySQL server.";
+
+export const MYSQL_DATABASE_DESCRIPTION: string =
+  "Name of the database to be used.";
+
+export const MYSQL_SSL_DESCRIPTION: string =
+  "Whether to use SSL for the connection.";
+
+export const MYSQL_CA_CERT_FILE_DESCRIPTION: string =
+  "Filename of the CA certificate under db/.ca-certificates/. NOTE: This only works when running from the Deno codebase; it is not supported in the compiled binary as internal directories are encapsulated. Use --mysql.ca-cert-path instead.";
+
+export const MYSQL_CA_CERT_PATH_DESCRIPTION: string =
+  "Full path to the CA certificate file. Used when --mysql.ca-cert-file is not set.";
+
+export const MYSQL_CERT_FILE_DESCRIPTION: string =
+  "Filename of the client certificate under db/.ca-certificates/. NOTE: This only works when running from the Deno codebase; it is not supported in the compiled binary as internal directories are encapsulated. Use --mysql.cert-path instead.";
+
+export const MYSQL_CERT_PATH_DESCRIPTION: string =
+  "Full path to the client certificate file. Used when --mysql.cert-file is not set.";
+
+export const MYSQL_KEY_FILE_DESCRIPTION: string =
+  "Filename of the client key under db/.ca-certificates/. NOTE: This only works when running from the Deno codebase; it is not supported in the compiled binary as internal directories are encapsulated. Use --mysql.key-path instead.";
+
+export const MYSQL_KEY_PATH_DESCRIPTION: string =
+  "Full path to the client key file. Used when --mysql.key-file is not set.";
+
 // ── SQLite descriptions ─────────────────────────────────────────────────────
 
 export const SQLITE_DB_FILE_DESCRIPTION: string =

@@ -116,8 +116,8 @@ export interface PostgresConnectionConfig {
   database: string;
   /** Whether to use SSL for the connection. */
   ssl?: boolean;
-  /** The maximum size of the connection pool. */
-  poolSize?: number;
+  /** Maximum number of connections in the pool. */
+  connectionLimit?: number;
   /**
    * Filename of a CA certificate located under the shared `db/.ca-certificates/`
    * directory. Takes precedence over `caCertPath` when both are provided.

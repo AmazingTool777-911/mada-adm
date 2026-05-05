@@ -68,6 +68,7 @@ export function resolveGlobalCliConfig(
       ssl: args.pg?.ssl ?? args.pgSsl ?? false,
       caCertFile: args.pg?.caCertFile ?? args.pgCaCertFile,
       caCertPath: args.pg?.caCertPath ?? args.pgCaCertPath,
+      connectionLimit: args.pg?.connectionLimit ?? args.pgConnectionLimit ?? 10,
     },
     mysql: {
       url: args.mysql?.url ?? args.mysqlUrl,

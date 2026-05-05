@@ -1,5 +1,5 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { mapFokontanySnakeToCamel } from "@scope/helpers/models";
+
 import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
@@ -12,7 +12,6 @@ import type {
 import type {
   Fokontany,
   FokontanyRecord,
-  FokontanySnakeCased,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
@@ -30,52 +29,50 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     super(config, db, schema);
   }
 
+  /**
+   * Retrieves multiple fokontanys by their unique attributes.
+   *
+   * @param attributes - The list of fokontany identifying attributes.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An array of matching fokontany entities.
+   */
   async getManyByAttributes(
     attributes: FokontanyAttributes[],
     transactionContext?: DbTransactionContext,
   ): Promise<Fokontany[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
-    );
-
-    return await this._getManyByAttributes<Fokontany, FokontanySnakeCased>(
-      tableName,
-      [`${tableName}.*`],
+    return (await this._getManyByAttributes(
+      AdmLevelCode.FOKONTANY,
       attributes,
-      mapFokontanySnakeToCamel,
-      "fokontany",
       transactionContext,
-    );
+    )) as Fokontany[];
   }
 
   /**
    * Retrieves multiple fokontanys whose nearest parent commune ID is among the provided set.
    *
    * @param communeIds - The commune IDs to filter by.
+   * @param transactionContext - Optional database transaction context.
    * @returns An array of matching fokontany entities.
    */
   async getManyByCommuneIds(
     communeIds: EntityId[],
     transactionContext?: DbTransactionContext,
   ): Promise<Fokontany[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
-    );
-    return await this._getManyByParentId<Fokontany, FokontanySnakeCased>(
-      tableName,
-      [`${tableName}.*`],
-      "commune_id",
+    return (await this._getManyByParentsIds(
+      AdmLevelCode.FOKONTANY,
       communeIds,
-      mapFokontanySnakeToCamel,
       transactionContext,
-    );
+    )) as Fokontany[];
   }
 
   /**
-   * Updates the fokontany name of all fokontany records whose IDs belong to the provided set.
+   * Updates a field of all fokontany records whose IDs belong to the provided set.
    *
    * @param ids - The fokontany IDs to target.
-   * @param value - The new fokontany name value to assign.
+   * @param fieldCode - The ADM level field to update.
+   * @param value - The new value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
    */
   async updateFieldByIds(
     ids: EntityId[],
@@ -88,15 +85,12 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     value: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
-    );
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
     return await this._updateFieldByIds(
-      tableName,
+      AdmLevelCode.FOKONTANY,
+      ids,
       column,
       value,
-      ids,
       transactionContext,
     );
   }
@@ -107,116 +101,41 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
    * @param values - An array of fokontany values to insert.
    * @returns A result object containing the count of inserted rows.
    */
-  async createMany(values: FokontanyRecord[]): Promise<DMLCreateManyResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
-    );
-    const columns = [
-      "fokontany",
-      "commune",
-      "district",
-      "region",
-      "commune_id",
-    ];
-
-    if (this.config.isProvinceRepeated) columns.push("province");
-    if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
-      columns.push("province_id");
-    }
-    if (this.config.isFkRepeated) {
-      columns.push("region_id");
-      columns.push("district_id");
-    }
-    if (this.config.hasAdmLevel) columns.push("adm_level");
-    if (this.config.hasGeojson) columns.push("geojson");
-
+  async createMany(
+    values: FokontanyRecord[],
+    transactionContext?: DbTransactionContext,
+  ): Promise<DMLCreateManyResult> {
     return await this._createMany(
-      tableName,
-      columns,
+      AdmLevelCode.FOKONTANY,
       values,
-      (val, argIndex) => {
-        const placeholders: string[] = [];
-        const args: unknown[] = [];
-
-        // fokontany
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.fokontany);
-
-        // commune
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.commune);
-
-        // district
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.district);
-
-        // region
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.region);
-
-        // commune_id
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.communeId);
-
-        // province
-        if (this.config.isProvinceRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.province);
-        }
-
-        // province_id
-        if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.provinceId);
-        }
-
-        // region_id & district_id
-        if (this.config.isFkRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.regionId);
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.districtId);
-        }
-
-        // adm_level
-        if (this.config.hasAdmLevel) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.admLevel ?? 4);
-        }
-
-        // geojson
-        if (this.config.hasGeojson) {
-          placeholders.push(`ST_GeomFromGeoJSON($${argIndex++})`);
-          args.push(val.geojson ? JSON.stringify(val.geojson) : null);
-        }
-
-        return { placeholders, args };
-      },
+      transactionContext,
     );
   }
 
-  async deleteDuplicates(): Promise<void> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
-    );
-    await this._deleteDuplicates(tableName, [
-      "fokontany",
-      "commune",
-      "district",
-      "region",
-    ]);
+  /**
+   * Removes duplicate fokontany records from the table.
+   */
+  async deleteDuplicates(
+    transactionContext?: DbTransactionContext,
+  ): Promise<void> {
+    await this._deleteDuplicates(AdmLevelCode.FOKONTANY, transactionContext);
   }
 
+  /**
+   * Updates the geojson field of a fokontany record identified by its attributes.
+   *
+   * @param attributes - The identifying attributes for the fokontany.
+   * @param geojson - The GeoJSON string value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
   async updateGeojsonByAttributes(
     attributes: FokontanyAttributes,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
-    );
     return await this._updateGeojsonByIdentifiers(
-      tableName,
+      AdmLevelCode.FOKONTANY,
       {
         fokontany: attributes.fokontany,
         commune: attributes.commune,
@@ -224,7 +143,6 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
         region: attributes.region,
       },
       geojson,
-      "fokontany",
       transactionContext,
     );
   }

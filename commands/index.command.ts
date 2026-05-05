@@ -31,6 +31,7 @@ import {
   MYSQL_USER_DESCRIPTION,
   PG_CA_CERT_FILE_DESCRIPTION,
   PG_CA_CERT_PATH_DESCRIPTION,
+  PG_CONNECTION_LIMIT_DESCRIPTION,
   PG_DATABASE_DESCRIPTION,
   PG_HOST_DESCRIPTION,
   PG_PASSWORD_DESCRIPTION,
@@ -215,6 +216,13 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           depends: ["pg.ssl"],
         },
       )
+      .globalOption(
+        "--pg.connection-limit <limit:number>",
+        PG_CONNECTION_LIMIT_DESCRIPTION,
+        {
+          depends: ["pg.host"],
+        },
+      )
       .group("MySQL configuration")
       .globalOption("--mysql.url <url:string>", MYSQL_URL_DESCRIPTION)
       .globalOption("--mysql.host <host:string>", MYSQL_HOST_DESCRIPTION)
@@ -323,6 +331,10 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalEnv(
         "PG_CA_CERT_PATH=<path:string>",
         PG_CA_CERT_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "PG_CONNECTION_LIMIT=<limit:number>",
+        PG_CONNECTION_LIMIT_DESCRIPTION,
       )
       .globalEnv("MYSQL_URL=<url:string>", MYSQL_URL_DESCRIPTION)
       .globalEnv("MYSQL_HOST=<host:string>", MYSQL_HOST_DESCRIPTION)

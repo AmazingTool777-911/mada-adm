@@ -1,5 +1,5 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
+
 import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
@@ -12,7 +12,6 @@ import type {
 import type {
   District,
   DistrictRecord,
-  DistrictSnakeCased,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
@@ -30,52 +29,50 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     super(config, db, schema);
   }
 
+  /**
+   * Retrieves multiple districts by their unique attributes.
+   *
+   * @param attributes - The list of district identifying attributes.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An array of matching district entities.
+   */
   async getManyByAttributes(
     attributes: DistrictAttributes[],
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
-    );
-
-    return await this._getManyByAttributes<District, DistrictSnakeCased>(
-      tableName,
-      [`${tableName}.*`],
+    return (await this._getManyByAttributes(
+      AdmLevelCode.DISTRICT,
       attributes,
-      mapDistrictSnakeToCamel,
-      "district",
       transactionContext,
-    );
+    )) as District[];
   }
 
   /**
    * Retrieves multiple districts whose nearest parent region ID is among the provided set.
    *
    * @param regionIds - The region IDs to filter by.
+   * @param transactionContext - Optional database transaction context.
    * @returns An array of matching district entities.
    */
   async getManyByRegionIds(
     regionIds: EntityId[],
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
-    );
-    return await this._getManyByParentId<District, DistrictSnakeCased>(
-      tableName,
-      [`${tableName}.*`],
-      "region_id",
+    return (await this._getManyByParentsIds(
+      AdmLevelCode.DISTRICT,
       regionIds,
-      mapDistrictSnakeToCamel,
       transactionContext,
-    );
+    )) as District[];
   }
 
   /**
-   * Updates the district name of all district records whose IDs belong to the provided set.
+   * Updates a field of all district records whose IDs belong to the provided set.
    *
    * @param ids - The district IDs to target.
-   * @param value - The new district name value to assign.
+   * @param fieldCode - The ADM level field to update.
+   * @param value - The new value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
    */
   async updateFieldByIds(
     ids: EntityId[],
@@ -86,15 +83,12 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     value: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
-    );
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
     return await this._updateFieldByIds(
-      tableName,
+      AdmLevelCode.DISTRICT,
+      ids,
       column,
       value,
-      ids,
       transactionContext,
     );
   }
@@ -105,88 +99,43 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
    * @param values - An array of district values to insert.
    * @returns A result object containing the count of inserted rows.
    */
-  async createMany(values: DistrictRecord[]): Promise<DMLCreateManyResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
-    );
-    const columns = ["district", "region", "region_id"];
-
-    if (this.config.isProvinceRepeated) columns.push("province");
-    if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
-      columns.push("province_id");
-    }
-    if (this.config.hasAdmLevel) columns.push("adm_level");
-    if (this.config.hasGeojson) columns.push("geojson");
-
+  async createMany(
+    values: DistrictRecord[],
+    transactionContext?: DbTransactionContext,
+  ): Promise<DMLCreateManyResult> {
     return await this._createMany(
-      tableName,
-      columns,
+      AdmLevelCode.DISTRICT,
       values,
-      (val, argIndex) => {
-        const placeholders: string[] = [];
-        const args: unknown[] = [];
-
-        // district
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.district);
-
-        // region
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.region);
-
-        // region_id
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.regionId);
-
-        // province
-        if (this.config.isProvinceRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.province);
-        }
-
-        // province_id
-        if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.provinceId);
-        }
-
-        // adm_level
-        if (this.config.hasAdmLevel) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.admLevel ?? 2);
-        }
-
-        // geojson
-        if (this.config.hasGeojson) {
-          placeholders.push(`ST_GeomFromGeoJSON($${argIndex++})`);
-          args.push(val.geojson ? JSON.stringify(val.geojson) : null);
-        }
-
-        return { placeholders, args };
-      },
+      transactionContext,
     );
   }
 
-  async deleteDuplicates(): Promise<void> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
-    );
-    await this._deleteDuplicates(tableName, ["district", "region"]);
+  /**
+   * Removes duplicate district records from the table.
+   */
+  async deleteDuplicates(
+    transactionContext?: DbTransactionContext,
+  ): Promise<void> {
+    await this._deleteDuplicates(AdmLevelCode.DISTRICT, transactionContext);
   }
 
+  /**
+   * Updates the geojson field of a district record identified by its attributes.
+   *
+   * @param attributes - The identifying attributes for the district.
+   * @param geojson - The GeoJSON string value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
   async updateGeojsonByAttributes(
     attributes: DistrictAttributes,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
-    );
     return await this._updateGeojsonByIdentifiers(
-      tableName,
+      AdmLevelCode.DISTRICT,
       { district: attributes.district, region: attributes.region },
       geojson,
-      "district",
       transactionContext,
     );
   }

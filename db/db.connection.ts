@@ -69,6 +69,7 @@ export async function attemptDbConnection(
           ssl: pg.ssl,
           caCertFile: pg.ssl ? pg.caCertFile : undefined,
           caCertPath: pg.ssl ? pg.caCertPath : undefined,
+          connectionLimit: pg.connectionLimit,
         },
       };
       break;

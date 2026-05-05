@@ -1,14 +1,37 @@
 import { StringUtils } from "@scope/utils";
 import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
-import type { AdmEntity } from "@scope/types/models";
+import type {
+  AdmAttributes,
+  AdmEntity,
+  AdmRecord,
+  CommuneSnakeCased,
+  DistrictSnakeCased,
+  FokontanySnakeCased,
+  ProvinceSnakeCased,
+  RegionSnakeCased,
+} from "@scope/types/models";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
   DMLUpdateResult,
+  EntityId,
 } from "@scope/types/db";
 import { DbHelper } from "@scope/helpers";
-import { ensureIsPostgresDbTransactionCtx } from "@scope/helpers/db";
+import {
+  ADM_LEVEL_CODES_INDEXED,
+  ADM_LEVEL_INDEX_BY_CODE,
+  ADM_LEVEL_TITLE_BY_CODE,
+  AdmLevelCode,
+} from "@scope/consts/models";
+import {
+  isGeoJSONGeometry,
+  mapCommuneSnakeToCamel,
+  mapDistrictSnakeToCamel,
+  mapFokontanySnakeToCamel,
+  mapProvinceSnakeToCamel,
+  mapRegionSnakeToCamel,
+} from "@scope/helpers/models";
 
 /**
  * Abstract base class for ADM Data Manipulation Layer (DML) implementations
@@ -36,18 +59,24 @@ export abstract class BaseAdmPostgresTableDML {
     return `${this.schema}.${tableName}`;
   }
 
-  protected async _getManyByAttributes<T extends AdmEntity, R>(
-    tableName: string,
-    selectedColumns: string[],
-    attributesValues: Record<string, string>[],
-    mapper: (record: R) => T,
-    lowercaseAttribute?: string,
+  /**
+   * Fetches multiple administrative entities matching a list of attribute sets.
+   *
+   * @param admLevel - The administrative level to query.
+   * @param attributesValues - A list of attribute sets to match against.
+   * @param mapper - Maps a raw snake-cased row to a camel-cased entity.
+   * @param lowercaseAttribute - Optional column name to compare case-insensitively.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An array of mapped administrative entities.
+   */
+  protected async _getManyByAttributes(
+    admLevel: AdmLevelCode,
+    attributesValues: AdmAttributes[],
     transactionContext?: DbTransactionContext,
-  ): Promise<T[]> {
+  ): Promise<AdmEntity[]> {
     if (attributesValues.length === 0) return [];
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? transactionContext.tx
-      : this.db.client;
+    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+    const tableName = this.getTableName(`${admLevelTitle}s`);
     const attributes = Object.keys(attributesValues[0]);
     const sql = `
       SELECT t.*
@@ -58,37 +87,63 @@ export abstract class BaseAdmPostgresTableDML {
         FROM UNNEST($1::jsonb[]) AS row
       ) AS inputs
       CROSS JOIN LATERAL (
-        SELECT ${selectedColumns.join(", ")}
+        SELECT ${tableName}.*
         FROM ${tableName}
         WHERE ${
       attributes.map((attr) => {
-        const isLower = attr === lowercaseAttribute;
-        const lhs = isLower
-          ? `LOWER(${tableName}.${attr})`
-          : `${tableName}.${attr}`;
-        const rhs = isLower ? `LOWER(inputs.${attr})` : `inputs.${attr}`;
-        return `${lhs} = ${rhs}`;
+        return `${tableName}.${attr} = inputs.${attr}`;
       }).join(" AND ")
     }
       ) AS t;
     `;
-    const result = await client.queryObject<R>(sql, [
-      attributesValues.map((v) => JSON.stringify(v)),
-    ]);
-    return result.rows.map(mapper);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<unknown>(sql, [
+        attributesValues.map((v) => JSON.stringify(v)),
+      ]);
+      return result.rows.map((r) => {
+        switch (admLevel) {
+          case AdmLevelCode.PROVINCE:
+            return mapProvinceSnakeToCamel(r as ProvinceSnakeCased);
+          case AdmLevelCode.REGION:
+            return mapRegionSnakeToCamel(r as RegionSnakeCased);
+          case AdmLevelCode.DISTRICT:
+            return mapDistrictSnakeToCamel(r as DistrictSnakeCased);
+          case AdmLevelCode.COMMUNE:
+            return mapCommuneSnakeToCamel(r as CommuneSnakeCased);
+          case AdmLevelCode.FOKONTANY:
+            return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
+          default:
+            throw new Error(
+              `Unknown ADM level when getting ${admLevelTitle}: ${admLevel} by attributes`,
+            );
+        }
+      });
+    } finally {
+      if (client) client.release();
+    }
   }
 
+  /**
+   * Updates the GeoJSON field of an administrative entity identified by its attributes.
+   *
+   * @param admLevel - The administrative level of the entity.
+   * @param identifiers - The attributes used to identify the entity.
+   * @param geojson - The new GeoJSON string to set.
+   * @param lowercaseAttribute - Optional column name to compare case-insensitively.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
   protected async _updateGeojsonByIdentifiers(
-    tableName: string,
-    identifiers: Record<string, string>,
+    admLevel: AdmLevelCode,
+    identifiers: AdmAttributes,
     geojson: string,
-    lowercaseAttribute?: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? transactionContext.tx
-      : this.db.client;
-
+    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+    const tableName = this.getTableName(`${admLevelTitle}s`);
     const attributes = Object.keys(identifiers);
     const sql = `
       UPDATE ${tableName}
@@ -97,159 +152,239 @@ export abstract class BaseAdmPostgresTableDML {
         updated_at = NOW()
       WHERE ${
       attributes.map((attr, i) => {
-        const isLower = attr === lowercaseAttribute;
-        const lhs = isLower ? `LOWER(${attr})` : attr;
-        const rhs = isLower ? `LOWER($${i + 2})` : `$${i + 2}`;
-        return `${lhs} = ${rhs}`;
+        return `${attr} = $${i + 2}`;
       }).join(" AND ")
     }
     `;
-
-    const result = await client.queryObject(sql, [
-      geojson,
-      ...Object.values(identifiers),
-    ]);
-
-    return { affectedRows: result.rowCount ?? 0 };
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject(sql, [
+        geojson,
+        ...Object.values(identifiers),
+      ]);
+      return { affectedRows: result.rowCount ?? 0 };
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
-   * Internal helper to execute a batch insertion within a transaction.
+   * Executes a batch insertion for the given administrative level.
    *
-   * @param tableName - The name of the table to insert into.
-   * @param columns - The list of column names for the insert statement.
-   * @param rows - The data rows to insert.
-   * @param rowToArgs - A mapper function that provides placeholders and arguments for a single row.
+   * @param admLevel - The administrative level of the entities to insert.
+   * @param records - The data records to insert.
+   * @param transactionContext - Optional database transaction context.
    * @returns A promise resolving to the result of the batch insertion.
    */
-  protected async _createMany<T>(
-    tableName: string,
-    columns: string[],
-    rows: T[],
-    rowToArgs: (
-      row: T,
-      argIndex: number,
-    ) => { placeholders: string[]; args: unknown[] },
+  protected async _createMany(
+    admLevel: AdmLevelCode,
+    records: AdmRecord[],
+    transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
-    if (rows.length === 0) return { insertedCount: 0 };
+    if (records.length === 0) return { insertedCount: 0 };
+    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+    const tableName = this.getTableName(`${admLevelTitle}s`);
 
-    return await this.db.transaction(async (transactionContext) => {
-      if (!ensureIsPostgresDbTransactionCtx(transactionContext)) {
-        return { insertedCount: 0 };
+    const columns = Object.keys(records[0]).filter((attr) => {
+      if (attr === "geojson") return this.config.hasGeojson;
+      if (attr === "adm_level") return this.config.hasAdmLevel;
+      if (
+        [AdmLevelCode.DISTRICT, AdmLevelCode.COMMUNE, AdmLevelCode.FOKONTANY]
+          .includes(admLevel)
+      ) {
+        if (attr === "province") return this.config.isProvinceRepeated;
+        if (attr === "provinceId") return this.config.isProvinceFkRepeated;
       }
-      const { tx } = transactionContext;
-      const allPlaceholders: string[] = [];
-      const allArgs: unknown[] = [];
-      let currentArgIndex = 1;
-
-      for (const row of rows) {
-        const { placeholders, args } = rowToArgs(row, currentArgIndex);
-        allPlaceholders.push(`(${placeholders.join(", ")})`);
-        allArgs.push(...args);
-
-        // Calculate how many parameterized arguments were added (those starting with $)
-        const paramCount = placeholders
-          .map((p) => p.match(/\$/g)?.length ?? 0)
-          .reduce((sum, value) => sum + value, 0);
-        currentArgIndex += paramCount;
+      if (admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
+        return this.config.isFkRepeated;
       }
-
-      const sql = `
-        INSERT INTO ${tableName} (${columns.join(", ")})
-        VALUES ${allPlaceholders.join(", ")};
-      `;
-
-      const res = await tx.queryObject<{ rowCount: number }>(sql, allArgs);
-
-      return { insertedCount: res.rowCount ?? 0 };
+      if (
+        admLevel === AdmLevelCode.FOKONTANY &&
+        ["regionId", "districtId"].includes(attr)
+      ) return this.config.isFkRepeated;
+      return true;
     });
+
+    const values = records.map((r) =>
+      columns.map((c) => {
+        const value = r[c as keyof AdmRecord]!;
+        if (isGeoJSONGeometry(value)) return JSON.stringify(value);
+        return value;
+      })
+    );
+
+    let argIndex = 1;
+    const placeholders = values.map(() =>
+      "(" + columns.map((c) =>
+        c === "geojson"
+          ? `ST_GeomFromGeoJSON($${argIndex++})`
+          : `$${argIndex++}`
+      ).join(", ") + ")"
+    ).join(", ");
+
+    const sql = `
+      INSERT INTO ${tableName} (${
+      columns.map((c) => StringUtils.camelToSnakeCase(c)).join(",")
+    })
+      VALUES ${placeholders};
+    `;
+
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const res = await executor.queryObject<{ rowCount: number }>(
+        sql,
+        values.flat(),
+      );
+      return { insertedCount: res.rowCount ?? 0 };
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
-   * Internal helper to delete duplicate records from a table.
+   * Deletes duplicate records from the given administrative level's table.
    *
-   * @param tableName - The fully qualified name of the table to deduplicate.
+   * @param admLevel - The administrative level of the table to deduplicate.
    * @param partitionKeys - The columns to use for identifying duplicates.
    */
   protected async _deleteDuplicates(
-    tableName: string,
-    partitionKeys: string[],
+    admLevel: AdmLevelCode,
+    transactionContext?: DbTransactionContext,
   ): Promise<void> {
+    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const partitionKeys: string[] = [admLevelTitle];
+
+    const regionAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
+      AdmLevelCode.REGION,
+    )!;
+    if (ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! > regionAdmLevelIndex) {
+      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(admLevel)!;
+      for (let i = admLevelIndex - 1; i >= regionAdmLevelIndex; i--) {
+        const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+          ADM_LEVEL_CODES_INDEXED[i],
+        )!;
+        partitionKeys.push(parentAdmLevelTitle);
+      }
+    }
+
     const sql = `
       WITH CTE AS (
-          SELECT id, 
-                 ROW_NUMBER() OVER (
-                     PARTITION BY ${partitionKeys.join(", ")}
-                     ORDER BY id ASC
-                 ) AS row_num
-          FROM ${tableName}
+        SELECT id, 
+          ROW_NUMBER() OVER (
+            PARTITION BY ${partitionKeys.join(", ")}
+            ORDER BY id ASC
+          ) AS row_num
+        FROM ${tableName}
       )
       DELETE FROM ${tableName}
       WHERE id IN (
-          SELECT id FROM CTE WHERE row_num > 1
+        SELECT id FROM CTE WHERE row_num > 1
       );
     `;
-    await this.db.client.queryObject(sql);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(sql);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
-   * Fetches all rows from `tableName` whose `parentIdColumn` value appears
-   * in `parentIds`, mapping each result row with the supplied `mapper`.
+   * Fetches all rows from the given administrative level's table whose parent FK
+   * matches any value in `parentsIds`.
    *
-   * @param tableName - The fully qualified table name to query.
-   * @param selectedColumns - The columns to include in the SELECT list.
-   * @param parentIdColumn - The FK column name to filter on.
-   * @param parentIds - The set of parent IDs to match.
-   * @param mapper - Converts a raw snake-cased row to its camel-cased entity.
+   * @param admLevel - The administrative level of the entities to retrieve.
+   * @param parentsIds - The set of parent IDs to match.
+   * @param transactionContext - Optional database transaction context.
    * @returns An array of mapped entities.
    */
-  protected async _getManyByParentId<T, R>(
-    tableName: string,
-    selectedColumns: string[],
-    parentIdColumn: string,
-    parentIds: unknown[],
-    mapper: (record: R) => T,
+  protected async _getManyByParentsIds(
+    admLevel: AdmLevelCode,
+    parentsIds: EntityId[],
     transactionContext?: DbTransactionContext,
-  ): Promise<T[]> {
-    if (parentIds.length === 0) return [];
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? transactionContext.tx
-      : this.db.client;
+  ): Promise<AdmEntity[]> {
+    if (admLevel === AdmLevelCode.PROVINCE) {
+      throw new Error(`There is no parent for province`);
+    }
+    if (parentsIds.length === 0) return [];
+
+    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const parentIdColumn = `${ADM_LEVEL_TITLE_BY_CODE.get(
+      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! - 1],
+    )!}_id`;
     const sql = `
-      SELECT ${selectedColumns.join(", ")}
+      SELECT ${tableName}.*
       FROM ${tableName}
       WHERE ${parentIdColumn} = ANY($1);
     `;
-    const result = await client.queryObject<R>(sql, [parentIds]);
-    return result.rows.map(mapper);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<unknown>(sql, [parentsIds]);
+      return result.rows.map((r) => {
+        switch (admLevel) {
+          case AdmLevelCode.REGION:
+            return mapRegionSnakeToCamel(r as RegionSnakeCased);
+          case AdmLevelCode.DISTRICT:
+            return mapDistrictSnakeToCamel(r as DistrictSnakeCased);
+          case AdmLevelCode.COMMUNE:
+            return mapCommuneSnakeToCamel(r as CommuneSnakeCased);
+          case AdmLevelCode.FOKONTANY:
+            return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
+          default:
+            throw new Error(
+              `Unknown ADM level when getting ${admLevelTitle}: ${admLevel} by parents ids`,
+            );
+        }
+      });
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
-   * Updates the column `column` to `value` on every row in `tableName`
-   * whose `id` appears in `ids`.
+   * Updates the column `column` to `value` on every row in the given
+   * administrative level's table whose `id` appears in `ids`.
    *
-   * @param tableName - The fully qualified table name to update.
+   * @param admLevel - The administrative level of the entities to update.
+   * @param ids - The set of row IDs to target.
    * @param column - The column to set.
    * @param value - The new value for the column.
-   * @param ids - The set of row IDs to target.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
    */
   protected async _updateFieldByIds(
-    tableName: string,
+    admLevel: AdmLevelCode,
+    ids: EntityId[],
     column: string,
     value: string,
-    ids: unknown[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     if (ids.length === 0) return { affectedRows: 0 };
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? transactionContext.tx
-      : this.db.client;
+    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+    const tableName = this.getTableName(`${admLevelTitle}s`);
     const sql = `
       UPDATE ${tableName}
       SET ${column} = $1
       WHERE id = ANY($2);
     `;
-    const result = await client.queryObject(sql, [value, ids]);
-    return { affectedRows: result.rowCount ?? 0 };
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject(sql, [value, ids]);
+      return { affectedRows: result.rowCount ?? 0 };
+    } finally {
+      if (client) client.release();
+    }
   }
 }

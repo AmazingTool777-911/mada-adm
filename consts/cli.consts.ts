@@ -54,6 +54,9 @@ export const PG_CA_CERT_FILE_DESCRIPTION: string =
 export const PG_CA_CERT_PATH_DESCRIPTION: string =
   "Full path to the CA certificate file. Used when --pg.ca-cert-file is not set.";
 
+export const PG_CONNECTION_LIMIT_DESCRIPTION: string =
+  "Maximum number of connections in the PostgreSQL pool (default 10).";
+
 // ── MySQL descriptions ───────────────────────────────────────────────────────
 
 export const MYSQL_URL_DESCRIPTION: string =

@@ -38,16 +38,15 @@ export class MadaAdmConfigPostgresDML implements MadaAdmConfigDML {
   async get(): Promise<MadaAdmConfig | null> {
     const query =
       `SELECT * FROM ${this.schema}.${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} LIMIT 1;`;
-    const client = this.db.client;
-
-    const result = await client.queryObject<MadaAdmConfigSnakeCased>(query);
-    const row = result.rows[0];
-
-    if (!row) {
-      return null;
+    const client = await this.db.pool.connect();
+    try {
+      const result = await client.queryObject<MadaAdmConfigSnakeCased>(query);
+      const row = result.rows[0];
+      if (!row) return null;
+      return this._mapRowToConfig(row);
+    } finally {
+      client.release();
     }
-
-    return this._mapRowToConfig(row);
   }
 
   /**

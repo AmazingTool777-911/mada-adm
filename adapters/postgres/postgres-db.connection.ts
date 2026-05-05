@@ -1,4 +1,4 @@
-import { Client } from "@db/postgres";
+import { Pool } from "@db/postgres";
 import * as path from "@std/path";
 import type {
   DbConnection,
@@ -8,21 +8,25 @@ import type {
 import type { MaybePromise } from "@scope/types/utils";
 import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 
+/** Default number of connections in the PostgreSQL pool. */
+const DEFAULT_PG_POOL_SIZE = 10;
+
 /**
  * Implementation of a database connection specifically for PostgreSQL.
- * It manages the underlying PostgreSQL client and provides transaction support.
+ * It manages the underlying PostgreSQL connection pool and provides
+ * transaction support with automatic pool client lifecycle management.
  */
 export class PostgresDbConnection implements DbConnection {
-  /** The native PostgreSQL client instance. */
-  #client: Client | null = null;
+  /** The native PostgreSQL connection pool. */
+  #pool: Pool | null = null;
 
   /**
-   * The lastest db connection params used to connect to the database.
+   * The latest db connection params used to connect to the database.
    */
   #params: DbConnectionParams | null = null;
 
   /**
-   * Getter for the lastest db connection params used to connect to the database.
+   * Getter for the latest db connection params used to connect to the database.
    */
   get params(): DbConnectionParams {
     if (!this.#params) {
@@ -34,23 +38,23 @@ export class PostgresDbConnection implements DbConnection {
   }
 
   /**
-   * Native getter for the PostgreSQL client.
+   * Native getter for the PostgreSQL connection pool.
    *
-   * @returns The active PostgreSQL client.
-   * @throws {Error} If the client has not been initialized through a call to {@link connect}.
+   * @returns The active PostgreSQL connection pool.
+   * @throws {Error} If the pool has not been initialized through a call to {@link connect}.
    */
-  get client(): Client {
-    if (!this.#client) {
+  get pool(): Pool {
+    if (!this.#pool) {
       throw new Error(
-        "PostgreSQL client has not been initialized. Call connect() first.",
+        "PostgreSQL pool has not been initialized. Call connect() first.",
       );
     }
-    return this.#client;
+    return this.#pool;
   }
 
   /**
-   * Establishes a connection to a PostgreSQL database.
-   * Supports re-initialization by closing any existing connection before creating a new one.
+   * Establishes a connection pool to a PostgreSQL database.
+   * Supports re-initialization by closing any existing pool before creating a new one.
    *
    * @param params - The connection parameters, including database type and connection details.
    * @throws {Error} If the provided database type is not PostgreSQL.
@@ -62,17 +66,18 @@ export class PostgresDbConnection implements DbConnection {
       );
     }
 
-    // Support re-initialization by ending existing client session if it exists
-    if (this.#client) {
-      await this.#client.end();
+    // Support re-initialization by ending existing pool if it exists
+    if (this.#pool) {
+      await this.#pool.end();
     }
 
     this.#params = params;
 
     if (typeof params.connection === "string") {
-      this.#client = new Client(params.connection);
+      this.#pool = new Pool(params.connection, DEFAULT_PG_POOL_SIZE);
     } else {
       const config = params.connection;
+      const poolSize = config.connectionLimit ?? DEFAULT_PG_POOL_SIZE;
 
       let caCertificates: string[] | undefined;
       if (config.ssl) {
@@ -85,37 +90,46 @@ export class PostgresDbConnection implements DbConnection {
         }
       }
 
-      this.#client = new Client({
-        hostname: config.host,
-        port: config.port,
-        user: config.username,
-        password: config.password,
-        database: config.database,
-        tls: {
-          enabled: config.ssl ?? true,
-          enforce: config.ssl ?? false,
-          caCertificates,
+      this.#pool = new Pool(
+        {
+          hostname: config.host,
+          port: config.port,
+          user: config.username,
+          password: config.password,
+          database: config.database,
+          tls: {
+            enabled: config.ssl ?? true,
+            enforce: config.ssl ?? false,
+            caCertificates,
+          },
         },
-      });
+        poolSize,
+      );
     }
 
-    await this.#client.connect();
+    const client = await this.#pool.connect();
+    try {
+      await client.queryObject("CREATE EXTENSION IF NOT EXISTS citext;");
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Closes the active PostgreSQL connection.
-   * If no connection is active, this method does nothing.
+   * Closes the active PostgreSQL connection pool.
+   * If no pool is active, this method does nothing.
    */
   async close(): Promise<void> {
-    if (this.#client) {
-      await this.#client.end();
-      this.#client = null;
+    if (this.#pool) {
+      await this.#pool.end();
+      this.#pool = null;
     }
   }
 
   /**
    * Executes a callback function within a PostgreSQL transaction.
-   * Handles automatic BEGIN, COMMIT, and ROLLBACK operations.
+   * Acquires a client from the pool, handles automatic BEGIN, COMMIT, and
+   * ROLLBACK operations, and releases the client back to the pool when done.
    *
    * @param callback - The asynchronous function to execute within the transaction.
    * @returns The resolved value of the callback function.
@@ -124,7 +138,8 @@ export class PostgresDbConnection implements DbConnection {
   async transaction<T>(
     callback: (transactionContext: DbTransactionContext) => MaybePromise<T>,
   ): Promise<T> {
-    const transaction = this.client.createTransaction(crypto.randomUUID());
+    const poolClient = await this.pool.connect();
+    const transaction = poolClient.createTransaction(crypto.randomUUID());
 
     try {
       await transaction.begin();
@@ -138,6 +153,8 @@ export class PostgresDbConnection implements DbConnection {
       console.log(error);
       await transaction.rollback();
       throw error;
+    } finally {
+      poolClient.release();
     }
   }
 }

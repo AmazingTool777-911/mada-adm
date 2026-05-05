@@ -27,7 +27,7 @@ import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import { DbType, DEFAULT_DB_TYPE, DEFAULT_PG_SCHEMA } from "@scope/consts/db";
+import { resolveCommonGlobalCliConfig } from "@scope/helpers/cli";
 import {
   injectCommunesDML,
   injectDbConnection,
@@ -345,9 +345,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
     let db!: DbConnection;
 
     try {
-      const dbType = (options.dbType ?? DEFAULT_DB_TYPE) as DbType;
-      const pgSchema = options.pg?.schema ?? options.pgSchema ??
-        DEFAULT_PG_SCHEMA;
+      const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
       db = injectDbConnection(dbType);
       const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {
@@ -426,17 +424,29 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
                 break;
               case AdmLevelCode.DISTRICT:
                 entities = await districtsDML.getManyByAttributes([
-                  identifiers,
+                  {
+                    district: identifiers.district,
+                    region: identifiers.region,
+                  },
                 ], txCtx);
                 break;
               case AdmLevelCode.COMMUNE:
                 entities = await communesDML.getManyByAttributes([
-                  identifiers,
+                  {
+                    commune: identifiers.commune,
+                    district: identifiers.district,
+                    region: identifiers.region,
+                  },
                 ], txCtx);
                 break;
               case AdmLevelCode.FOKONTANY:
                 entities = await fokontanysDML.getManyByAttributes([
-                  identifiers,
+                  {
+                    fokontany: identifiers.fokontany,
+                    commune: identifiers.commune,
+                    district: identifiers.district,
+                    region: identifiers.region,
+                  },
                 ], txCtx);
                 break;
             }
@@ -628,17 +638,29 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
           break;
         case AdmLevelCode.DISTRICT:
           finalEntities = await districtsDML.getManyByAttributes([
-            updatedIdentifiers,
+            {
+              district: updatedIdentifiers.district,
+              region: updatedIdentifiers.region,
+            },
           ]);
           break;
         case AdmLevelCode.COMMUNE:
           finalEntities = await communesDML.getManyByAttributes([
-            updatedIdentifiers,
+            {
+              commune: updatedIdentifiers.commune,
+              district: updatedIdentifiers.district,
+              region: updatedIdentifiers.region,
+            },
           ]);
           break;
         case AdmLevelCode.FOKONTANY:
           finalEntities = await fokontanysDML.getManyByAttributes([
-            updatedIdentifiers,
+            {
+              fokontany: updatedIdentifiers.fokontany,
+              commune: updatedIdentifiers.commune,
+              district: updatedIdentifiers.district,
+              region: updatedIdentifiers.region,
+            },
           ]);
           break;
       }
@@ -692,9 +714,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
         Deno.exit(1);
       }
 
-      const dbType = (options.dbType ?? DEFAULT_DB_TYPE) as DbType;
-      const pgSchema = options.pg?.schema ?? options.pgSchema ??
-        DEFAULT_PG_SCHEMA;
+      const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
       db = injectDbConnection(dbType);
       const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {

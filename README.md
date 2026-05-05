@@ -216,22 +216,48 @@ These options can be provided either as CLI flags or environment variables. If
 both are provided, the CLI flags take precedence. They apply globally across all
 commands. All options are optional.
 
-| CLI Flag            | Environment Variable | Description                                                                 | Default       |
-| :------------------ | :------------------- | :-------------------------------------------------------------------------- | :------------ |
-| `--db-type`         | `DB_TYPE`            | The database type to connect to (`sqlite`, `mysql`, `postgres`, `mongodb`). | `sqlite`      |
-| `--cli-debug`       | `CLI_DEBUG`          | Enable debug logging across the pipeline.                                   | `false`       |
-| `--pg.schema`       | `PG_SCHEMA`          | The PostgreSQL schema to use.                                               | `public`      |
-| `--pg.url`          | `PG_URL`             | The URL to connect to the PostgreSQL database.                              | -             |
-| `--pg.host`         | `PG_HOST`            | Hostname or IP address of the PostgreSQL server.                            | `localhost`   |
-| `--pg.port`         | `PG_PORT`            | Port number of the PostgreSQL server.                                       | `5432`        |
-| `--pg.user`         | `PG_USER`            | Username for authenticating with the PostgreSQL server.                     | `postgres`    |
-| `--pg.password`     | `PG_PASSWORD`        | Password for authenticating with the PostgreSQL server.                     | `""`          |
-| `--pg.database`     | `PG_DATABASE`        | Name of the database to be used.                                            | `postgres`    |
-| `--pg.ssl`          | `PG_SSL`             | Whether to use SSL for the connection.                                      | `false`       |
-| `--pg.ca-cert-file` | `PG_CA_CERT_FILE`    | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)**       | -             |
-| `--pg.ca-cert-path` | `PG_CA_CERT_PATH`    | Full path to the CA cert file.                                              | -             |
-| `--sqlite.db-file`  | `SQLITE_DB_FILE`     | Filename of the SQLite database within `db/.sqlite`. **(Deno only)**        | `mada-adm.db` |
-| `--sqlite.db-path`  | `SQLITE_DB_PATH`     | Full absolute or relative path to the SQLite database file.                 | -             |
+#### Common Options
+
+| CLI Flag      | Environment Variable | Description                                                                 | Default  |
+| :------------ | :------------------- | :-------------------------------------------------------------------------- | :------- |
+| `--db-type`   | `DB_TYPE`            | The database type to connect to (`sqlite`, `mysql`, `postgres`, `mongodb`). | `sqlite` |
+| `--cli-debug` | `CLI_DEBUG`          | Enable debug logging across the pipeline.                                   | `false`  |
+
+#### PostgreSQL Configuration
+
+| CLI Flag            | Environment Variable | Description                                                           | Default     |
+| :------------------ | :------------------- | :-------------------------------------------------------------------- | :---------- |
+| `--pg.schema`       | `PG_SCHEMA`          | The PostgreSQL schema to use (e.g. public).                           | `public`    |
+| `--pg.url`          | `PG_URL`             | The URL to connect to the PostgreSQL database.                        | -           |
+| `--pg.host`         | `PG_HOST`            | Hostname or IP address of the PostgreSQL server.                      | `localhost` |
+| `--pg.port`         | `PG_PORT`            | Port number of the PostgreSQL server.                                 | `5432`      |
+| `--pg.user`         | `PG_USER`            | Username for authenticating with the PostgreSQL server.               | `postgres`  |
+| `--pg.password`     | `PG_PASSWORD`        | Password for authenticating with the PostgreSQL server.               | `""`        |
+| `--pg.database`     | `PG_DATABASE`        | Name of the database to be used.                                      | `postgres`  |
+| `--pg.ssl`          | `PG_SSL`             | Whether to use SSL for the connection.                                | `false`     |
+| `--pg.ca-cert-file` | `PG_CA_CERT_FILE`    | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
+| `--pg.ca-cert-path` | `PG_CA_CERT_PATH`    | Full path to the CA cert file.                                        | -           |
+
+#### MySQL Configuration
+
+| CLI Flag               | Environment Variable  | Description                                                           | Default     |
+| :--------------------- | :-------------------- | :-------------------------------------------------------------------- | :---------- |
+| `--mysql.url`          | `MYSQL_URL`           | The URL to connect to the MySQL database.                             | -           |
+| `--mysql.host`         | `MYSQL_HOST`          | Hostname or IP address of the MySQL server.                           | `localhost` |
+| `--mysql.port`         | `MYSQL_PORT`          | Port number of the MySQL server.                                      | `3306`      |
+| `--mysql.user`         | `MYSQL_USER`          | Username for authenticating with the MySQL server.                    | `root`      |
+| `--mysql.password`     | `MYSQL_PASSWORD`      | Password for authenticating with the MySQL server.                    | `""`        |
+| `--mysql.database`     | `MYSQL_DATABASE`      | Name of the database to be used.                                      | `mysql`     |
+| `--mysql.ssl`          | `MYSQL_SSL`           | Whether to use SSL for the connection.                                | `false`     |
+| `--mysql.ca-cert-file` | `MYSQL_CA_CERT_FILE`  | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
+| `--mysql.ca-cert-path` | `MYSQL_CA_CERT_PATH`  | Full path to the CA cert file.                                        | -           |
+
+#### SQLite Configuration
+
+| CLI Flag           | Environment Variable | Description                                                               | Default       |
+| :----------------- | :------------------- | :------------------------------------------------------------------------ | :------------ |
+| `--sqlite.db-file` | `SQLITE_DB_FILE`     | Filename of the SQLite database within `db/.sqlite`. **(Deno only)**      | `mada-adm.db` |
+| `--sqlite.db-path` | `SQLITE_DB_PATH`     | Full absolute or relative path to the SQLite database file.               | -             |
 
 > **Note on File Paths:** Options ending in `-file` (e.g., `--sqlite.db-file`,
 > `--pg.ca-cert-file`) resolve paths relative to the internal project structure.
@@ -429,7 +455,7 @@ features are available alongside the CLI:
 
 ### Coming Soon
 
-- **Database Adapters**: Native support for MySQL and MongoDB within the seeding
+- **Database Adapters**: Native support for MongoDB within the seeding
   pipeline.
 - **Data Catalog**: A comprehensive, public-facing catalog of administrative
   metadata.
@@ -441,7 +467,8 @@ features are available alongside the CLI:
   - **PostgreSQL** (with [PostGIS](https://postgis.net/))
   - **SQLite** (with
     [SpatiaLite](https://www.gaia-gis.it/fossil/libspatialite/index))
-  - _MySQL, MongoDB support coming soon_
+  - **MySQL**
+  - _MongoDB support coming soon_
 - **Job Orchestration**: Redis / In-Memory (for fault-tolerant processing)
 - **UI**: CLI with interactive progress tracking and resumable job state
 

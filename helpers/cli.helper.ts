@@ -33,13 +33,28 @@ import type {
  * @returns A fully resolved global CLI configuration with no `undefined` values for
  *   defaulted fields.
  */
+export function resolveCommonGlobalCliConfig(args: GlobalCliConfig): {
+  dbType: DbType;
+  pgSchema: string;
+} {
+  return {
+    dbType: (args.dbType ?? DEFAULT_DB_TYPE) as DbType,
+    pgSchema: args.pg?.schema ?? args.pgSchema ?? DEFAULT_PG_SCHEMA,
+  };
+}
+
+/**
+ * Resolves the raw global CLI configuration into a fully-typed, default-applied
+ * resolved configuration.
+ */
 export function resolveGlobalCliConfig(
   args: GlobalCliConfig,
 ): GlobalCliConfigResolved {
+  const common = resolveCommonGlobalCliConfig(args);
   return {
-    dbType: (args.dbType ?? DEFAULT_DB_TYPE) as DbType,
+    dbType: common.dbType,
     cliDebug: !!(args.cliDebug ?? false),
-    pgSchema: args.pg?.schema ?? args.pgSchema ?? DEFAULT_PG_SCHEMA,
+    pgSchema: common.pgSchema,
     pg: {
       url: args.pg?.url ?? args.pgUrl,
       host: args.pg?.host ?? args.pgHost ?? "localhost",
@@ -50,6 +65,24 @@ export function resolveGlobalCliConfig(
       ssl: args.pg?.ssl ?? args.pgSsl ?? false,
       caCertFile: args.pg?.caCertFile ?? args.pgCaCertFile,
       caCertPath: args.pg?.caCertPath ?? args.pgCaCertPath,
+    },
+    mysql: {
+      url: args.mysql?.url ?? args.mysqlUrl,
+      host: args.mysql?.host ?? args.mysqlHost ?? "localhost",
+      port: args.mysql?.port ?? args.mysqlPort ?? 3306,
+      user: args.mysql?.user ?? args.mysqlUser ?? "root",
+      password: args.mysql?.password ?? args.mysqlPassword ?? "",
+      database: args.mysql?.database ?? args.mysqlDatabase,
+      ssl: args.mysql?.ssl ?? args.mysqlSsl ?? false,
+      caCertFile: args.mysql?.caCertFile ?? args.mysqlCaCertFile,
+      caCertPath: args.mysql?.caCertPath ?? args.mysqlCaCertPath,
+      certFile: args.mysql?.certFile ?? args.mysqlCertFile,
+      certPath: args.mysql?.certPath ?? args.mysqlCertPath,
+      keyFile: args.mysql?.keyFile ?? args.mysqlKeyFile,
+      keyPath: args.mysql?.keyPath ?? args.mysqlKeyPath,
+      connectionLimit: args.mysql?.connectionLimit ??
+        args.mysqlConnectionLimit ??
+        10,
     },
     sqlite: {
       dbFile: args.sqlite?.dbFile ?? args.sqliteDbFile,
@@ -78,6 +111,7 @@ export function resolveIndexCliConfig(
     dbType: global.dbType,
     cliDebug: global.cliDebug,
     pgSchema: global.pgSchema,
+    mysql: global.mysql,
     sqlite: global.sqlite,
     disableRedis: !!(args.disableRedis ?? false),
     redis: {

@@ -1,6 +1,7 @@
 import { DbType } from "@scope/consts/db";
 import type {
   DbTransactionContext,
+  MySQLTransactionContext,
   PostgresTransactionContext,
   SQLiteTransactionContext,
 } from "@scope/types/db";
@@ -42,6 +43,28 @@ export function ensureIsSqliteDbTransactionCtx(
     if (transactionContext.dbType !== DbType.SQLite) {
       throw new Error(
         `Transaction context type (${transactionContext.dbType}) does not match database type (${DbType.SQLite})`,
+      );
+    }
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Ensures the given transaction context is a MySQLTransactionContext.
+ * Throws an error if the context is present but has a different database type.
+ *
+ * @param transactionContext - The database transaction context to validate.
+ * @returns True if the transaction context is a MySQLTransactionContext.
+ * @throws Error if the transaction context exists but is not for a MySQL database.
+ */
+export function ensureIsMySQLDbTransactionCtx(
+  transactionContext?: DbTransactionContext,
+): transactionContext is MySQLTransactionContext {
+  if (transactionContext) {
+    if (transactionContext.dbType !== DbType.MySQL) {
+      throw new Error(
+        `Transaction context type (${transactionContext.dbType}) does not match database type (${DbType.MySQL})`,
       );
     }
     return true;

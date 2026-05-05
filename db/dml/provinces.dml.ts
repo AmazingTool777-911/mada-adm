@@ -12,6 +12,11 @@ import {
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
 
+import {
+  injectProvincesMySQLDML,
+  type MySQLDbConnection,
+} from "@scope/adapters/mysql";
+
 /**
  * Injects (or creates) an instance of the provinces table DML adapter based on the database type.
  *
@@ -39,6 +44,11 @@ export function injectProvincesDML(
       return injectProvincesSqliteDML(
         config,
         db as SqliteDbConnection,
+      );
+    case DbType.MySQL:
+      return injectProvincesMySQLDML(
+        config,
+        db as MySQLDbConnection,
       );
     default:
       throw new Error(

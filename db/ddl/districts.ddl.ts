@@ -12,6 +12,11 @@ import {
   resetDistrictsSqliteDDL,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectDistrictsMySQLDDL,
+  type MySQLDbConnection,
+  resetDistrictsMySQLDDL,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the districts table DDL adapter based on the database type.
@@ -38,6 +43,8 @@ export function injectDistrictsDDL(
       );
     case DbType.SQLite:
       return injectDistrictsSqliteDDL(config, db as SqliteDbConnection);
+    case DbType.MySQL:
+      return injectDistrictsMySQLDDL(config, db as MySQLDbConnection);
     default:
       throw new Error(`Unsupported database type for districts DDL: ${dbType}`);
   }
@@ -56,6 +63,9 @@ export function resetDistrictsDDL(dbType: DbType): void {
       break;
     case DbType.SQLite:
       resetDistrictsSqliteDDL();
+      break;
+    case DbType.MySQL:
+      resetDistrictsMySQLDDL();
       break;
     default:
       throw new Error(

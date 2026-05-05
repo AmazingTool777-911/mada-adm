@@ -12,6 +12,11 @@ import {
   resetFokontanysSqliteDDL,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectFokontanysMySQLDDL,
+  type MySQLDbConnection,
+  resetFokontanysMySQLDDL,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the fokontanys table DDL adapter based on the database type.
@@ -38,6 +43,8 @@ export function injectFokontanysDDL(
       );
     case DbType.SQLite:
       return injectFokontanysSqliteDDL(config, db as SqliteDbConnection);
+    case DbType.MySQL:
+      return injectFokontanysMySQLDDL(config, db as MySQLDbConnection);
     default:
       throw new Error(
         `Unsupported database type for fokontanys DDL: ${dbType}`,
@@ -58,6 +65,9 @@ export function resetFokontanysDDL(dbType: DbType): void {
       break;
     case DbType.SQLite:
       resetFokontanysSqliteDDL();
+      break;
+    case DbType.MySQL:
+      resetFokontanysMySQLDDL();
       break;
     default:
       throw new Error(

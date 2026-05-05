@@ -16,6 +16,20 @@ import {
   DISABLE_REDIS_DESCRIPTION,
   IN_MEMORY_INSERT_HWM_DESCRIPTION,
   IN_MEMORY_PROCESSING_HWM_DESCRIPTION,
+  MYSQL_CA_CERT_FILE_DESCRIPTION,
+  MYSQL_CA_CERT_PATH_DESCRIPTION,
+  MYSQL_CERT_FILE_DESCRIPTION,
+  MYSQL_CERT_PATH_DESCRIPTION,
+  MYSQL_CONNECTION_LIMIT_DESCRIPTION,
+  MYSQL_DATABASE_DESCRIPTION,
+  MYSQL_HOST_DESCRIPTION,
+  MYSQL_KEY_FILE_DESCRIPTION,
+  MYSQL_KEY_PATH_DESCRIPTION,
+  MYSQL_PASSWORD_DESCRIPTION,
+  MYSQL_PORT_DESCRIPTION,
+  MYSQL_SSL_DESCRIPTION,
+  MYSQL_URL_DESCRIPTION,
+  MYSQL_USER_DESCRIPTION,
   PG_CA_CERT_FILE_DESCRIPTION,
   PG_CA_CERT_PATH_DESCRIPTION,
   PG_DATABASE_DESCRIPTION,
@@ -201,6 +215,84 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           depends: ["pg.ssl"],
         },
       )
+      .group("MySQL configuration")
+      .globalOption("--mysql.url <url:string>", MYSQL_URL_DESCRIPTION)
+      .globalOption("--mysql.host <host:string>", MYSQL_HOST_DESCRIPTION)
+      .globalOption("--mysql.port <port:number>", MYSQL_PORT_DESCRIPTION, {
+        depends: ["mysql.host"],
+      })
+      .globalOption("--mysql.user <username:string>", MYSQL_USER_DESCRIPTION, {
+        depends: ["mysql.host"],
+      })
+      .globalOption(
+        "--mysql.password <password:string>",
+        MYSQL_PASSWORD_DESCRIPTION,
+        {
+          depends: ["mysql.user"],
+        },
+      )
+      .globalOption(
+        "--mysql.database <database:string>",
+        MYSQL_DATABASE_DESCRIPTION,
+        {
+          depends: ["mysql.user"],
+        },
+      )
+      .globalOption("--mysql.ssl [ssl:boolean]", MYSQL_SSL_DESCRIPTION, {
+        depends: ["mysql.user"],
+      })
+      .globalOption(
+        "--mysql.ca-cert-file <filename:string>",
+        MYSQL_CA_CERT_FILE_DESCRIPTION,
+        {
+          depends: ["mysql.ssl"],
+        },
+      )
+      .globalOption(
+        "--mysql.ca-cert-path <path:string>",
+        MYSQL_CA_CERT_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mysql.ca-cert-file"],
+          depends: ["mysql.ssl"],
+        },
+      )
+      .globalOption(
+        "--mysql.cert-file <filename:string>",
+        MYSQL_CERT_FILE_DESCRIPTION,
+        {
+          depends: ["mysql.ssl"],
+        },
+      )
+      .globalOption(
+        "--mysql.cert-path <path:string>",
+        MYSQL_CERT_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mysql.cert-file"],
+          depends: ["mysql.ssl"],
+        },
+      )
+      .globalOption(
+        "--mysql.key-file <filename:string>",
+        MYSQL_KEY_FILE_DESCRIPTION,
+        {
+          depends: ["mysql.ssl"],
+        },
+      )
+      .globalOption(
+        "--mysql.key-path <path:string>",
+        MYSQL_KEY_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mysql.key-file"],
+          depends: ["mysql.ssl"],
+        },
+      )
+      .globalOption(
+        "--mysql.connection-limit <limit:number>",
+        MYSQL_CONNECTION_LIMIT_DESCRIPTION,
+        {
+          depends: ["mysql.host"],
+        },
+      )
       .group("SQLite configuration")
       .globalOption(
         "--sqlite.db-file <filename:string>",
@@ -231,6 +323,41 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalEnv(
         "PG_CA_CERT_PATH=<path:string>",
         PG_CA_CERT_PATH_DESCRIPTION,
+      )
+      .globalEnv("MYSQL_URL=<url:string>", MYSQL_URL_DESCRIPTION)
+      .globalEnv("MYSQL_HOST=<host:string>", MYSQL_HOST_DESCRIPTION)
+      .globalEnv("MYSQL_PORT=<port:number>", MYSQL_PORT_DESCRIPTION)
+      .globalEnv("MYSQL_USER=<user:string>", MYSQL_USER_DESCRIPTION)
+      .globalEnv("MYSQL_PASSWORD=<password:string>", MYSQL_PASSWORD_DESCRIPTION)
+      .globalEnv("MYSQL_DATABASE=<database:string>", MYSQL_DATABASE_DESCRIPTION)
+      .globalEnv("MYSQL_SSL=<ssl:boolean>", MYSQL_SSL_DESCRIPTION)
+      .globalEnv(
+        "MYSQL_CA_CERT_FILE=<file:string>",
+        MYSQL_CA_CERT_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_CA_CERT_PATH=<path:string>",
+        MYSQL_CA_CERT_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_CERT_FILE=<file:string>",
+        MYSQL_CERT_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_CERT_PATH=<path:string>",
+        MYSQL_CERT_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_KEY_FILE=<file:string>",
+        MYSQL_KEY_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_KEY_PATH=<path:string>",
+        MYSQL_KEY_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_CONNECTION_LIMIT=<limit:number>",
+        MYSQL_CONNECTION_LIMIT_DESCRIPTION,
       )
       .globalEnv("SQLITE_DB_FILE <filename:string>", SQLITE_DB_FILE_DESCRIPTION)
       .globalEnv("SQLITE_DB_PATH <path:string>", SQLITE_DB_PATH_DESCRIPTION)
@@ -408,6 +535,26 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         }
         break;
       }
+      case DbType.MySQL: {
+        if (args.mysql.url) {
+          const maskedUrl = args.mysql.url.replace(
+            /^(mysql:\/\/.*:)(.*)(@.*)$/,
+            "$1****$3",
+          );
+          console.log(colors.gray(`   MySQL URL: ${maskedUrl}`));
+        } else {
+          console.log(
+            colors.gray(
+              `   MySQL Host: ${args.mysql.host}:${args.mysql.port}`,
+            ),
+          );
+          console.log(colors.gray(`   MySQL User: ${args.mysql.user}`));
+          console.log(
+            colors.gray(`   Target Database: ${args.mysql.database}`),
+          );
+        }
+        break;
+      }
       case DbType.SQLite: {
         let fullPath!: string;
         if (args.sqlite.dbFile) {
@@ -431,6 +578,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
     await attemptDbConnection(db, {
       dbType: args.dbType,
       pg: args.pg,
+      mysql: args.mysql,
       sqlite: args.sqlite,
     });
     console.log(

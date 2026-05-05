@@ -12,6 +12,11 @@ import {
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
 
+import {
+  injectFokontanysMySQLDML,
+  type MySQLDbConnection,
+} from "@scope/adapters/mysql";
+
 /**
  * Injects (or creates) an instance of the fokontanys table DML adapter based on the database type.
  *
@@ -39,6 +44,11 @@ export function injectFokontanysDML(
       return injectFokontanysSqliteDML(
         config,
         db as SqliteDbConnection,
+      );
+    case DbType.MySQL:
+      return injectFokontanysMySQLDML(
+        config,
+        db as MySQLDbConnection,
       );
     default:
       throw new Error(

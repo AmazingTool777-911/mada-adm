@@ -7,6 +7,10 @@ import {
   injectMadaAdmConfigSqliteDML,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectMadaAdmConfigMySQLDML,
+  type MySQLDbConnection,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the mada adm config table DML adapter based on the database type.
@@ -31,6 +35,10 @@ export function injectMadaAdmConfigDML(
     case DbType.SQLite:
       return injectMadaAdmConfigSqliteDML(
         db as SqliteDbConnection,
+      );
+    case DbType.MySQL:
+      return injectMadaAdmConfigMySQLDML(
+        db as MySQLDbConnection,
       );
     default:
       throw new Error(

@@ -11,6 +11,11 @@ import {
   resetMadaAdmConfigSqliteDDL,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectMadaAdmConfigMySQLDDL,
+  type MySQLDbConnection,
+  resetMadaAdmConfigMySQLDDL,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the mada adm config table DDL adapter based on the database type.
@@ -36,6 +41,10 @@ export function injectMadaAdmConfigDDL(
       return injectMadaAdmConfigSqliteDDL(
         db as SqliteDbConnection,
       );
+    case DbType.MySQL:
+      return injectMadaAdmConfigMySQLDDL(
+        db as MySQLDbConnection,
+      );
     default:
       throw new Error(
         `Unsupported database type for mada adm config DDL: ${dbType}`,
@@ -56,6 +65,9 @@ export function resetMadaAdmConfigDDL(dbType: DbType): void {
       break;
     case DbType.SQLite:
       resetMadaAdmConfigSqliteDDL();
+      break;
+    case DbType.MySQL:
+      resetMadaAdmConfigMySQLDDL();
       break;
     default:
       throw new Error(

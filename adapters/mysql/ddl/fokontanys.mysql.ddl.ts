@@ -1,0 +1,160 @@
+import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
+import { BaseAdmTableDDL } from "@scope/db/ddl/base";
+import type { MadaAdmConfigValues } from "@scope/types/models";
+import type { DbTransactionContext } from "@scope/types/db";
+import type { MySQLDbConnection } from "../mysql-db.connection.ts";
+import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
+
+/**
+ * Concrete implementation of the DDL abstract class for the fokontanys table
+ * using MySQL.
+ */
+export class FokontanysMySQLDDL extends BaseAdmTableDDL {
+  constructor(
+    protected db: MySQLDbConnection,
+    config: MadaAdmConfigValues,
+  ) {
+    super(config);
+  }
+
+  get tableName(): string {
+    return this.getTableName(
+      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)! + "s",
+    );
+  }
+
+  async create(transactionContext?: DbTransactionContext): Promise<void> {
+    const geometryColumn = this.config.hasGeojson
+      ? "\n        geojson GEOMETRY NOT NULL,"
+      : "";
+    const admLevelColumn = this.config.hasAdmLevel
+      ? "\n        adm_level SMALLINT NOT NULL DEFAULT 4,"
+      : "";
+
+    const communesTable = this.getTableName(
+      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
+    );
+    const districtsTable = this.getTableName(
+      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
+    );
+    const regionsTable = this.getTableName(
+      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
+    );
+    const provincesTable = this.getTableName(
+      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",
+    );
+
+    let optionalCols = "";
+    let optionalFk = "";
+
+    if (this.config.isProvinceRepeated) {
+      optionalCols += "\n        province VARCHAR(255) NOT NULL,";
+    }
+    if (this.config.isProvinceFkRepeated) {
+      optionalCols += "\n        province_id INT NOT NULL,";
+      optionalFk +=
+        `,\n        CONSTRAINT fk_${this.tableName}_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE`;
+    }
+    if (this.config.isFkRepeated) {
+      optionalCols += "\n        region_id INT NOT NULL,";
+      optionalCols += "\n        district_id INT NOT NULL,";
+      optionalFk +=
+        `,\n        CONSTRAINT fk_${this.tableName}_region FOREIGN KEY (region_id) REFERENCES ${regionsTable}(id) ON DELETE CASCADE`;
+      optionalFk +=
+        `,\n        CONSTRAINT fk_${this.tableName}_district FOREIGN KEY (district_id) REFERENCES ${districtsTable}(id) ON DELETE CASCADE`;
+    }
+
+    const query = `
+      CREATE TABLE IF NOT EXISTS ${this.tableName} (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        fokontany VARCHAR(255) NOT NULL,
+        commune VARCHAR(255) NOT NULL,
+        district VARCHAR(255) NOT NULL,
+        region VARCHAR(255) NOT NULL,
+        commune_id INT NOT NULL,${optionalCols}${admLevelColumn}${geometryColumn}
+        created_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+        updated_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+        INDEX idx_${this.tableName}_fokontany (fokontany),
+        INDEX idx_${this.tableName}_commune_id_main (commune_id),
+        CONSTRAINT fk_${this.tableName}_commune_main FOREIGN KEY (commune_id) REFERENCES ${communesTable}(id) ON DELETE CASCADE
+        ${optionalFk ? optionalFk : ""}
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+    const client = ensureIsMySQLDbTransactionCtx(transactionContext)
+      ? transactionContext.connection
+      : this.db.pool;
+    await client.query(query);
+
+    if (this.config.hasGeojson) {
+      try {
+        await client.query(
+          `ALTER TABLE ${this.tableName} ADD SPATIAL INDEX idx_${this.tableName}_geojson (geojson);`,
+        );
+      } catch (_e) {
+        // Silently ignore if spatial index already exists or not supported
+      }
+    }
+
+    if (this.config.isProvinceFkRepeated) {
+      try {
+        await client.query(
+          `ALTER TABLE ${this.tableName} ADD INDEX idx_${this.tableName}_province_id (province_id);`,
+        );
+      } catch (_e) {
+        // Silently ignore if index already exists
+      }
+    }
+
+    if (this.config.isFkRepeated) {
+      try {
+        await client.query(
+          `ALTER TABLE ${this.tableName} ADD INDEX idx_${this.tableName}_region_id (region_id);`,
+        );
+        await client.query(
+          `ALTER TABLE ${this.tableName} ADD INDEX idx_${this.tableName}_district_id (district_id);`,
+        );
+      } catch (_e) {
+        // Silently ignore if indexes already exist
+      }
+    }
+  }
+
+  async drop(transactionContext?: DbTransactionContext): Promise<void> {
+    const query = `DROP TABLE IF EXISTS ${this.tableName};`;
+    const client = ensureIsMySQLDbTransactionCtx(transactionContext)
+      ? transactionContext.connection
+      : this.db.pool;
+    await client.query(query);
+  }
+
+  async exists(transactionContext?: DbTransactionContext): Promise<boolean> {
+    const query = `
+      SELECT COUNT(*) as count 
+      FROM information_schema.tables 
+      WHERE table_schema = DATABASE() 
+      AND table_name = '${this.tableName}';
+    `;
+    const client = ensureIsMySQLDbTransactionCtx(transactionContext)
+      ? transactionContext.connection
+      : this.db.pool;
+    const [rows] = (await client.query(query)) as unknown as [
+      { count: number }[],
+      unknown,
+    ];
+    return rows[0].count > 0;
+  }
+}
+
+let _instance: FokontanysMySQLDDL | null = null;
+
+export function injectFokontanysMySQLDDL(
+  config: MadaAdmConfigValues,
+  db: MySQLDbConnection,
+): FokontanysMySQLDDL {
+  if (!_instance) _instance = new FokontanysMySQLDDL(db, config);
+  return _instance;
+}
+
+export function resetFokontanysMySQLDDL(): void {
+  _instance = null;
+}

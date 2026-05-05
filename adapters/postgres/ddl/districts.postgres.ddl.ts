@@ -38,7 +38,7 @@ export class DistrictsPostgresDDL extends BaseAdmTableDDL {
     if (this.config.isProvinceRepeated) {
       optionalCols += "\n        province VARCHAR(255) NOT NULL,";
     }
-    if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
+    if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INTEGER NOT NULL,";
       const provincesTable = this.getTableName(
         ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",

@@ -9,7 +9,7 @@ import {
 import type { GlobalCliConfig } from "@scope/types/cli";
 import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { DbConnection } from "@scope/types/db";
-import { DbType, DEFAULT_DB_TYPE, DEFAULT_PG_SCHEMA } from "@scope/consts/db";
+import { resolveCommonGlobalCliConfig } from "@scope/helpers/cli";
 import {
   injectCommunesDDL,
   injectDbConnection,
@@ -104,9 +104,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
     let db!: DbConnection;
 
     try {
-      const dbType = (options.dbType ?? DEFAULT_DB_TYPE) as DbType;
-      const pgSchema = options.pg?.schema ?? options.pgSchema ??
-        DEFAULT_PG_SCHEMA;
+      const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
       db = injectDbConnection(dbType);
 

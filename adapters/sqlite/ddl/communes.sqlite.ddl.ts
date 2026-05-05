@@ -46,7 +46,8 @@ export class CommunesSqliteDDL extends BaseAdmTableDDL {
     let optionalFk = "";
 
     if (this.config.isProvinceRepeated) {
-      optionalCols += "\n        province VARCHAR(255) COLLATE NOCASE NOT NULL,";
+      optionalCols +=
+        "\n        province VARCHAR(255) COLLATE NOCASE NOT NULL,";
     }
     if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INTEGER NOT NULL,";

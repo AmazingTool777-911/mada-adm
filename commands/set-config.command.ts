@@ -340,27 +340,44 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
               { pgSchema },
             );
 
-            console.log(
-              colors.yellow(
-                `\n🏗️  Creating new ADM tables with the updated configuration...`,
-              ),
-            );
-            await db.transaction(async (txCtx) => {
-              for (
-                const ddl of [
-                  newProvincesDDL,
-                  newRegionsDDL,
-                  newDistrictsDDL,
-                  newCommunesDDL,
-                  newFokontanysDDL,
-                ]
-              ) {
-                await ddl.create(txCtx);
-              }
-            });
-            console.log(
-              colors.bold.green(`✅ New ADM tables created successfully.`),
-            );
+            // Check if any of the new tables already exist
+            const someNewTablesExist = (await Promise.all([
+              newProvincesDDL.exists(),
+              newRegionsDDL.exists(),
+              newDistrictsDDL.exists(),
+              newCommunesDDL.exists(),
+              newFokontanysDDL.exists(),
+            ])).some((exists) => exists);
+
+            if (someNewTablesExist) {
+              console.log(
+                colors.yellow(
+                  `\nℹ️  Some ADM tables for the new configuration already exist. Skipping creation and leaving existing tables intact.`,
+                ),
+              );
+            } else {
+              console.log(
+                colors.yellow(
+                  `\n🏗️  Creating new ADM tables with the updated configuration...`,
+                ),
+              );
+              await db.transaction(async (txCtx) => {
+                for (
+                  const ddl of [
+                    newProvincesDDL,
+                    newRegionsDDL,
+                    newDistrictsDDL,
+                    newCommunesDDL,
+                    newFokontanysDDL,
+                  ]
+                ) {
+                  await ddl.create(txCtx);
+                }
+              });
+              console.log(
+                colors.bold.green(`✅ New ADM tables created successfully.`),
+              );
+            }
           }
         }
       }

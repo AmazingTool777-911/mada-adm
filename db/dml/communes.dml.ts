@@ -12,6 +12,11 @@ import {
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
 
+import {
+  injectCommunesMySQLDML,
+  type MySQLDbConnection,
+} from "@scope/adapters/mysql";
+
 /**
  * Injects (or creates) an instance of the communes table DML adapter based on the database type.
  *
@@ -39,6 +44,11 @@ export function injectCommunesDML(
       return injectCommunesSqliteDML(
         config,
         db as SqliteDbConnection,
+      );
+    case DbType.MySQL:
+      return injectCommunesMySQLDML(
+        config,
+        db as MySQLDbConnection,
       );
     default:
       throw new Error(

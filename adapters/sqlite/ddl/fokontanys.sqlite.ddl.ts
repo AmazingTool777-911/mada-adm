@@ -49,7 +49,7 @@ export class FokontanysSqliteDDL extends BaseAdmTableDDL {
     let optionalFk = "";
 
     if (this.config.isProvinceRepeated) {
-      optionalCols += "\n        province VARCHAR(255) NOT NULL,";
+      optionalCols += "\n        province VARCHAR(255) COLLATE NOCASE NOT NULL,";
     }
     if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INTEGER NOT NULL,";
@@ -68,10 +68,10 @@ export class FokontanysSqliteDDL extends BaseAdmTableDDL {
     const query = `
       CREATE TABLE IF NOT EXISTS ${this.tableName} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fokontany VARCHAR(255) NOT NULL,
-        commune VARCHAR(255) NOT NULL,
-        district VARCHAR(255) NOT NULL,
-        region VARCHAR(255) NOT NULL,
+        fokontany VARCHAR(255) COLLATE NOCASE NOT NULL,
+        commune VARCHAR(255) COLLATE NOCASE NOT NULL,
+        district VARCHAR(255) COLLATE NOCASE NOT NULL,
+        region VARCHAR(255) COLLATE NOCASE NOT NULL,
         commune_id INTEGER NOT NULL,${optionalCols}${admLevelColumn}
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),
@@ -105,8 +105,8 @@ export class FokontanysSqliteDDL extends BaseAdmTableDDL {
     }
 
     let indexesQuery = `
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany_lower 
-      ON ${this.tableName} (lower(fokontany));
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany 
+      ON ${this.tableName} (fokontany COLLATE NOCASE);
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_id 
       ON ${this.tableName} (commune_id);
     `;

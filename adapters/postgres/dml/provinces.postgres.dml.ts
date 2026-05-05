@@ -1,5 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { mapProvinceSnakeToCamel } from "@scope/helpers/models";
+import { DbHelper } from "@scope/helpers";
 import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
@@ -8,7 +9,6 @@ import type {
   EntityId,
   ProvinceTableDML,
 } from "@scope/types/db";
-import { DbHelper } from "@scope/helpers";
 import type {
   MadaAdmConfigValues,
   Province,
@@ -30,6 +30,13 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
     super(config, db, schema);
   }
 
+  /**
+   * Retrieves multiple provinces by their names.
+   *
+   * @param names - The province names to look up (case-insensitive).
+   * @param transactionContext - Optional database transaction context.
+   * @returns An array of matching province entities.
+   */
   async getManyByNames(
     names: string[],
     transactionContext?: DbTransactionContext,
@@ -37,15 +44,43 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
     const tableName = this.getTableName(
       ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",
     );
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? transactionContext.tx
-      : this.db.client;
-    const query = `SELECT * FROM ${tableName} WHERE LOWER(province) = ANY($1)`;
-    const result = await client.queryObject<ProvinceSnakeCased>(
-      query,
-      [names.map((n) => n.toLowerCase())],
+    const query = `SELECT * FROM ${tableName} WHERE province = ANY($1)`;
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<ProvinceSnakeCased>(query, [
+        names,
+      ]);
+      return result.rows.map(mapProvinceSnakeToCamel);
+    } finally {
+      if (client) client.release();
+    }
+  }
+
+  /**
+   * Updates a field of all province records whose IDs belong to the provided set.
+   *
+   * @param ids - The province IDs to target.
+   * @param fieldCode - The ADM level field to update.
+   * @param value - The new value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
+  async updateFieldByIds(
+    ids: EntityId[],
+    fieldCode: AdmLevelCode.PROVINCE,
+    value: string,
+    transactionContext?: DbTransactionContext,
+  ): Promise<DMLUpdateResult> {
+    const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
+    return await this._updateFieldByIds(
+      AdmLevelCode.PROVINCE,
+      ids,
+      column,
+      value,
+      transactionContext,
     );
-    return result.rows.map(mapProvinceSnakeToCamel);
   }
 
   /**
@@ -54,89 +89,43 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
    * @param values - An array of province values to insert.
    * @returns A result object containing the count of inserted rows.
    */
-
-  /**
-   * Updates the province name of all province records whose IDs belong to the provided set.
-   *
-   * @param ids - The province IDs to target.
-   * @param value - The new province name value to assign.
-   */
-  async updateFieldByIds(
-    ids: EntityId[],
-    fieldCode: AdmLevelCode.PROVINCE,
-    value: string,
+  async createMany(
+    values: ProvinceRecord[],
     transactionContext?: DbTransactionContext,
-  ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",
-    );
-    const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      tableName,
-      column,
-      value,
-      ids,
+  ): Promise<DMLCreateManyResult> {
+    return await this._createMany(
+      AdmLevelCode.PROVINCE,
+      values,
       transactionContext,
     );
   }
 
-  async createMany(values: ProvinceRecord[]): Promise<DMLCreateManyResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",
-    );
-    const columns = ["province"];
-    if (this.config.hasAdmLevel) columns.push("adm_level");
-    if (this.config.hasGeojson) columns.push("geojson");
-
-    return await this._createMany(
-      tableName,
-      columns,
-      values,
-      (val, argIndex) => {
-        const placeholders: string[] = [];
-        const args: unknown[] = [];
-
-        // province
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.province);
-
-        // adm_level
-        if (this.config.hasAdmLevel) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.admLevel ?? 0);
-        }
-
-        // geojson
-        if (this.config.hasGeojson) {
-          placeholders.push(`ST_GeomFromGeoJSON($${argIndex++})`);
-          args.push(val.geojson ? JSON.stringify(val.geojson) : null);
-        }
-
-        return { placeholders, args };
-      },
-    );
+  /**
+   * Removes duplicate province records from the table.
+   */
+  async deleteDuplicates(
+    transactionContext?: DbTransactionContext,
+  ): Promise<void> {
+    await this._deleteDuplicates(AdmLevelCode.PROVINCE, transactionContext);
   }
 
-  async deleteDuplicates(): Promise<void> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",
-    );
-    await this._deleteDuplicates(tableName, ["province"]);
-  }
-
+  /**
+   * Updates the geojson field of a province record identified by name.
+   *
+   * @param name - The name of the province.
+   * @param geojson - The GeoJSON string value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
   async updateGeojsonByName(
     name: string,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)! + "s",
-    );
     return await this._updateGeojsonByIdentifiers(
-      tableName,
+      AdmLevelCode.PROVINCE,
       { province: name },
       geojson,
-      "province",
       transactionContext,
     );
   }

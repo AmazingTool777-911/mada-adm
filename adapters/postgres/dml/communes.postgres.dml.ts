@@ -1,5 +1,5 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { mapCommuneSnakeToCamel } from "@scope/helpers/models";
+
 import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   CommuneTableDML,
@@ -12,7 +12,6 @@ import type {
   Commune,
   CommuneAttributes,
   CommuneRecord,
-  CommuneSnakeCased,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
@@ -30,52 +29,50 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     super(config, db, schema);
   }
 
+  /**
+   * Retrieves multiple communes by their unique attributes.
+   *
+   * @param attributes - The list of commune identifying attributes.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An array of matching commune entities.
+   */
   async getManyByAttributes(
     attributes: CommuneAttributes[],
     transactionContext?: DbTransactionContext,
   ): Promise<Commune[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
-    );
-
-    return await this._getManyByAttributes<Commune, CommuneSnakeCased>(
-      tableName,
-      [`${tableName}.*`],
+    return (await this._getManyByAttributes(
+      AdmLevelCode.COMMUNE,
       attributes,
-      mapCommuneSnakeToCamel,
-      "commune",
       transactionContext,
-    );
+    )) as Commune[];
   }
 
   /**
    * Retrieves multiple communes whose nearest parent district ID is among the provided set.
    *
    * @param districtIds - The district IDs to filter by.
+   * @param transactionContext - Optional database transaction context.
    * @returns An array of matching commune entities.
    */
   async getManyByDistrictIds(
     districtIds: EntityId[],
     transactionContext?: DbTransactionContext,
   ): Promise<Commune[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
-    );
-    return await this._getManyByParentId<Commune, CommuneSnakeCased>(
-      tableName,
-      [`${tableName}.*`],
-      "district_id",
+    return (await this._getManyByParentsIds(
+      AdmLevelCode.COMMUNE,
       districtIds,
-      mapCommuneSnakeToCamel,
       transactionContext,
-    );
+    )) as Commune[];
   }
 
   /**
-   * Updates the commune name of all commune records whose IDs belong to the provided set.
+   * Updates a field of all commune records whose IDs belong to the provided set.
    *
    * @param ids - The commune IDs to target.
-   * @param value - The new commune name value to assign.
+   * @param fieldCode - The ADM level field to update.
+   * @param value - The new value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
    */
   async updateFieldByIds(
     ids: EntityId[],
@@ -87,15 +84,12 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     value: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
-    );
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
     return await this._updateFieldByIds(
-      tableName,
+      AdmLevelCode.COMMUNE,
+      ids,
       column,
       value,
-      ids,
       transactionContext,
     );
   }
@@ -106,103 +100,47 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
    * @param values - An array of commune values to insert.
    * @returns A result object containing the count of inserted rows.
    */
-  async createMany(values: CommuneRecord[]): Promise<DMLCreateManyResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
-    );
-    const columns = ["commune", "district", "region", "district_id"];
-
-    if (this.config.isProvinceRepeated) columns.push("province");
-    if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
-      columns.push("province_id");
-    }
-    if (this.config.isFkRepeated) columns.push("region_id");
-    if (this.config.hasAdmLevel) columns.push("adm_level");
-    if (this.config.hasGeojson) columns.push("geojson");
-
+  async createMany(
+    values: CommuneRecord[],
+    transactionContext?: DbTransactionContext,
+  ): Promise<DMLCreateManyResult> {
     return await this._createMany(
-      tableName,
-      columns,
+      AdmLevelCode.COMMUNE,
       values,
-      (val, argIndex) => {
-        const placeholders: string[] = [];
-        const args: unknown[] = [];
-
-        // commune
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.commune);
-
-        // district
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.district);
-
-        // region
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.region);
-
-        // district_id
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.districtId);
-
-        // province
-        if (this.config.isProvinceRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.province);
-        }
-
-        // province_id
-        if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.provinceId);
-        }
-
-        // region_id
-        if (this.config.isFkRepeated) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.regionId);
-        }
-
-        // adm_level
-        if (this.config.hasAdmLevel) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.admLevel ?? 3);
-        }
-
-        // geojson
-        if (this.config.hasGeojson) {
-          placeholders.push(`ST_GeomFromGeoJSON($${argIndex++})`);
-          args.push(val.geojson ? JSON.stringify(val.geojson) : null);
-        }
-
-        return { placeholders, args };
-      },
+      transactionContext,
     );
   }
 
-  async deleteDuplicates(): Promise<void> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
-    );
-    await this._deleteDuplicates(tableName, ["commune", "district", "region"]);
+  /**
+   * Removes duplicate commune records from the table.
+   */
+  async deleteDuplicates(
+    transactionContext?: DbTransactionContext,
+  ): Promise<void> {
+    await this._deleteDuplicates(AdmLevelCode.COMMUNE, transactionContext);
   }
 
+  /**
+   * Updates the geojson field of a commune record identified by its attributes.
+   *
+   * @param attributes - The identifying attributes for the commune.
+   * @param geojson - The GeoJSON string value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
   async updateGeojsonByAttributes(
     attributes: CommuneAttributes,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)! + "s",
-    );
     return await this._updateGeojsonByIdentifiers(
-      tableName,
+      AdmLevelCode.COMMUNE,
       {
         commune: attributes.commune,
         district: attributes.district,
         region: attributes.region,
       },
       geojson,
-      "commune",
       transactionContext,
     );
   }

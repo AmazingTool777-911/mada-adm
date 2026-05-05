@@ -68,10 +68,14 @@ export class MadaAdmConfigPostgresDDL implements TableDDL {
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
       );
     `;
-    const client = this.ensureIsPostgresTransactionContext(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
+    const isTx = this.ensureIsPostgresTransactionContext(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
@@ -82,10 +86,14 @@ export class MadaAdmConfigPostgresDDL implements TableDDL {
   async drop(transactionContext?: DbTransactionContext): Promise<void> {
     const query =
       `DROP TABLE IF EXISTS ${this.schema}.${MadaAdmConfigPostgresDDL.TABLE_NAME};`;
-    const client = this.ensureIsPostgresTransactionContext(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
+    const isTx = this.ensureIsPostgresTransactionContext(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
@@ -101,11 +109,15 @@ export class MadaAdmConfigPostgresDDL implements TableDDL {
          AND    tablename  = '${MadaAdmConfigPostgresDDL.TABLE_NAME}'
       );
     `;
-    const client = this.ensureIsPostgresTransactionContext(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    const result = await client.queryObject<{ exists: boolean }>(query);
-    return result.rows[0]?.exists ?? false;
+    const isTx = this.ensureIsPostgresTransactionContext(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<{ exists: boolean }>(query);
+      return result.rows[0]?.exists ?? false;
+    } finally {
+      if (client) client.release();
+    }
   }
 }
 

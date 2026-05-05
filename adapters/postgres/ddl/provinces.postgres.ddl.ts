@@ -53,21 +53,25 @@ export class ProvincesPostgresDDL extends BaseAdmTableDDL {
     const query = `
       CREATE TABLE IF NOT EXISTS ${this.schema}.${this.tableName} (
         id SERIAL PRIMARY KEY,
-        province VARCHAR(255) NOT NULL,${admLevelColumn}${geometryColumn}
+        province CITEXT NOT NULL,${admLevelColumn}${geometryColumn}
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
       );
     `;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
-
     const indexQuery = `
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_province_lower 
-      ON ${this.schema}.${this.tableName} (lower(province) text_pattern_ops);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_province_ci 
+      ON ${this.schema}.${this.tableName} (province citext_ops);
     `;
-    await client.queryObject(indexQuery);
+
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+      await executor.queryObject(indexQuery);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
@@ -77,10 +81,14 @@ export class ProvincesPostgresDDL extends BaseAdmTableDDL {
    */
   async drop(transactionContext?: DbTransactionContext): Promise<void> {
     const query = `DROP TABLE IF EXISTS ${this.schema}.${this.tableName};`;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
@@ -96,11 +104,15 @@ export class ProvincesPostgresDDL extends BaseAdmTableDDL {
          AND    tablename  = '${this.tableName}'
       );
     `;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    const result = await client.queryObject<{ exists: boolean }>(query);
-    return result.rows[0]?.exists ?? false;
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<{ exists: boolean }>(query);
+      return result.rows[0]?.exists ?? false;
+    } finally {
+      if (client) client.release();
+    }
   }
 }
 

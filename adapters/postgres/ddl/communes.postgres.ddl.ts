@@ -31,7 +31,6 @@ export class CommunesPostgresDDL extends BaseAdmTableDDL {
     const admLevelColumn = this.config.hasAdmLevel
       ? "\n        adm_level SMALLINT NOT NULL DEFAULT 3,"
       : "";
-
     const regionsTable = this.getTableName(
       ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
     );
@@ -41,12 +40,10 @@ export class CommunesPostgresDDL extends BaseAdmTableDDL {
     const districtsTable = this.getTableName(
       ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)! + "s",
     );
-
     let optionalCols = "";
     let optionalFk = "";
-
     if (this.config.isProvinceRepeated) {
-      optionalCols += "\n        province VARCHAR(255) NOT NULL,";
+      optionalCols += "\n        province CITEXT NOT NULL,";
     }
     if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INTEGER NOT NULL,";
@@ -58,31 +55,24 @@ export class CommunesPostgresDDL extends BaseAdmTableDDL {
       optionalFk +=
         `,\n        CONSTRAINT fk_commune_region FOREIGN KEY (region_id) REFERENCES ${this.schema}.${regionsTable}(id) ON DELETE CASCADE`;
     }
-
     const query = `
       CREATE TABLE IF NOT EXISTS ${this.schema}.${this.tableName} (
         id SERIAL PRIMARY KEY,
-        commune VARCHAR(255) NOT NULL,
-        district VARCHAR(255) NOT NULL,
-        region VARCHAR(255) NOT NULL,
+        commune CITEXT NOT NULL,
+        district CITEXT NOT NULL,
+        region CITEXT NOT NULL,
         district_id INTEGER NOT NULL,${optionalCols}${admLevelColumn}${geometryColumn}
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
         CONSTRAINT fk_commune_district FOREIGN KEY (district_id) REFERENCES ${this.schema}.${districtsTable}(id) ON DELETE CASCADE${optionalFk}
       );
     `;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
-
     let indexesQuery = `
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_lower 
-      ON ${this.schema}.${this.tableName} (lower(commune) text_pattern_ops);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_ci 
+      ON ${this.schema}.${this.tableName} (commune citext_ops);
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_district_id 
       ON ${this.schema}.${this.tableName} (district_id);
     `;
-
     if (this.config.isProvinceFkRepeated) {
       indexesQuery += `
         CREATE INDEX IF NOT EXISTS idx_${this.tableName}_province_id 
@@ -95,16 +85,27 @@ export class CommunesPostgresDDL extends BaseAdmTableDDL {
         ON ${this.schema}.${this.tableName} (region_id);
       `;
     }
-
-    await client.queryObject(indexesQuery);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+      await executor.queryObject(indexesQuery);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   async drop(transactionContext?: DbTransactionContext): Promise<void> {
     const query = `DROP TABLE IF EXISTS ${this.schema}.${this.tableName};`;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
@@ -120,11 +121,15 @@ export class CommunesPostgresDDL extends BaseAdmTableDDL {
          AND    tablename  = '${this.tableName}'
       );
     `;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    const result = await client.queryObject<{ exists: boolean }>(query);
-    return result.rows[0]?.exists ?? false;
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<{ exists: boolean }>(query);
+      return result.rows[0]?.exists ?? false;
+    } finally {
+      if (client) client.release();
+    }
   }
 }
 

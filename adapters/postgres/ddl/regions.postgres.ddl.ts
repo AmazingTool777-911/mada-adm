@@ -38,34 +38,42 @@ export class RegionsPostgresDDL extends BaseAdmTableDDL {
     const query = `
       CREATE TABLE IF NOT EXISTS ${this.schema}.${this.tableName} (
         id SERIAL PRIMARY KEY,
-        region VARCHAR(255) NOT NULL,
-        province VARCHAR(255) NOT NULL,
+        region CITEXT NOT NULL,
+        province CITEXT NOT NULL,
         province_id INTEGER NOT NULL,${admLevelColumn}${geometryColumn}
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
         CONSTRAINT fk_region_province FOREIGN KEY (province_id) REFERENCES ${this.schema}.${provincesTable}(id) ON DELETE CASCADE
       );
     `;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
-
     const indexesQuery = `
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_region_lower 
-      ON ${this.schema}.${this.tableName} (lower(region) text_pattern_ops);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_region_ci 
+      ON ${this.schema}.${this.tableName} (region citext_ops);
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_province_id 
       ON ${this.schema}.${this.tableName} (province_id);
     `;
-    await client.queryObject(indexesQuery);
+
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+      await executor.queryObject(indexesQuery);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   async drop(transactionContext?: DbTransactionContext): Promise<void> {
     const query = `DROP TABLE IF EXISTS ${this.schema}.${this.tableName};`;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    await client.queryObject(query);
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      await executor.queryObject(query);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
@@ -81,11 +89,15 @@ export class RegionsPostgresDDL extends BaseAdmTableDDL {
          AND    tablename  = '${this.tableName}'
       );
     `;
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? (transactionContext?.tx ?? this.db.client)
-      : this.db.client;
-    const result = await client.queryObject<{ exists: boolean }>(query);
-    return result.rows[0]?.exists ?? false;
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<{ exists: boolean }>(query);
+      return result.rows[0]?.exists ?? false;
+    } finally {
+      if (client) client.release();
+    }
   }
 }
 

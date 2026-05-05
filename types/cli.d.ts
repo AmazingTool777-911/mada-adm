@@ -34,6 +34,8 @@ export interface PostgresDbConnectionCliConfig {
    * Only used when `ssl` is `true` and `caCertFile` is not set.
    */
   caCertPath?: string;
+  /** Maximum number of connections in the pool. */
+  connectionLimit?: number;
 }
 
 /**
@@ -203,6 +205,8 @@ export type GlobalCliConfig = {
   mysqlKeyPath?: string;
   /** Environment variable mapped for MYSQL_CONNECTION_LIMIT. */
   mysqlConnectionLimit?: number;
+  /** Environment variable mapped for PG_CONNECTION_LIMIT. */
+  pgConnectionLimit?: number;
   /** Environment variable mapped for SQLITE_DB_FILE. */
   sqliteDbFile?: string;
   /** Environment variable mapped for SQLITE_DB_PATH. */
@@ -300,6 +304,8 @@ export type GlobalCliConfigResolved = {
     caCertFile?: string;
     /** Full path to the CA certificate file. */
     caCertPath?: string;
+    /** Maximum number of connections in the pool. */
+    connectionLimit: number;
   };
   /** Resolved MySQL connection configuration. */
   mysql: {

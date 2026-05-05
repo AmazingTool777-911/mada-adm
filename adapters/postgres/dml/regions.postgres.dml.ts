@@ -1,5 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { mapRegionSnakeToCamel } from "@scope/helpers/models";
+import { DbHelper } from "@scope/helpers";
 import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
@@ -8,7 +9,6 @@ import type {
   EntityId,
   RegionTableDML,
 } from "@scope/types/db";
-import { DbHelper } from "@scope/helpers";
 import type {
   MadaAdmConfigValues,
   Region,
@@ -30,6 +30,13 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     super(config, db, schema);
   }
 
+  /**
+   * Retrieves multiple regions by their names.
+   *
+   * @param names - The region names to look up (case-insensitive).
+   * @param transactionContext - Optional database transaction context.
+   * @returns An array of matching region entities.
+   */
   async getManyByNames(
     names: string[],
     transactionContext?: DbTransactionContext,
@@ -37,44 +44,46 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     const tableName = this.getTableName(
       ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
     );
-    const client = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext)
-      ? transactionContext.tx
-      : this.db.client;
-    const query = `SELECT * FROM ${tableName} WHERE LOWER(region) = ANY($1)`;
-    const result = await client.queryObject<RegionSnakeCased>(query, [
-      names.map((n) => n.toLowerCase()),
-    ]);
-    return result.rows.map(mapRegionSnakeToCamel);
+    const query = `SELECT * FROM ${tableName} WHERE region = ANY($1)`;
+    const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);
+    const client = isTx ? null : await this.db.pool.connect();
+    const executor = isTx ? transactionContext.tx : client!;
+    try {
+      const result = await executor.queryObject<RegionSnakeCased>(query, [
+        names,
+      ]);
+      return result.rows.map(mapRegionSnakeToCamel);
+    } finally {
+      if (client) client.release();
+    }
   }
 
   /**
    * Retrieves multiple regions whose nearest parent province ID is among the provided set.
    *
    * @param provinceIds - The province IDs to filter by.
+   * @param transactionContext - Optional database transaction context.
    * @returns An array of matching region entities.
    */
   async getManyByProvinceIds(
     provinceIds: EntityId[],
     transactionContext?: DbTransactionContext,
   ): Promise<Region[]> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
-    );
-    return await this._getManyByParentId<Region, RegionSnakeCased>(
-      tableName,
-      [`${tableName}.*`],
-      "province_id",
+    return (await this._getManyByParentsIds(
+      AdmLevelCode.REGION,
       provinceIds,
-      mapRegionSnakeToCamel,
       transactionContext,
-    );
+    )) as Region[];
   }
 
   /**
-   * Updates the region name of all region records whose IDs belong to the provided set.
+   * Updates a field of all region records whose IDs belong to the provided set.
    *
    * @param ids - The region IDs to target.
-   * @param value - The new region name value to assign.
+   * @param fieldCode - The ADM level field to update.
+   * @param value - The new value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
    */
   async updateFieldByIds(
     ids: EntityId[],
@@ -82,15 +91,12 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     value: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
-    );
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
     return await this._updateFieldByIds(
-      tableName,
+      AdmLevelCode.REGION,
+      ids,
       column,
       value,
-      ids,
       transactionContext,
     );
   }
@@ -101,71 +107,43 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
    * @param values - An array of region values to insert.
    * @returns A result object containing the count of inserted rows.
    */
-  async createMany(values: RegionRecord[]): Promise<DMLCreateManyResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
-    );
-    const columns = ["region", "province", "province_id"];
-    if (this.config.hasAdmLevel) columns.push("adm_level");
-    if (this.config.hasGeojson) columns.push("geojson");
-
+  async createMany(
+    values: RegionRecord[],
+    transactionContext?: DbTransactionContext,
+  ): Promise<DMLCreateManyResult> {
     return await this._createMany(
-      tableName,
-      columns,
+      AdmLevelCode.REGION,
       values,
-      (val, argIndex) => {
-        const placeholders: string[] = [];
-        const args: unknown[] = [];
-
-        // region
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.region);
-
-        // province
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.province);
-
-        // province_id
-        placeholders.push(`$${argIndex++}`);
-        args.push(val.provinceId);
-
-        // adm_level
-        if (this.config.hasAdmLevel) {
-          placeholders.push(`$${argIndex++}`);
-          args.push(val.admLevel ?? 1);
-        }
-
-        // geojson
-        if (this.config.hasGeojson) {
-          placeholders.push(`ST_GeomFromGeoJSON($${argIndex++})`);
-          args.push(val.geojson ? JSON.stringify(val.geojson) : null);
-        }
-
-        return { placeholders, args };
-      },
+      transactionContext,
     );
   }
 
-  async deleteDuplicates(): Promise<void> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
-    );
-    await this._deleteDuplicates(tableName, ["region"]);
+  /**
+   * Removes duplicate region records from the table.
+   */
+  async deleteDuplicates(
+    transactionContext?: DbTransactionContext,
+  ): Promise<void> {
+    await this._deleteDuplicates(AdmLevelCode.REGION, transactionContext);
   }
 
+  /**
+   * Updates the geojson field of a region record identified by name.
+   *
+   * @param name - The name of the region.
+   * @param geojson - The GeoJSON string value to assign.
+   * @param transactionContext - Optional database transaction context.
+   * @returns An object containing the number of affected rows.
+   */
   async updateGeojsonByName(
     name: string,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const tableName = this.getTableName(
-      ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.REGION)! + "s",
-    );
     return await this._updateGeojsonByIdentifiers(
-      tableName,
+      AdmLevelCode.REGION,
       { region: name },
       geojson,
-      "region",
       transactionContext,
     );
   }

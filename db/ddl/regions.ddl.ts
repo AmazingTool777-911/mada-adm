@@ -12,6 +12,11 @@ import {
   resetRegionsSqliteDDL,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectRegionsMySQLDDL,
+  type MySQLDbConnection,
+  resetRegionsMySQLDDL,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the regions table DDL adapter based on the database type.
@@ -38,6 +43,8 @@ export function injectRegionsDDL(
       );
     case DbType.SQLite:
       return injectRegionsSqliteDDL(config, db as SqliteDbConnection);
+    case DbType.MySQL:
+      return injectRegionsMySQLDDL(config, db as MySQLDbConnection);
     default:
       throw new Error(`Unsupported database type for regions DDL: ${dbType}`);
   }
@@ -56,6 +63,9 @@ export function resetRegionsDDL(dbType: DbType): void {
       break;
     case DbType.SQLite:
       resetRegionsSqliteDDL();
+      break;
+    case DbType.MySQL:
+      resetRegionsMySQLDDL();
       break;
     default:
       throw new Error(

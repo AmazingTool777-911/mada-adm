@@ -12,6 +12,11 @@ import {
   resetCommunesSqliteDDL,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectCommunesMySQLDDL,
+  type MySQLDbConnection,
+  resetCommunesMySQLDDL,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the communes table DDL adapter based on the database type.
@@ -38,6 +43,8 @@ export function injectCommunesDDL(
       );
     case DbType.SQLite:
       return injectCommunesSqliteDDL(config, db as SqliteDbConnection);
+    case DbType.MySQL:
+      return injectCommunesMySQLDDL(config, db as MySQLDbConnection);
     default:
       throw new Error(`Unsupported database type for communes DDL: ${dbType}`);
   }
@@ -56,6 +63,9 @@ export function resetCommunesDDL(dbType: DbType): void {
       break;
     case DbType.SQLite:
       resetCommunesSqliteDDL();
+      break;
+    case DbType.MySQL:
+      resetCommunesMySQLDDL();
       break;
     default:
       throw new Error(

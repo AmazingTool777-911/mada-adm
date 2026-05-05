@@ -12,6 +12,11 @@ import {
   resetProvincesSqliteDDL,
   type SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectProvincesMySQLDDL,
+  type MySQLDbConnection,
+  resetProvincesMySQLDDL,
+} from "@scope/adapters/mysql";
 
 /**
  * Injects (or creates) an instance of the provinces table DDL adapter based on the database type.
@@ -38,6 +43,8 @@ export function injectProvincesDDL(
       );
     case DbType.SQLite:
       return injectProvincesSqliteDDL(config, db as SqliteDbConnection);
+    case DbType.MySQL:
+      return injectProvincesMySQLDDL(config, db as MySQLDbConnection);
     default:
       throw new Error(`Unsupported database type for provinces DDL: ${dbType}`);
   }
@@ -56,6 +63,9 @@ export function resetProvincesDDL(dbType: DbType): void {
       break;
     case DbType.SQLite:
       resetProvincesSqliteDDL();
+      break;
+    case DbType.MySQL:
+      resetProvincesMySQLDDL();
       break;
     default:
       throw new Error(

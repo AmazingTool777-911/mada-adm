@@ -47,7 +47,7 @@ export class DistrictsMySQLDDL extends BaseAdmTableDDL {
     if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INT NOT NULL,";
       optionalFk +=
-        `,\n        CONSTRAINT fk_district_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE`;
+        `,\n        CONSTRAINT fk_${this.tableName}_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE`;
     }
 
     const query = `
@@ -60,7 +60,7 @@ export class DistrictsMySQLDDL extends BaseAdmTableDDL {
         updated_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
         INDEX idx_${this.tableName}_district (district),
         INDEX idx_${this.tableName}_region_id (region_id),
-        CONSTRAINT fk_district_region_main FOREIGN KEY (region_id) REFERENCES ${regionsTable}(id) ON DELETE CASCADE
+        CONSTRAINT fk_${this.tableName}_region_main FOREIGN KEY (region_id) REFERENCES ${regionsTable}(id) ON DELETE CASCADE
         ${optionalFk ? optionalFk : ""}
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;

@@ -45,7 +45,7 @@ export class RegionsMySQLDDL extends BaseAdmTableDDL {
         updated_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
         INDEX idx_${this.tableName}_region (region),
         INDEX idx_${this.tableName}_province_id (province_id),
-        CONSTRAINT fk_region_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE
+        CONSTRAINT fk_${this.tableName}_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
     const client = ensureIsMySQLDbTransactionCtx(transactionContext)

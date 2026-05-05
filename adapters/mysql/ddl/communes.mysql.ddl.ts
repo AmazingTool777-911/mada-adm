@@ -50,12 +50,12 @@ export class CommunesMySQLDDL extends BaseAdmTableDDL {
     if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INT NOT NULL,";
       optionalFk +=
-        `,\n        CONSTRAINT fk_commune_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE`;
+        `,\n        CONSTRAINT fk_${this.tableName}_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE`;
     }
     if (this.config.isFkRepeated) {
       optionalCols += "\n        region_id INT NOT NULL,";
       optionalFk +=
-        `,\n        CONSTRAINT fk_commune_region FOREIGN KEY (region_id) REFERENCES ${regionsTable}(id) ON DELETE CASCADE`;
+        `,\n        CONSTRAINT fk_${this.tableName}_region FOREIGN KEY (region_id) REFERENCES ${regionsTable}(id) ON DELETE CASCADE`;
     }
 
     const query = `
@@ -69,7 +69,7 @@ export class CommunesMySQLDDL extends BaseAdmTableDDL {
         updated_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
         INDEX idx_${this.tableName}_commune (commune),
         INDEX idx_${this.tableName}_district_id_main (district_id),
-        CONSTRAINT fk_commune_district_main FOREIGN KEY (district_id) REFERENCES ${districtsTable}(id) ON DELETE CASCADE
+        CONSTRAINT fk_${this.tableName}_district_main FOREIGN KEY (district_id) REFERENCES ${districtsTable}(id) ON DELETE CASCADE
         ${optionalFk ? optionalFk : ""}
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;

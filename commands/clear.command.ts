@@ -18,6 +18,8 @@ import {
   injectRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import { Table } from "@cliffy/table";
+import type { MadaAdmConfigValues } from "@scope/types/models";
 
 /**
  * CLI sub-command that drops all ADM tables and the configuration table from
@@ -89,6 +91,8 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
         );
         return;
       }
+
+      this.printAdmConfig("Current ADM Configuration", existingConfig);
 
       // ── 2. Confirm before proceeding ──────────────────────────────────────
 
@@ -209,6 +213,45 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
         `\n${colors.green("✅ Database connection closed successfully")}`,
       );
     }
+  }
+
+  /**
+   * Prints the Mada ADM configuration in a human-readable format.
+   *
+   * @param title - The title of the configuration section.
+   * @param values - The configuration values to print.
+   */
+  private printAdmConfig(title: string, values: MadaAdmConfigValues): void {
+    const table = new Table(
+      [
+        "Tables prefix",
+        values.tablesPrefix
+          ? colors.green(values.tablesPrefix)
+          : colors.gray("None"),
+      ],
+      [
+        "Parent tables' foreign keys are repeated",
+        values.isFkRepeated ? colors.green("Yes") : colors.red("No"),
+      ],
+      [
+        "A parent province's name is repeated across sub-tables",
+        values.isProvinceRepeated ? colors.green("Yes") : colors.red("No"),
+      ],
+      [
+        "A parent province's foreign key is repeated across sub-tables",
+        values.isProvinceFkRepeated ? colors.green("Yes") : colors.red("No"),
+      ],
+      [
+        "A table stores the spatial GeoJSON boundaries of its corresponding ADM",
+        values.hasGeojson ? colors.green("Yes") : colors.red("No"),
+      ],
+      [
+        "A table stores its ADM level index (0 to 4)",
+        values.hasAdmLevel ? colors.green("Yes") : colors.red("No"),
+      ],
+    );
+    console.log(colors.blue(`\n⚙️  ${title}:`));
+    console.log(table.toString());
   }
 }
 

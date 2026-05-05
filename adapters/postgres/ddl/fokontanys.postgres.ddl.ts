@@ -51,7 +51,7 @@ export class FokontanysPostgresDDL extends BaseAdmTableDDL {
     if (this.config.isProvinceRepeated) {
       optionalCols += "\n        province VARCHAR(255) NOT NULL,";
     }
-    if (this.config.isFkRepeated || this.config.isProvinceFkRepeated) {
+    if (this.config.isProvinceFkRepeated) {
       optionalCols += "\n        province_id INTEGER NOT NULL,";
       optionalFk +=
         `,\n        CONSTRAINT fk_fokontany_province FOREIGN KEY (province_id) REFERENCES ${this.schema}.${provincesTable}(id) ON DELETE CASCADE`;

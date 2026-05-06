@@ -15,6 +15,7 @@ import {
   DISABLE_REDIS_DESCRIPTION,
   IN_MEMORY_INSERT_HWM_DESCRIPTION,
   IN_MEMORY_PROCESSING_HWM_DESCRIPTION,
+  MONGO_DATABASE_DESCRIPTION,
   MONGO_POOL_SIZE_DESCRIPTION,
   MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
   MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
@@ -329,6 +330,10 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         "--mongo.pool-size <limit:number>",
         MONGO_POOL_SIZE_DESCRIPTION,
       )
+      .globalOption(
+        "--mongo.database <database:string>",
+        MONGO_DATABASE_DESCRIPTION,
+      )
       .globalOption("--mongo.tls [tls:boolean]", MONGO_TLS_DESCRIPTION)
       .globalOption(
         "--mongo.tls-ca-file <filename:string>",
@@ -445,6 +450,10 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalEnv(
         "MONGO_POOL_SIZE=<limit:number>",
         MONGO_POOL_SIZE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_DATABASE=<database:string>",
+        MONGO_DATABASE_DESCRIPTION,
       )
       .globalEnv("MONGO_TLS=<tls:boolean>", MONGO_TLS_DESCRIPTION)
       .globalEnv(
@@ -690,6 +699,11 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         console.log(
           colors.gray(`   MongoDB Max Pool Size: ${args.mongo.poolSize}`),
         );
+        if (args.mongo.database) {
+          console.log(
+            colors.gray(`   MongoDB Database: ${args.mongo.database}`),
+          );
+        }
         console.log(colors.gray(`   MongoDB TLS: ${args.mongo.tls}`));
         break;
       }

@@ -236,13 +236,14 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
   );
   await t.step("MongoDB options and env-var shadow keys", () => {
     const result = resolveGlobalCliConfig({
-      mongo: { uri: "mongodb://flag-host:27017", poolSize: 20 },
+      mongo: { uri: "mongodb://flag-host:27017", poolSize: 20, database: "test_db" },
       mongoTls: true,
       mongoTlsCaPath: "/path/to/ca.pem",
       mongoTlsAllowInvalidCertificates: true,
     });
     assertEquals(result.mongo.uri, "mongodb://flag-host:27017");
     assertEquals(result.mongo.poolSize, 20);
+    assertEquals(result.mongo.database, "test_db");
     assertEquals(result.mongo.tls, true);
     assertEquals(result.mongo.tlsCaPath, "/path/to/ca.pem");
     assertEquals(result.mongo.tlsAllowInvalidCertificates, true);
@@ -258,8 +259,6 @@ Deno.test("resolveIndexCliConfig", async (t) => {
     assertEquals(result.dbType, DbType.SQLite);
     assertEquals(result.cliDebug, false);
     assertEquals(result.pgSchema, "public");
-    assertEquals(result.mysql.host, "localhost");
-    assertEquals(result.sqlite.dbFile, undefined);
     // Redis defaults
     assertEquals(result.disableRedis, false);
     assertEquals(result.redis.host, "localhost");

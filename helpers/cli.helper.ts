@@ -95,6 +95,7 @@ export function resolveGlobalCliConfig(
     mongo: {
       uri: args.mongo?.uri ?? args.mongoUri ?? "mongodb://localhost:27017",
       poolSize: args.mongo?.poolSize ?? args.mongoPoolSize ?? 10,
+      database: args.mongo?.database ?? args.mongoDatabase,
       tls: args.mongo?.tls ?? args.mongoTls ?? false,
       tlsCaFile: args.mongo?.tlsCaFile ?? args.mongoTlsCaFile,
       tlsCaPath: args.mongo?.tlsCaPath ?? args.mongoTlsCaPath,
@@ -135,9 +136,6 @@ export function resolveIndexCliConfig(
     dbType: global.dbType,
     cliDebug: global.cliDebug,
     pgSchema: global.pgSchema,
-    mysql: global.mysql,
-    sqlite: global.sqlite,
-    mongo: global.mongo,
     disableRedis: !!(args.disableRedis ?? false),
     redis: {
       url: args.redis?.url ?? args.redisUrl,

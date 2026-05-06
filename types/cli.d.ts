@@ -145,6 +145,8 @@ export interface MongoDbConnectionCliConfig {
   uri?: string;
   /** Maximum number of connections in the pool. */
   poolSize?: number;
+  /** Name of the target database. */
+  database?: string;
   /** Whether to use TLS for the connection. */
   tls?: boolean;
   /**
@@ -250,6 +252,8 @@ export type GlobalCliConfig = {
   mongoUri?: string;
   /** Environment variable mapped for MONGO_POOL_SIZE. */
   mongoPoolSize?: number;
+  /** Environment variable mapped for MONGO_DATABASE. */
+  mongoDatabase?: string;
   /** Environment variable mapped for MONGO_TLS. */
   mongoTls?: boolean;
   /** Environment variable mapped for MONGO_TLS_CA_FILE. */
@@ -397,10 +401,12 @@ export type GlobalCliConfigResolved = {
   sqlite: SQLiteDbConnectionCliConfig;
   /** Resolved MongoDB connection configuration. */
   mongo: {
-    /** Full MongoDB connection URI. When set, individual config fields are ignored. */
+    /** Full MongoDB connection URI. */
     uri?: string;
     /** Maximum number of connections in the pool. */
     poolSize: number;
+    /** Name of the target database. Optional if present in the URI. */
+    database?: string;
     /** Whether to use TLS for the connection. */
     tls: boolean;
     /** Filename of the CA certificate under `db/.ca-certificates/`. */
@@ -433,62 +439,6 @@ export type IndexActionCliConfigResolved = {
   cliDebug: boolean;
   /** The PostgreSQL schema name. */
   pgSchema: string;
-  /** Resolved MySQL connection configuration. */
-  mysql: {
-    /** Full MySQL connection URL. When set, individual config fields are ignored. */
-    url?: string;
-    /** Hostname or IP address of the MySQL server. */
-    host: string;
-    /** TCP port the MySQL server listens on. */
-    port: number;
-    /** Username to authenticate with. */
-    user: string;
-    /** Password for the database user. */
-    password: string;
-    /** Name of the target database. */
-    database?: string;
-    /** Whether to enable SSL for the connection. */
-    ssl: boolean;
-    /** Filename of the CA certificate under `db/.ca-certificates/`. */
-    caCertFile?: string;
-    /** Full path to the CA certificate file. */
-    caCertPath?: string;
-    /** Filename of the client certificate under `db/.ca-certificates/`. */
-    certFile?: string;
-    /** Full path to the client certificate file. */
-    certPath?: string;
-    /** Filename of the client key under `db/.ca-certificates/`. */
-    keyFile?: string;
-    /** Full path to the client key file. */
-    keyPath?: string;
-    /** Maximum number of connections in the pool. */
-    connectionLimit: number;
-  };
-  /** Resolved SQLite connection configuration. */
-  sqlite: SQLiteDbConnectionCliConfig;
-  /** Resolved MongoDB connection configuration. */
-  mongo: {
-    /** Full MongoDB connection URI. When set, individual config fields are ignored. */
-    uri?: string;
-    /** Maximum number of connections in the pool. */
-    poolSize: number;
-    /** Whether to use TLS for the connection. */
-    tls: boolean;
-    /** Filename of the CA certificate under `db/.ca-certificates/`. */
-    tlsCaFile?: string;
-    /** Full path to the CA certificate file. */
-    tlsCaPath?: string;
-    /** Filename of the client certificate and key PEM file under `db/.ca-certificates/`. */
-    tlsCertificateKeyFile?: string;
-    /** Full path to the client certificate and key PEM file. */
-    tlsCertificateKeyPath?: string;
-    /** Password for the client certificate key file if it is encrypted. */
-    tlsCertificateKeyFilePassword?: string;
-    /** Whether to allow invalid certificates for the connection. */
-    tlsAllowInvalidCertificates: boolean;
-    /** Whether to allow invalid hostnames for the connection. */
-    tlsAllowInvalidHostnames: boolean;
-  };
   /** Resolved Redis connection configuration. */
   redis: {
     /** Full Redis connection URL. */

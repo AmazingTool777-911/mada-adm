@@ -117,6 +117,9 @@ export const MONGO_URI_DESCRIPTION: string =
 export const MONGO_POOL_SIZE_DESCRIPTION: string =
   "Maximum number of connections in the MongoDB pool (default 10).";
 
+export const MONGO_DATABASE_DESCRIPTION: string =
+  "Name of the target MongoDB database.";
+
 export const MONGO_TLS_DESCRIPTION: string =
   "Whether to use TLS for the connection.";
 

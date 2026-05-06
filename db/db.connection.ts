@@ -10,6 +10,10 @@ import {
   injectSqliteDbConnection,
   SqliteDbConnection,
 } from "@scope/adapters/sqlite";
+import {
+  injectMongoDbConnection,
+  MongoDbConnection,
+} from "@scope/adapters/mongo";
 import { DbType } from "@scope/consts/db";
 import type { DbConnection, DbConnectionParams } from "@scope/types/db";
 import type { DbConnectionCliConfig } from "@scope/types/cli";
@@ -29,6 +33,8 @@ export function injectDbConnection(dbType: DbType): DbConnection {
       return injectMySQLDbConnection();
     case DbType.SQLite:
       return injectSqliteDbConnection();
+    case DbType.MongoDB:
+      return injectMongoDbConnection();
     default:
       throw new Error(`Unsupported database type: ${dbType}`);
   }
@@ -110,6 +116,29 @@ export async function attemptDbConnection(
           keyFile: mysql.ssl ? mysql.keyFile : undefined,
           keyPath: mysql.ssl ? mysql.keyPath : undefined,
         },
+      };
+      break;
+    }
+    case DbType.MongoDB: {
+      if (!(connection instanceof MongoDbConnection)) {
+        throw new Error(
+          "Invalid connection instance: Expected MongoDbConnection for MongoDB database type.",
+        );
+      }
+      const mongo = config.mongo;
+      params = {
+        dbType: DbType.MongoDB,
+        uri: mongo.uri,
+        poolSize: mongo.poolSize,
+        database: mongo.database,
+        tls: mongo.tls,
+        tlsCaFile: mongo.tlsCaFile,
+        tlsCaPath: mongo.tlsCaPath,
+        tlsCertKeyFile: mongo.tlsCertKeyFile,
+        tlsCertKeyPath: mongo.tlsCertKeyPath,
+        tlsCertPassword: mongo.tlsCertPassword,
+        tlsAllowInvalidCertificates: mongo.tlsAllowInvalidCertificates,
+        tlsAllowInvalidHostnames: mongo.tlsAllowInvalidHostnames,
       };
       break;
     }

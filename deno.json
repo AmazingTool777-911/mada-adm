@@ -1,9 +1,9 @@
 {
   "tasks": {
-    "cli": "deno -E --env -N -R -W --allow-ffi commands/index.ts",
-    "cli:set-config": "deno -E --env -N -R -W --allow-ffi commands/index.ts set-config",
-    "cli:update-field": "deno -E --env -N -R -W --allow-ffi commands/index.ts update-field",
-    "cli:clear": "deno -E --env -N -R -W --allow-ffi commands/index.ts clear",
+    "cli": "deno -E --env -N -R -W --allow-ffi --allow-sys commands/index.ts",
+    "cli:set-config": "deno -E --env -N -R -W --allow-ffi --allow-sys commands/index.ts set-config",
+    "cli:update-field": "deno -E --env -N -R -W --allow-ffi --allow-sys commands/index.ts update-field",
+    "cli:clear": "deno -E --env -N -R -W --allow-ffi --allow-sys commands/index.ts clear",
     "build:windows:x86_64": "deno compile -E -N -R -W --target x86_64-pc-windows-msvc --output ./bin/x86_64-pc-windows-msvc/mada-adm --include commands/workers commands/index.ts",
     "build:macos:x86_64": "deno compile -E -N -R -W --target x86_64-apple-darwin --output ./bin/x86_64-apple-darwin/mada-adm --include commands/workers commands/index.ts",
     "build:macos:arm64": "deno compile -E -N -R -W --target aarch64-apple-darwin --output ./bin/aarch64-apple-darwin/mada-adm --include commands/workers commands/index.ts",
@@ -25,7 +25,7 @@
     "@std/cli": "jsr:@std/cli@^1.0.28",
     "@std/path": "jsr:@std/path@^1.0.8",
     "@std/streams": "jsr:@std/streams@^1.0.17",
-    "mongo": "npm:mongo@^0.1.0",
+    "mongodb": "npm:mongodb@^6.10.0",
     "mysql2": "npm:mysql2@^3.22.3"
   },
   "workspace": [

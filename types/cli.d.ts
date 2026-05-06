@@ -160,11 +160,11 @@ export interface MongoDbConnectionCliConfig {
    * Filename of the client certificate and key PEM file located under the shared
    * `db/.ca-certificates/` directory.
    */
-  tlsCertificateKeyFile?: string;
+  tlsCertKeyFile?: string;
   /** Full path to the client certificate and key PEM file. */
-  tlsCertificateKeyPath?: string;
+  tlsCertKeyPath?: string;
   /** Password for the client certificate key file if it is encrypted. */
-  tlsCertificateKeyFilePassword?: string;
+  tlsCertPassword?: string;
   /** Whether to allow invalid certificates for the connection. */
   tlsAllowInvalidCertificates?: boolean;
   /** Whether to allow invalid hostnames for the connection. */
@@ -261,11 +261,11 @@ export type GlobalCliConfig = {
   /** Environment variable mapped for MONGO_TLS_CA_PATH. */
   mongoTlsCaPath?: string;
   /** Environment variable mapped for MONGO_TLS_CERT_KEY_FILE. */
-  mongoTlsCertificateKeyFile?: string;
+  mongoTlsCertKeyFile?: string;
   /** Environment variable mapped for MONGO_TLS_CERT_KEY_PATH. */
-  mongoTlsCertificateKeyPath?: string;
+  mongoTlsCertKeyPath?: string;
   /** Environment variable mapped for MONGO_TLS_CERT_PASSWORD. */
-  mongoTlsCertificateKeyFilePassword?: string;
+  mongoTlsCertPassword?: string;
   /** Environment variable mapped for MONGO_TLS_ALLOW_INVALID_CERTIFICATES. */
   mongoTlsAllowInvalidCertificates?: boolean;
   /** Environment variable mapped for MONGO_TLS_ALLOW_INVALID_HOSTNAMES. */
@@ -414,11 +414,11 @@ export type GlobalCliConfigResolved = {
     /** Full path to the CA certificate file. */
     tlsCaPath?: string;
     /** Filename of the client certificate and key PEM file under `db/.ca-certificates/`. */
-    tlsCertificateKeyFile?: string;
+    tlsCertKeyFile?: string;
     /** Full path to the client certificate and key PEM file. */
-    tlsCertificateKeyPath?: string;
+    tlsCertKeyPath?: string;
     /** Password for the client certificate key file if it is encrypted. */
-    tlsCertificateKeyFilePassword?: string;
+    tlsCertPassword?: string;
     /** Whether to allow invalid certificates for the connection. */
     tlsAllowInvalidCertificates: boolean;
     /** Whether to allow invalid hostnames for the connection. */

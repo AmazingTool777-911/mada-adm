@@ -1,4 +1,5 @@
 import type { Transaction } from "@db/postgres";
+import type { ClientSession } from "mongodb";
 import type { PoolConnection } from "mysql2/promise";
 import type { DbType } from "@scope/consts/db";
 import type { AdmLevelCode } from "@scope/consts/models";
@@ -58,13 +59,19 @@ export type MySQLTransactionContext = {
   connection: PoolConnection;
 };
 
+export type MongoDbTransactionContext = {
+  dbType: DbType.MongoDB;
+  session: ClientSession;
+};
+
 /**
  * Represents the transaction context for a specific database type.
  */
 export type DbTransactionContext =
   | PostgresTransactionContext
   | SQLiteTransactionContext
-  | MySQLTransactionContext;
+  | MySQLTransactionContext
+  | MongoDbTransactionContext;
 
 /**
  * Represents a database connection.
@@ -201,13 +208,50 @@ export interface MySQLConnectionParams {
 }
 
 /**
+ * Detailed configuration for a MongoDB database connection.
+ */
+export interface MongoDbConnectionConfig {
+  /** Full MongoDB connection URI. */
+  uri: string;
+  /** Maximum number of connections in the pool. */
+  poolSize: number;
+  /** Name of the target database. */
+  database?: string;
+  /** Whether to use TLS for the connection. */
+  tls: boolean;
+  /** Filename of the CA certificate under `db/.ca-certificates/`. */
+  tlsCaFile?: string;
+  /** Full path to the CA certificate file. */
+  tlsCaPath?: string;
+  /** Filename of the client certificate and key PEM file under `db/.ca-certificates/`. */
+  tlsCertKeyFile?: string;
+  /** Full path to the client certificate and key PEM file. */
+  tlsCertKeyPath?: string;
+  /** Password for the client certificate key file if it is encrypted. */
+  tlsCertPassword?: string;
+  /** Whether to allow invalid certificates for the connection. */
+  tlsAllowInvalidCertificates?: boolean;
+  /** Whether to allow invalid hostnames for the connection. */
+  tlsAllowInvalidHostnames?: boolean;
+}
+
+/**
+ * Connection parameters specifically for a MongoDB database.
+ */
+export interface MongoDbConnectionParams extends MongoDbConnectionConfig {
+  /** The type of database, fixed to MongoDB. */
+  dbType: DbType.MongoDB;
+}
+
+/**
  * Union type of all supported database connection parameters.
  * Initially supports only PostgreSQL.
  */
 export type DbConnectionParams =
   | PostgresConnectionParams
   | SQLiteConnectionParams
-  | MySQLConnectionParams;
+  | MySQLConnectionParams
+  | MongoDbConnectionParams;
 
 export interface TableDDL {
   /** The physical database table name. */

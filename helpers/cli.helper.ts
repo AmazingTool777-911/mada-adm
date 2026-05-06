@@ -99,13 +99,9 @@ export function resolveGlobalCliConfig(
       tls: args.mongo?.tls ?? args.mongoTls ?? false,
       tlsCaFile: args.mongo?.tlsCaFile ?? args.mongoTlsCaFile,
       tlsCaPath: args.mongo?.tlsCaPath ?? args.mongoTlsCaPath,
-      tlsCertificateKeyFile: args.mongo?.tlsCertificateKeyFile ??
-        args.mongoTlsCertificateKeyFile,
-      tlsCertificateKeyPath: args.mongo?.tlsCertificateKeyPath ??
-        args.mongoTlsCertificateKeyPath,
-      tlsCertificateKeyFilePassword:
-        args.mongo?.tlsCertificateKeyFilePassword ??
-          args.mongoTlsCertificateKeyFilePassword,
+      tlsCertKeyFile: args.mongo?.tlsCertKeyFile ?? args.mongoTlsCertKeyFile,
+      tlsCertKeyPath: args.mongo?.tlsCertKeyPath ?? args.mongoTlsCertKeyPath,
+      tlsCertPassword: args.mongo?.tlsCertPassword ?? args.mongoTlsCertPassword,
       tlsAllowInvalidCertificates: args.mongo?.tlsAllowInvalidCertificates ??
         args.mongoTlsAllowInvalidCertificates ??
         false,

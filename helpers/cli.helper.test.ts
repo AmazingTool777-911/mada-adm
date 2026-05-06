@@ -80,6 +80,16 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
     assertEquals(result.mysql.connectionLimit, 10);
     assertEquals(result.sqlite.dbFile, undefined);
     assertEquals(result.sqlite.dbPath, undefined);
+    assertEquals(result.mongo.uri, "mongodb://localhost:27017");
+    assertEquals(result.mongo.poolSize, 10);
+    assertEquals(result.mongo.tls, false);
+    assertEquals(result.mongo.tlsCaFile, undefined);
+    assertEquals(result.mongo.tlsCaPath, undefined);
+    assertEquals(result.mongo.tlsCertificateKeyFile, undefined);
+    assertEquals(result.mongo.tlsCertificateKeyPath, undefined);
+    assertEquals(result.mongo.tlsCertificateKeyFilePassword, undefined);
+    assertEquals(result.mongo.tlsAllowInvalidCertificates, false);
+    assertEquals(result.mongo.tlsAllowInvalidHostnames, false);
   });
 
   await t.step(
@@ -224,6 +234,21 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
       assertEquals(result.mysql.ssl, true);
     },
   );
+  await t.step("MongoDB options and env-var shadow keys", () => {
+    const result = resolveGlobalCliConfig({
+      mongo: { uri: "mongodb://flag-host:27017", poolSize: 20 },
+      mongoTls: true,
+      mongoTlsCaPath: "/path/to/ca.pem",
+      mongoTlsAllowInvalidCertificates: true,
+    });
+    assertEquals(result.mongo.uri, "mongodb://flag-host:27017");
+    assertEquals(result.mongo.poolSize, 20);
+    assertEquals(result.mongo.tls, true);
+    assertEquals(result.mongo.tlsCaPath, "/path/to/ca.pem");
+    assertEquals(result.mongo.tlsAllowInvalidCertificates, true);
+    // Defaults for the rest
+    assertEquals(result.mongo.tlsAllowInvalidHostnames, false);
+  });
 });
 
 Deno.test("resolveIndexCliConfig", async (t) => {

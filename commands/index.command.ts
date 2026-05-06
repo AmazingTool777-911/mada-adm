@@ -15,6 +15,16 @@ import {
   DISABLE_REDIS_DESCRIPTION,
   IN_MEMORY_INSERT_HWM_DESCRIPTION,
   IN_MEMORY_PROCESSING_HWM_DESCRIPTION,
+  MONGO_POOL_SIZE_DESCRIPTION,
+  MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
+  MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
+  MONGO_TLS_CA_FILE_DESCRIPTION,
+  MONGO_TLS_CA_PATH_DESCRIPTION,
+  MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
+  MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
+  MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
+  MONGO_TLS_DESCRIPTION,
+  MONGO_URI_DESCRIPTION,
   MYSQL_CA_CERT_FILE_DESCRIPTION,
   MYSQL_CA_CERT_PATH_DESCRIPTION,
   MYSQL_CERT_FILE_DESCRIPTION,
@@ -313,6 +323,64 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           conflicts: ["sqlite.db-file"],
         },
       )
+      .group("MongoDB configuration")
+      .globalOption("--mongo.uri <uri:string>", MONGO_URI_DESCRIPTION)
+      .globalOption(
+        "--mongo.pool-size <limit:number>",
+        MONGO_POOL_SIZE_DESCRIPTION,
+      )
+      .globalOption("--mongo.tls [tls:boolean]", MONGO_TLS_DESCRIPTION)
+      .globalOption(
+        "--mongo.tls-ca-file <filename:string>",
+        MONGO_TLS_CA_FILE_DESCRIPTION,
+        {
+          depends: ["mongo.tls"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-ca-path <path:string>",
+        MONGO_TLS_CA_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mongo.tls-ca-file"],
+          depends: ["mongo.tls"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-certificate-key-file <filename:string>",
+        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
+        {
+          depends: ["mongo.tls"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-certificate-key-path <path:string>",
+        MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mongo.tls-certificate-key-file"],
+          depends: ["mongo.tls"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-certificate-key-file-password <password:string>",
+        MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
+        {
+          // depends: ["mongo.tls-certificate-key-path", "mongo.tls-certificate-key-file"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-allow-invalid-certificates [allow:boolean]",
+        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
+        {
+          depends: ["mongo.tls"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-allow-invalid-hostnames [allow:boolean]",
+        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
+        {
+          depends: ["mongo.tls"],
+        },
+      )
       // ── Global env variables ────────────────────────────────────────────
       .globalEnv("DB_TYPE=<type:string>", DB_TYPE_DESCRIPTION)
       .globalEnv("CLI_DEBUG=<debug:boolean>", DEBUG_DESCRIPTION)
@@ -373,6 +441,40 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       )
       .globalEnv("SQLITE_DB_FILE <filename:string>", SQLITE_DB_FILE_DESCRIPTION)
       .globalEnv("SQLITE_DB_PATH <path:string>", SQLITE_DB_PATH_DESCRIPTION)
+      .globalEnv("MONGO_URI=<uri:string>", MONGO_URI_DESCRIPTION)
+      .globalEnv(
+        "MONGO_POOL_SIZE=<limit:number>",
+        MONGO_POOL_SIZE_DESCRIPTION,
+      )
+      .globalEnv("MONGO_TLS=<tls:boolean>", MONGO_TLS_DESCRIPTION)
+      .globalEnv(
+        "MONGO_TLS_CA_FILE=<file:string>",
+        MONGO_TLS_CA_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CA_PATH=<path:string>",
+        MONGO_TLS_CA_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CERT_KEY_FILE=<file:string>",
+        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CERT_KEY_PATH=<path:string>",
+        MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CERT_PASSWORD=<password:string>",
+        MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_ALLOW_INVALID_CERTIFICATES=<allow:boolean>",
+        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_ALLOW_INVALID_HOSTNAMES=<allow:boolean>",
+        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
+      )
       .globalAction(async (args) => {
         await this.handleGlobalAction(resolveGlobalCliConfig(args));
       })
@@ -579,6 +681,18 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         console.log(colors.gray(`   SQLite DB File: ${fullPath}`));
         break;
       }
+      case DbType.MongoDB: {
+        const maskedUri = args.mongo.uri?.replace(
+          /^(mongodb(?:\+srv)?:\/\/.*:)(.*)(@.*)$/,
+          "$1****$3",
+        );
+        console.log(colors.gray(`   MongoDB URI: ${maskedUri}`));
+        console.log(
+          colors.gray(`   MongoDB Max Pool Size: ${args.mongo.poolSize}`),
+        );
+        console.log(colors.gray(`   MongoDB TLS: ${args.mongo.tls}`));
+        break;
+      }
       default:
         break;
     }
@@ -592,6 +706,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       pg: args.pg,
       mysql: args.mysql,
       sqlite: args.sqlite,
+      mongo: args.mongo,
     });
     console.log(
       colors.green.bold(`✅ Database connection established successfully!\n`),

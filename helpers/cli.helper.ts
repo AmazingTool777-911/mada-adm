@@ -92,6 +92,26 @@ export function resolveGlobalCliConfig(
       dbFile: args.sqlite?.dbFile ?? args.sqliteDbFile,
       dbPath: args.sqlite?.dbPath ?? args.sqliteDbPath,
     },
+    mongo: {
+      uri: args.mongo?.uri ?? args.mongoUri ?? "mongodb://localhost:27017",
+      poolSize: args.mongo?.poolSize ?? args.mongoPoolSize ?? 10,
+      tls: args.mongo?.tls ?? args.mongoTls ?? false,
+      tlsCaFile: args.mongo?.tlsCaFile ?? args.mongoTlsCaFile,
+      tlsCaPath: args.mongo?.tlsCaPath ?? args.mongoTlsCaPath,
+      tlsCertificateKeyFile: args.mongo?.tlsCertificateKeyFile ??
+        args.mongoTlsCertificateKeyFile,
+      tlsCertificateKeyPath: args.mongo?.tlsCertificateKeyPath ??
+        args.mongoTlsCertificateKeyPath,
+      tlsCertificateKeyFilePassword:
+        args.mongo?.tlsCertificateKeyFilePassword ??
+          args.mongoTlsCertificateKeyFilePassword,
+      tlsAllowInvalidCertificates: args.mongo?.tlsAllowInvalidCertificates ??
+        args.mongoTlsAllowInvalidCertificates ??
+        false,
+      tlsAllowInvalidHostnames: args.mongo?.tlsAllowInvalidHostnames ??
+        args.mongoTlsAllowInvalidHostnames ??
+        false,
+    },
   };
 }
 
@@ -117,6 +137,7 @@ export function resolveIndexCliConfig(
     pgSchema: global.pgSchema,
     mysql: global.mysql,
     sqlite: global.sqlite,
+    mongo: global.mongo,
     disableRedis: !!(args.disableRedis ?? false),
     redis: {
       url: args.redis?.url ?? args.redisUrl,

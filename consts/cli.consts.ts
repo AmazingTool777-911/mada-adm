@@ -109,6 +109,38 @@ export const SQLITE_DB_FILE_DESCRIPTION: string =
 export const SQLITE_DB_PATH_DESCRIPTION: string =
   "Path to the SQLite database file.";
 
+// ── MongoDB descriptions ──────────────────────────────────────────────────────
+
+export const MONGO_URI_DESCRIPTION: string =
+  "The URI to connect to the MongoDB database.";
+
+export const MONGO_POOL_SIZE_DESCRIPTION: string =
+  "Maximum number of connections in the MongoDB pool (default 10).";
+
+export const MONGO_TLS_DESCRIPTION: string =
+  "Whether to use TLS for the connection.";
+
+export const MONGO_TLS_CA_FILE_DESCRIPTION: string =
+  "Filename of the CA certificate under db/.ca-certificates/. NOTE: This only works when running from the Deno codebase; it is not supported in the compiled binary as internal directories are encapsulated. Use --mongo.tls-ca-path instead.";
+
+export const MONGO_TLS_CA_PATH_DESCRIPTION: string =
+  "Full path to the CA certificate file for MongoDB TLS.";
+
+export const MONGO_TLS_CERT_KEY_FILE_DESCRIPTION: string =
+  "Filename of the client certificate and key PEM file under db/.ca-certificates/. NOTE: This only works when running from the Deno codebase; it is not supported in the compiled binary as internal directories are encapsulated. Use --mongo.tls-cert-key-path instead.";
+
+export const MONGO_TLS_CERT_KEY_PATH_DESCRIPTION: string =
+  "Full path to the client certificate and key PEM file.";
+
+export const MONGO_TLS_CERT_PASSWORD_DESCRIPTION: string =
+  "Password for the client certificate key file if it is encrypted.";
+
+export const MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION: string =
+  "Whether to allow invalid certificates for the connection (never true in production).";
+
+export const MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION: string =
+  "Whether to allow invalid hostnames for the connection (never true in production).";
+
 // ── Redis descriptions ─────────────────────────────────────────────────────
 
 export const DISABLE_REDIS_DESCRIPTION: string =

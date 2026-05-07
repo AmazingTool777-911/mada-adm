@@ -39,3 +39,8 @@ export const DEFAULT_PG_SCHEMA: string = "public";
  * Default database type used when none is configured.
  */
 export const DEFAULT_DB_TYPE: DbType = DbType.SQLite;
+
+/**
+ * Camel-cased name of the `MadaAdmConfig` collection.
+ */
+export const MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED: string = "madaAdmConfigs";

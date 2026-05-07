@@ -16,11 +16,13 @@ import type {
   FokontanyAttributes,
   FokontanyRecord,
   MadaAdmConfig,
+  MadaAdmConfigBSON,
   MadaAdmConfigValues,
   Province,
   ProvinceRecord,
   Region,
   RegionRecord,
+  AdmEntityBSON,
 } from "./models.d.ts";
 
 export type {
@@ -35,11 +37,13 @@ export type {
   FokontanyAttributes,
   FokontanyRecord,
   MadaAdmConfig,
+  MadaAdmConfigBSON,
   MadaAdmConfigValues,
   Province,
   ProvinceRecord,
   Region,
   RegionRecord,
+  AdmEntityBSON,
 };
 
 /**

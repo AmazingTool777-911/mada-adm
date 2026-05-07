@@ -1,27 +1,35 @@
 import type {
+  AdmEntity,
+  AdmEntityBSON,
   AdmRecord,
   AdmValues,
   Commune,
   CommuneAttributes,
+  CommuneBSON,
   CommuneRecord,
   CommuneSnakeCased,
   CommuneValues,
   District,
   DistrictAttributes,
+  DistrictBSON,
   DistrictRecord,
   DistrictSnakeCased,
   DistrictValues,
   Fokontany,
+  FokontanyBSON,
   FokontanyRecord,
   FokontanySnakeCased,
   FokontanyValues,
   MadaAdmConfig,
+  MadaAdmConfigBSON,
   MadaAdmConfigSnakeCased,
   Province,
+  ProvinceBSON,
   ProvinceRecord,
   ProvinceSnakeCased,
   ProvinceValues,
   Region,
+  RegionBSON,
   RegionRecord,
   RegionSnakeCased,
   RegionValues,
@@ -454,4 +462,129 @@ export function isGeoJSONGeometry(value: unknown): value is GeoJSONGeometry {
   }
 
   return false;
+}
+
+/**
+ * Maps a MongoDB BSON Mada ADM Config model into its Camel Cased entity.
+ *
+ * @param bson - The raw BSON document from MongoDB.
+ * @returns The structured camel cased configuration framework entity.
+ */
+export function mapMadaAdmConfigBsonToEntity(
+  bson: MadaAdmConfigBSON,
+): MadaAdmConfig {
+  const { _id, createdAt, updatedAt, ...rest } = bson;
+  return {
+    ...rest,
+    id: _id.toString(),
+    createdAt: createdAt?.toISOString(),
+    updatedAt: updatedAt?.toISOString(),
+  };
+}
+
+/**
+ * Maps a MongoDB BSON Province model into its Camel Cased entity.
+ */
+export function mapProvinceBsonToEntity(bson: ProvinceBSON): Province {
+  const { _id, createdAt, updatedAt, ...rest } = bson;
+  return {
+    ...rest,
+    id: _id.toString(),
+    createdAt: createdAt?.toISOString(),
+    updatedAt: updatedAt?.toISOString(),
+  };
+}
+
+/**
+ * Maps a MongoDB BSON Region model into its Camel Cased entity.
+ */
+export function mapRegionBsonToEntity(bson: RegionBSON): Region {
+  const { _id, createdAt, updatedAt, provinceId, ...rest } = bson;
+  return {
+    ...rest,
+    id: _id.toString(),
+    provinceId: provinceId.toString(),
+    createdAt: createdAt?.toISOString(),
+    updatedAt: updatedAt?.toISOString(),
+  };
+}
+
+/**
+ * Maps a MongoDB BSON District model into its Camel Cased entity.
+ */
+export function mapDistrictBsonToEntity(bson: DistrictBSON): District {
+  const { _id, createdAt, updatedAt, regionId, provinceId, ...rest } = bson;
+  return {
+    ...rest,
+    id: _id.toString(),
+    regionId: regionId.toString(),
+    provinceId: provinceId?.toString(),
+    createdAt: createdAt?.toISOString(),
+    updatedAt: updatedAt?.toISOString(),
+  };
+}
+
+/**
+ * Maps a MongoDB BSON Commune model into its Camel Cased entity.
+ */
+export function mapCommuneBsonToEntity(bson: CommuneBSON): Commune {
+  const {
+    _id,
+    createdAt,
+    updatedAt,
+    districtId,
+    regionId,
+    provinceId,
+    ...rest
+  } = bson;
+  return {
+    ...rest,
+    id: _id.toString(),
+    districtId: districtId.toString(),
+    regionId: regionId?.toString(),
+    provinceId: provinceId?.toString(),
+    createdAt: createdAt?.toISOString(),
+    updatedAt: updatedAt?.toISOString(),
+  };
+}
+
+/**
+ * Maps a MongoDB BSON Fokontany model into its Camel Cased entity.
+ */
+export function mapFokontanyBsonToEntity(bson: FokontanyBSON): Fokontany {
+  const {
+    _id,
+    createdAt,
+    updatedAt,
+    communeId,
+    districtId,
+    regionId,
+    provinceId,
+    ...rest
+  } = bson;
+  return {
+    ...rest,
+    id: _id.toString(),
+    communeId: communeId.toString(),
+    districtId: districtId?.toString(),
+    regionId: regionId?.toString(),
+    provinceId: provinceId?.toString(),
+    createdAt: createdAt?.toISOString(),
+    updatedAt: updatedAt?.toISOString(),
+  };
+}
+
+/**
+ * Polymorphic mapper that converts any BSON ADM entity into its corresponding Camel Cased entity.
+ *
+ * @param bson - The BSON document to convert.
+ * @returns The converted application entity.
+ */
+export function mapAdmEntityBsonToEntity(bson: AdmEntityBSON): AdmEntity {
+  const record = bson as unknown as AdmRecord;
+  if (isFokontanyValues(record)) return mapFokontanyBsonToEntity(bson as FokontanyBSON);
+  if (isCommuneValues(record)) return mapCommuneBsonToEntity(bson as CommuneBSON);
+  if (isDistrictValues(record)) return mapDistrictBsonToEntity(bson as DistrictBSON);
+  if (isRegionValues(record)) return mapRegionBsonToEntity(bson as RegionBSON);
+  return mapProvinceBsonToEntity(bson as ProvinceBSON);
 }

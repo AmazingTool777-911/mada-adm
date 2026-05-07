@@ -11,6 +11,10 @@ import {
   injectMadaAdmConfigMySQLDML,
   type MySQLDbConnection,
 } from "@scope/adapters/mysql";
+import {
+  injectMadaAdmConfigMongoDML,
+  type MongoDbConnection,
+} from "@scope/adapters/mongo";
 
 /**
  * Injects (or creates) an instance of the mada adm config table DML adapter based on the database type.
@@ -39,6 +43,10 @@ export function injectMadaAdmConfigDML(
     case DbType.MySQL:
       return injectMadaAdmConfigMySQLDML(
         db as MySQLDbConnection,
+      );
+    case DbType.MongoDB:
+      return injectMadaAdmConfigMongoDML(
+        db as MongoDbConnection,
       );
     default:
       throw new Error(

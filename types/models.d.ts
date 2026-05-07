@@ -1,7 +1,13 @@
+import type { ObjectId, WithId } from "mongodb";
 import type { AdmLevelCode } from "@scope/consts/models";
-import type { GeoJSONGeometry } from "@scope/types/utils";
+import type { GeoJSONGeometry, ReplaceKeys } from "@scope/types/utils";
 
 export type Nullable<T> = T | null;
+
+export type WithTimestamps<T> = {
+  createdAt?: Date;
+  updatedAt?: Date;
+} & T;
 
 export type EntityId = number | string;
 
@@ -33,6 +39,10 @@ export type MadaAdmConfigValues = {
   /** Indicates whether the tables include an admLevel column natively. */
   hasAdmLevel: boolean;
 };
+export type MadaAdmConfigBSONRecord = MadaAdmConfigValues;
+export type MadaAdmConfigBSONRecordWithTimestamps = WithTimestamps<
+  MadaAdmConfigBSONRecord
+>;
 
 /**
  * Snake-cased version of MadaAdmConfigValues, representing the exact database row structure.
@@ -45,6 +55,11 @@ export type MadaAdmConfigSnakeCased = EntitySnakeCased<{
   has_geojson: boolean;
   has_adm_level: boolean;
 }>;
+
+/**
+ * The MongoDB native representation of MadaAdmConfigValues.
+ */
+export type MadaAdmConfigBSON = WithId<MadaAdmConfigBSONRecordWithTimestamps>;
 
 /**
  * The standard application entity wrapper for MadaAdmConfig.
@@ -77,6 +92,10 @@ export type ProvinceValues = HasAdmLevel<
   }>
 >;
 export type ProvinceRecord = ProvinceValues;
+export type ProvinceBSONRecord = ProvinceValues;
+export type ProvinceBSONRecordWithTimestamps = WithTimestamps<
+  ProvinceBSONRecord
+>;
 export type ProvinceSnakeCased = EntitySnakeCased<
   HasAdmLevelLowLevel<
     HasGeoJsonLowLevel<{
@@ -84,6 +103,7 @@ export type ProvinceSnakeCased = EntitySnakeCased<
     }>
   >
 >;
+export type ProvinceBSON = WithId<ProvinceBSONRecordWithTimestamps>;
 export type Province = Entity<ProvinceValues>;
 
 export type RegionValues = HasAdmLevel<
@@ -95,6 +115,8 @@ export type RegionValues = HasAdmLevel<
 export type RegionFks = { provinceId: EntityId };
 export type RegionFksSnakeCased = { province_id: EntityId };
 export type RegionRecord = RegionValues & RegionFks;
+export type RegionBSONRecord = RegionValues & ReplaceKeys<RegionFks, ObjectId>;
+export type RegionBSONRecordWithTimestamps = WithTimestamps<RegionBSONRecord>;
 export type RegionSnakeCased = EntitySnakeCased<
   HasAdmLevelLowLevel<
     HasGeoJsonLowLevel<
@@ -105,6 +127,7 @@ export type RegionSnakeCased = EntitySnakeCased<
     >
   >
 >;
+export type RegionBSON = WithId<RegionBSONRecordWithTimestamps>;
 export type Region = Entity<RegionRecord>;
 
 export type DistrictValues = HasAdmLevel<
@@ -120,6 +143,12 @@ export type DistrictFksSnakeCased = {
   province_id?: EntityId;
 };
 export type DistrictRecord = DistrictValues & DistrictFks;
+export type DistrictBSONRecord =
+  & DistrictValues
+  & ReplaceKeys<DistrictFks, ObjectId>;
+export type DistrictBSONRecordWithTimestamps = WithTimestamps<
+  DistrictBSONRecord
+>;
 export type DistrictSnakeCased = EntitySnakeCased<
   HasAdmLevelLowLevel<
     HasGeoJsonLowLevel<
@@ -131,6 +160,7 @@ export type DistrictSnakeCased = EntitySnakeCased<
     >
   >
 >;
+export type DistrictBSON = WithId<DistrictBSONRecordWithTimestamps>;
 export type District = Entity<DistrictRecord>;
 
 export type CommuneValues = HasAdmLevel<
@@ -152,6 +182,10 @@ export type CommuneFksSnakeCased = {
   province_id?: EntityId;
 };
 export type CommuneRecord = CommuneValues & CommuneFks;
+export type CommuneBSONRecord =
+  & CommuneValues
+  & ReplaceKeys<CommuneFks, ObjectId>;
+export type CommuneBSONRecordWithTimestamps = WithTimestamps<CommuneBSONRecord>;
 export type CommuneSnakeCased = EntitySnakeCased<
   HasAdmLevelLowLevel<
     HasGeoJsonLowLevel<
@@ -164,6 +198,7 @@ export type CommuneSnakeCased = EntitySnakeCased<
     >
   >
 >;
+export type CommuneBSON = WithId<CommuneBSONRecordWithTimestamps>;
 export type Commune = Entity<CommuneRecord>;
 
 export type FokontanyValues = HasAdmLevel<
@@ -188,6 +223,12 @@ export type FokontanyFksSnakeCased = {
   province_id?: EntityId;
 };
 export type FokontanyRecord = FokontanyValues & FokontanyFks;
+export type FokontanyBSONRecord =
+  & FokontanyValues
+  & ReplaceKeys<FokontanyFks, ObjectId>;
+export type FokontanyBSONRecordWithTimestamps = WithTimestamps<
+  FokontanyBSONRecord
+>;
 export type FokontanySnakeCased = EntitySnakeCased<
   HasAdmLevelLowLevel<
     HasGeoJsonLowLevel<
@@ -201,6 +242,7 @@ export type FokontanySnakeCased = EntitySnakeCased<
     >
   >
 >;
+export type FokontanyBSON = WithId<FokontanyBSONRecordWithTimestamps>;
 export type Fokontany = Entity<FokontanyRecord>;
 
 export type AdmEntity = Province | Region | District | Commune | Fokontany;
@@ -247,6 +289,13 @@ export type AdmValuesDiscriminated =
     admLevelCode: AdmLevelCode.FOKONTANY;
     values: FokontanyRecord;
   };
+
+export type AdmEntityBSON =
+  | ProvinceBSON
+  | RegionBSON
+  | DistrictBSON
+  | CommuneBSON
+  | FokontanyBSON;
 
 /**
  * Attributes used to uniquely identify a province.

@@ -6,6 +6,7 @@ import type {
   DbTransactionContext,
   MongoDbConnectionParams,
   MongoDbTransactionContext,
+  TransactionOptions,
 } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
 import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
@@ -153,12 +154,13 @@ export class MongoDbConnection implements DbConnection {
    */
   async transaction<T>(
     callback: (transactionContext: DbTransactionContext) => MaybePromise<T>,
+    options?: TransactionOptions,
   ): Promise<T> {
     const session = this.client.startSession();
 
     try {
       session.startTransaction({
-        readConcern: { level: "snapshot" },
+        readConcern: { level: options?.mongo?.readConcern ?? "snapshot" },
         writeConcern: { w: "majority" },
       });
 

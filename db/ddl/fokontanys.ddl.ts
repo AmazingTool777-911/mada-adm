@@ -17,6 +17,11 @@ import {
   type MySQLDbConnection,
   resetFokontanysMySQLDDL,
 } from "@scope/adapters/mysql";
+import {
+  injectFokontanysMongoDDL,
+  type MongoDbConnection,
+  resetFokontanysMongoDDL,
+} from "@scope/adapters/mongo";
 
 /**
  * Injects (or creates) an instance of the fokontanys table DDL adapter based on the database type.
@@ -45,6 +50,8 @@ export function injectFokontanysDDL(
       return injectFokontanysSqliteDDL(config, db as SqliteDbConnection);
     case DbType.MySQL:
       return injectFokontanysMySQLDDL(config, db as MySQLDbConnection);
+    case DbType.MongoDB:
+      return injectFokontanysMongoDDL(config, db as MongoDbConnection);
     default:
       throw new Error(
         `Unsupported database type for fokontanys DDL: ${dbType}`,
@@ -68,6 +75,9 @@ export function resetFokontanysDDL(dbType: DbType): void {
       break;
     case DbType.MySQL:
       resetFokontanysMySQLDDL();
+      break;
+    case DbType.MongoDB:
+      resetFokontanysMongoDDL();
       break;
     default:
       throw new Error(

@@ -75,6 +75,7 @@ import {
 } from "@scope/consts/cli";
 import {
   DbType,
+  DDL_TRANSACTION_OPTIONS,
   SQLITE_DB_DEFAULT_FILE,
   SQLITE_DB_DIR,
 } from "@scope/consts/db";
@@ -970,7 +971,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
                 for (const admTableDDL of admTablesDDLs) {
                   await admTableDDL.drop(transactionContext);
                 }
-              });
+              }, DDL_TRANSACTION_OPTIONS);
             }
           }
           resetProvincesDDL(args.dbType);
@@ -1165,7 +1166,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
             console.log(
               colors.green("\nAll Mada ADM tables dropped successfully."),
             );
-          });
+          }, DDL_TRANSACTION_OPTIONS);
         }
         await this.#db.transaction(async (transactionContext) => {
           console.log(colors.blue("\nCreating all Mada ADM tables..."));
@@ -1176,7 +1177,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           console.log(
             colors.green("\nAll Mada ADM tables created successfully."),
           );
-        });
+        }, DDL_TRANSACTION_OPTIONS);
       }
       const jobContext: SeedAdmJobContext = !shouldClearJobContext
         ? prevJobContext!

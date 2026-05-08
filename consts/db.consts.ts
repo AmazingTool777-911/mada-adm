@@ -1,3 +1,5 @@
+import type { TransactionOptions } from "@scope/types/db";
+
 /**
  * Supported database types.
  */
@@ -44,3 +46,38 @@ export const DEFAULT_DB_TYPE: DbType = DbType.SQLite;
  * Camel-cased name of the `MadaAdmConfig` collection.
  */
 export const MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED: string = "madaAdmConfigs";
+
+/**
+ * Standard collation settings used for text fields and indices in MongoDB collections
+ * for the ADM tables to support French language features like accents and case insensitivity.
+ */
+export const MONGO_FR_COLLATION = {
+  locale: "fr",
+  strength: 2,
+  normalization: true,
+  backwards: true,
+} as const;
+
+/**
+ * MongoDB $jsonSchema properties for GeoJSON validation.
+ */
+export const MONGO_GEOJSON_VALIDATION = {
+  bsonType: "object",
+  required: ["type", "coordinates"],
+  properties: {
+    type: {
+      bsonType: "string",
+      enum: ["Polygon", "MultiPolygon"],
+    },
+    coordinates: { bsonType: "array" },
+  },
+} as const;
+
+/**
+ * Transaction options used by DDLs operations
+ */
+export const DDL_TRANSACTION_OPTIONS: TransactionOptions = {
+  mongo: {
+    readConcern: "local",
+  },
+};

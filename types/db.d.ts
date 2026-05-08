@@ -5,6 +5,7 @@ import type { DbType } from "@scope/consts/db";
 import type { AdmLevelCode } from "@scope/consts/models";
 import type { MaybePromise } from "./utils.d.ts";
 import type {
+  AdmEntityBSON,
   Commune,
   CommuneAttributes,
   CommuneRecord,
@@ -22,10 +23,10 @@ import type {
   ProvinceRecord,
   Region,
   RegionRecord,
-  AdmEntityBSON,
 } from "./models.d.ts";
 
 export type {
+  AdmEntityBSON,
   Commune,
   CommuneAttributes,
   CommuneRecord,
@@ -43,7 +44,6 @@ export type {
   ProvinceRecord,
   Region,
   RegionRecord,
-  AdmEntityBSON,
 };
 
 /**
@@ -78,6 +78,15 @@ export type DbTransactionContext =
   | MongoDbTransactionContext;
 
 /**
+ * Represents the options for a database transaction.
+ */
+export type TransactionOptions = {
+  mongo?: {
+    readConcern?: "local" | "majority" | "snapshot";
+  };
+};
+
+/**
  * Represents a database connection.
  */
 export interface DbConnection {
@@ -102,12 +111,14 @@ export interface DbConnection {
    * The callback can be synchronous or asynchronous.
    *
    * @param callback - The function to execute within the transaction.
+   * @param options - The options for the transaction.
    * @returns The result of the callback.
    */
   transaction<TReturn>(
     callback: (
       transactionContext: DbTransactionContext,
     ) => MaybePromise<TReturn>,
+    options?: TransactionOptions,
   ): MaybePromise<TReturn>;
 }
 

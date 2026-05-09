@@ -1,5 +1,5 @@
 import { Command } from "@cliffy/command";
-import { Confirm, Input, prompt } from "@cliffy/prompt";
+import { Confirm } from "@cliffy/prompt";
 import { colors } from "@cliffy/ansi/colors";
 import {
   SET_CONFIG_COMMAND_DESCRIPTION,
@@ -10,6 +10,7 @@ import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { DbConnection } from "@scope/types/db";
 import {
   displayMadaAdmConfig,
+  promptMadaAdmConfig,
   resolveCommonGlobalCliConfig,
 } from "@scope/helpers/cli";
 import {
@@ -120,46 +121,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
         );
       console.log(configPromptTitle);
 
-      const result = await prompt([
-        {
-          name: "tablesPrefix",
-          message: "Tables Prefix (leave empty for none):",
-          type: Input,
-          default: prevAdmConfigValues?.tablesPrefix ?? "",
-        },
-        {
-          name: "isFkRepeated",
-          message: "Are parent tables's foreign keys repeated?",
-          type: Confirm,
-          default: prevAdmConfigValues?.isFkRepeated ?? true,
-        },
-        {
-          name: "isProvinceRepeated",
-          message: "Is a parent province's name repeated across sub-tables?",
-          type: Confirm,
-          default: prevAdmConfigValues?.isProvinceRepeated ?? false,
-        },
-        {
-          name: "isProvinceFkRepeated",
-          message:
-            "Is a parent province's foreign key repeated across sub-tables?",
-          type: Confirm,
-          default: prevAdmConfigValues?.isProvinceFkRepeated ?? false,
-        },
-        {
-          name: "hasGeojson",
-          message:
-            "Do tables include the spatial geometries of their respective ADM boundaries?",
-          type: Confirm,
-          default: prevAdmConfigValues?.hasGeojson ?? false,
-        },
-        {
-          name: "hasAdmLevel",
-          message: "Do the tables include an adm level index (0 to 4) column?",
-          type: Confirm,
-          default: prevAdmConfigValues?.hasAdmLevel ?? true,
-        },
-      ]);
+      const result = await promptMadaAdmConfig(prevAdmConfigValues ?? undefined);
 
       const rawTablesPrefix = (result.tablesPrefix as string) ?? "";
       const tablesPrefix = rawTablesPrefix.trim() || null;

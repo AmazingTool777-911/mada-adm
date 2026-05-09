@@ -402,7 +402,7 @@ export type GlobalCliConfigResolved = {
   /** Resolved MongoDB connection configuration. */
   mongo: {
     /** Full MongoDB connection URI. */
-    uri?: string;
+    uri: string;
     /** Maximum number of connections in the pool. */
     poolSize: number;
     /** Name of the target database. Optional if present in the URI. */

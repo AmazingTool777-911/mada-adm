@@ -1,4 +1,5 @@
 import { colors } from "@cliffy/ansi/colors";
+import { Confirm, Input, prompt } from "@cliffy/prompt";
 import { Table } from "@cliffy/table";
 import {
   type DbType,
@@ -202,4 +203,56 @@ export function displayMadaAdmConfig(
   );
   console.log(colors.blue(`\n⚙️  ${title}:`));
   console.log(table.toString());
+}
+
+/**
+ * Prompts the user to define or update the Mada ADM configuration interactively.
+ *
+ * @param prevValues - Optional previous configuration values to use as defaults.
+ * @returns A promise that resolves to the new Mada ADM configuration values.
+ */
+export async function promptMadaAdmConfig(
+  prevValues?: Partial<MadaAdmConfigValues>,
+): Promise<MadaAdmConfigValues> {
+  const result = await prompt([
+    {
+      name: "tablesPrefix",
+      message: "Tables Prefix (leave empty for none):",
+      type: Input,
+      default: prevValues?.tablesPrefix ?? "",
+    },
+    {
+      name: "isFkRepeated",
+      message: "Are parent tables's foreign keys repeated?",
+      type: Confirm,
+      default: prevValues?.isFkRepeated ?? true,
+    },
+    {
+      name: "isProvinceRepeated",
+      message: "Is a parent province's name repeated across sub-tables?",
+      type: Confirm,
+      default: prevValues?.isProvinceRepeated ?? false,
+    },
+    {
+      name: "isProvinceFkRepeated",
+      message: "Is a parent province's foreign key repeated across sub-tables?",
+      type: Confirm,
+      default: prevValues?.isProvinceFkRepeated ?? false,
+    },
+    {
+      name: "hasGeojson",
+      message:
+        "Do tables include the spatial geometries of their respective ADM boundaries?",
+      type: Confirm,
+      default: prevValues?.hasGeojson ?? false,
+    },
+    {
+      name: "hasAdmLevel",
+      message: "Do the tables include an adm level index (0 to 4) column?",
+      type: Confirm,
+      default: prevValues?.hasAdmLevel ?? true,
+    },
+  ]);
+
+  return result as MadaAdmConfigValues;
 }

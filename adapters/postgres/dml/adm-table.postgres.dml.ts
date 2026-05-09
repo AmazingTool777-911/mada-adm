@@ -38,11 +38,24 @@ import {
  * using PostgreSQL.
  */
 export abstract class BaseAdmPostgresTableDML {
+  #admLevel!: AdmLevelCode;
+
+  get admLevelTitle(): string {
+    return ADM_LEVEL_TITLE_BY_CODE.get(this.#admLevel)!;
+  }
+
+  get tableName(): string {
+    return this.getTableName(`${this.admLevelTitle}s`);
+  }
+
   constructor(
     protected config: MadaAdmConfigValues,
     protected db: PostgresDbConnection,
+    admLevel: AdmLevelCode,
     protected schema: string = "public",
-  ) {}
+  ) {
+    this.#admLevel = admLevel;
+  }
 
   /**
    * Generates the fully qualified physical database table name by applying
@@ -70,13 +83,11 @@ export abstract class BaseAdmPostgresTableDML {
    * @returns An array of mapped administrative entities.
    */
   protected async _getManyByAttributes(
-    admLevel: AdmLevelCode,
     attributesValues: AdmAttributes[],
     transactionContext?: DbTransactionContext,
   ): Promise<AdmEntity[]> {
     if (attributesValues.length === 0) return [];
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const attributes = Object.keys(attributesValues[0]);
     const sql = `
       SELECT t.*
@@ -104,7 +115,7 @@ export abstract class BaseAdmPostgresTableDML {
         attributesValues.map((v) => JSON.stringify(v)),
       ]);
       return result.rows.map((r) => {
-        switch (admLevel) {
+        switch (this.#admLevel) {
           case AdmLevelCode.PROVINCE:
             return mapProvinceSnakeToCamel(r as ProvinceSnakeCased);
           case AdmLevelCode.REGION:
@@ -117,7 +128,7 @@ export abstract class BaseAdmPostgresTableDML {
             return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
           default:
             throw new Error(
-              `Unknown ADM level when getting ${admLevelTitle}: ${admLevel} by attributes`,
+              `Unknown ADM level when getting ${this.admLevelTitle}: ${this.#admLevel} by attributes`,
             );
         }
       });
@@ -137,13 +148,11 @@ export abstract class BaseAdmPostgresTableDML {
    * @returns An object containing the number of affected rows.
    */
   protected async _updateGeojsonByIdentifiers(
-    admLevel: AdmLevelCode,
     identifiers: AdmAttributes,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const attributes = Object.keys(identifiers);
     const sql = `
       UPDATE ${tableName}
@@ -179,29 +188,27 @@ export abstract class BaseAdmPostgresTableDML {
    * @returns A promise resolving to the result of the batch insertion.
    */
   protected async _createMany(
-    admLevel: AdmLevelCode,
     records: AdmRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
     if (records.length === 0) return { insertedCount: 0 };
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
 
     const columns = Object.keys(records[0]).filter((attr) => {
       if (attr === "geojson") return this.config.hasGeojson;
       if (attr === "adm_level") return this.config.hasAdmLevel;
       if (
         [AdmLevelCode.DISTRICT, AdmLevelCode.COMMUNE, AdmLevelCode.FOKONTANY]
-          .includes(admLevel)
+          .includes(this.#admLevel)
       ) {
         if (attr === "province") return this.config.isProvinceRepeated;
         if (attr === "provinceId") return this.config.isProvinceFkRepeated;
       }
-      if (admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
+      if (this.#admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
         return this.config.isFkRepeated;
       }
       if (
-        admLevel === AdmLevelCode.FOKONTANY &&
+        this.#admLevel === AdmLevelCode.FOKONTANY &&
         ["regionId", "districtId"].includes(attr)
       ) return this.config.isFkRepeated;
       return true;
@@ -252,18 +259,16 @@ export abstract class BaseAdmPostgresTableDML {
    * @param partitionKeys - The columns to use for identifying duplicates.
    */
   protected async _deleteDuplicates(
-    admLevel: AdmLevelCode,
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
-    const partitionKeys: string[] = [admLevelTitle];
+    const tableName = this.tableName;
+    const partitionKeys: string[] = [this.admLevelTitle];
 
     const regionAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
       AdmLevelCode.REGION,
     )!;
-    if (ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! > regionAdmLevelIndex) {
-      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(admLevel)!;
+    if (ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! > regionAdmLevelIndex) {
+      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)!;
       for (let i = admLevelIndex - 1; i >= regionAdmLevelIndex; i--) {
         const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
           ADM_LEVEL_CODES_INDEXED[i],
@@ -306,19 +311,17 @@ export abstract class BaseAdmPostgresTableDML {
    * @returns An array of mapped entities.
    */
   protected async _getManyByParentsIds(
-    admLevel: AdmLevelCode,
     parentsIds: EntityId[],
     transactionContext?: DbTransactionContext,
   ): Promise<AdmEntity[]> {
-    if (admLevel === AdmLevelCode.PROVINCE) {
+    if (this.#admLevel === AdmLevelCode.PROVINCE) {
       throw new Error(`There is no parent for province`);
     }
     if (parentsIds.length === 0) return [];
 
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const parentIdColumn = `${ADM_LEVEL_TITLE_BY_CODE.get(
-      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! - 1],
+      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! - 1],
     )!}_id`;
     const sql = `
       SELECT ${tableName}.*
@@ -331,7 +334,7 @@ export abstract class BaseAdmPostgresTableDML {
     try {
       const result = await executor.queryObject<unknown>(sql, [parentsIds]);
       return result.rows.map((r) => {
-        switch (admLevel) {
+        switch (this.#admLevel) {
           case AdmLevelCode.REGION:
             return mapRegionSnakeToCamel(r as RegionSnakeCased);
           case AdmLevelCode.DISTRICT:
@@ -342,7 +345,7 @@ export abstract class BaseAdmPostgresTableDML {
             return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
           default:
             throw new Error(
-              `Unknown ADM level when getting ${admLevelTitle}: ${admLevel} by parents ids`,
+              `Unknown ADM level when getting ${this.admLevelTitle}: ${this.#admLevel} by parents ids`,
             );
         }
       });
@@ -363,15 +366,13 @@ export abstract class BaseAdmPostgresTableDML {
    * @returns An object containing the number of affected rows.
    */
   protected async _updateFieldByIds(
-    admLevel: AdmLevelCode,
     ids: EntityId[],
     column: string,
     value: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     if (ids.length === 0) return { affectedRows: 0 };
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const sql = `
       UPDATE ${tableName}
       SET ${column} = $1

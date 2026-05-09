@@ -1,4 +1,4 @@
-import { Client } from "@db/postgres";
+import type { Pool, PoolClient } from "@db/postgres";
 import { StringUtils } from "@scope/utils";
 import type { PostgresTransactionContext } from "@scope/types/db";
 import type {
@@ -42,9 +42,9 @@ async function buildParentsByAreaQuery<T>(
   config: MadaAdmConfigValues,
   parentTableBaseName: string,
   selectColumns: string[],
-  db: Client | PostgresTransactionContext,
+  db: Pool | PostgresTransactionContext,
 ): Promise<[string, T][]> {
-  const client = "tx" in db ? db.tx : db;
+  const client = "tx" in db ? db.tx : await db.connect();
   const parentTable = StringUtils.prefixWithSnakeCase(
     config.tablesPrefix,
     parentTableBaseName,
@@ -88,18 +88,24 @@ async function buildParentsByAreaQuery<T>(
     ) AS best
   `;
 
-  const result = await client.queryObject<ParentMatchRow & T>(query, [
-    inputJsonb,
-  ]);
+  try {
+    const result = await client.queryObject<ParentMatchRow & T>(query, [
+      inputJsonb,
+    ]);
 
-  return result.rows.map((row) => {
-    const {
-      input_id,
-      matched_id: _matched_id,
-      ...rest
-    } = row as ParentMatchRow & T;
-    return [input_id, rest as T];
-  });
+    return result.rows.map((row) => {
+      const {
+        input_id,
+        matched_id: _matched_id,
+        ...rest
+      } = row as ParentMatchRow & T;
+      return [input_id, rest as T];
+    });
+  } finally {
+    if (!("tx" in db)) {
+      (client as PoolClient).release();
+    }
+  }
 }
 
 /**
@@ -108,7 +114,7 @@ async function buildParentsByAreaQuery<T>(
 export async function getParentRegionsOfDistricts(
   inputs: InputRecord[],
   config: MadaAdmConfigValues,
-  db: Client | PostgresTransactionContext,
+  db: Pool | PostgresTransactionContext,
 ): Promise<[string, Region][]> {
   return await buildParentsByAreaQuery<Region>(
     inputs,
@@ -125,7 +131,7 @@ export async function getParentRegionsOfDistricts(
 export async function getParentDistrictsOfCommunes(
   inputs: InputRecord[],
   config: MadaAdmConfigValues,
-  db: Client | PostgresTransactionContext,
+  db: Pool | PostgresTransactionContext,
 ): Promise<[string, District][]> {
   // District also contains optional region/province fields
   return await buildParentsByAreaQuery<District>(
@@ -143,7 +149,7 @@ export async function getParentDistrictsOfCommunes(
 export async function getParentCommunesOfFokontanys(
   inputs: InputRecord[],
   config: MadaAdmConfigValues,
-  db: Client | PostgresTransactionContext,
+  db: Pool | PostgresTransactionContext,
 ): Promise<[string, Commune][]> {
   return await buildParentsByAreaQuery<Commune>(
     inputs,

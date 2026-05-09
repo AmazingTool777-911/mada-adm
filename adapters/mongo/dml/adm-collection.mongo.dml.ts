@@ -1,3 +1,4 @@
+import { type Collection, ObjectId } from "mongodb";
 import type {
   AdmAttributes,
   AdmEntity,
@@ -39,7 +40,6 @@ import {
   mapAdmEntityBsonToEntity,
 } from "@scope/helpers/models";
 import type { GeoJSONGeometry } from "@scope/types/utils";
-import { ObjectId } from "mongodb";
 
 export class BaseAdmCollectionMongoDML {
   #dbConnection!: MongoDbConnection;
@@ -48,15 +48,15 @@ export class BaseAdmCollectionMongoDML {
 
   #admLevel!: AdmLevelCode;
 
-  get admLevelTitle() {
+  get admLevelTitle(): string {
     return ADM_LEVEL_TITLE_BY_CODE.get(this.#admLevel)!;
   }
 
-  get collectionName() {
+  get collectionName(): string {
     return this.getCollectionName(`${this.admLevelTitle}s`);
   }
 
-  get collection() {
+  get collection(): Collection<AdmRecordBSONWithTimestamps> {
     return this.#dbConnection.db.collection<AdmRecordBSONWithTimestamps>(
       this.collectionName,
     );

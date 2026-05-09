@@ -41,11 +41,23 @@ import { camelToSnakeCase } from "../../../utils/string.utils.ts";
  * Base class for MySQL Data Manipulation Layer (DML) implementations
  * for administrative tables.
  */
-export class BaseAdmTableMySQLDML {
+export abstract class BaseAdmTableMySQLDML {
+  #admLevel!: AdmLevelCode;
+
+  get admLevelTitle(): string {
+    return ADM_LEVEL_TITLE_BY_CODE.get(this.#admLevel)!;
+  }
+
+  get tableName(): string {
+    return this.getTableName(`${this.admLevelTitle}s`);
+  }
+
   constructor(
     protected config: MadaAdmConfigValues,
     protected db: MySQLDbConnection,
+    admLevel: AdmLevelCode,
   ) {
+    this.#admLevel = admLevel;
   }
 
   /**
@@ -65,13 +77,11 @@ export class BaseAdmTableMySQLDML {
   /**
    * Fetches multiple administrative entities matching a list of attribute sets.
    *
-   * @param admLevel - The administrative level to query.
    * @param attributesValues - A list of attribute sets (e.g., [{province: 'Antananarivo'}]).
    * @param transactionContext - Optional database transaction context.
    * @returns An array of mapped administrative entities.
    */
   protected async _getManyByAttributes(
-    admLevel: AdmLevelCode,
     attributesValues: AdmAttributes[],
     transactionContext?: DbTransactionContext,
   ): Promise<AdmEntity[]> {
@@ -80,8 +90,7 @@ export class BaseAdmTableMySQLDML {
       : this.db.pool;
 
     if (attributesValues.length === 0) return [];
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const attributes = Object
       .keys(attributesValues[0]);
     const values = attributesValues.map(
@@ -113,7 +122,7 @@ export class BaseAdmTableMySQLDML {
     ];
 
     return res.map((r) => {
-      switch (admLevel) {
+      switch (this.#admLevel) {
         case AdmLevelCode.PROVINCE:
           return mapProvinceSnakeToCamel(r as ProvinceSnakeCased);
         case AdmLevelCode.REGION:
@@ -126,7 +135,7 @@ export class BaseAdmTableMySQLDML {
           return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
         default:
           throw new Error(
-            `Unknown ADM level when getting ${admLevelTitle}: ${admLevel} by attributes`,
+            `Unknown ADM level when getting ${this.admLevelTitle}: ${this.#admLevel} by attributes`,
           );
       }
     });
@@ -135,14 +144,12 @@ export class BaseAdmTableMySQLDML {
   /**
    * Updates the GeoJSON data for a specific administrative entity identified by its attributes.
    *
-   * @param admLevel - The administrative level of the entity.
    * @param identifiers - The attributes used to identify the entity.
    * @param geojson - The new GeoJSON string to set.
    * @param transactionContext - Optional database transaction context.
    * @returns An object containing the number of affected rows.
    */
   protected async _updateGeojsonByIdentifiers(
-    admLevel: AdmLevelCode,
     identifiers: AdmAttributes,
     geojson: string,
     transactionContext?: DbTransactionContext,
@@ -151,8 +158,7 @@ export class BaseAdmTableMySQLDML {
       ? transactionContext.connection
       : this.db.pool;
 
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const attributes = Object.keys(identifiers);
     const values = Object.values(identifiers);
 
@@ -174,13 +180,11 @@ export class BaseAdmTableMySQLDML {
   /**
    * Creates multiple administrative entities in the database.
    *
-   * @param admLevel - The administrative level of the entity.
    * @param records - An array of administrative entities to create.
    * @param transactionContext - Optional database transaction context.
    * @returns An object containing the number of inserted rows.
    */
   protected async _createMany(
-    admLevel: AdmLevelCode,
     records: AdmRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
@@ -189,24 +193,23 @@ export class BaseAdmTableMySQLDML {
       : this.db.pool;
 
     if (records.length === 0) return { insertedCount: 0 };
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
 
     const columns = Object.keys(records[0]).filter((attr) => {
       if (attr === "geojson") return this.config.hasGeojson;
       if (attr === "adm_level") return this.config.hasAdmLevel;
       if (
         [AdmLevelCode.DISTRICT, AdmLevelCode.COMMUNE, AdmLevelCode.FOKONTANY]
-          .includes(admLevel)
+          .includes(this.#admLevel)
       ) {
         if (attr === "province") return this.config.isProvinceRepeated;
         if (attr === "provinceId") return this.config.isProvinceFkRepeated;
       }
-      if (admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
+      if (this.#admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
         return this.config.isFkRepeated;
       }
       if (
-        admLevel === AdmLevelCode.FOKONTANY &&
+        this.#admLevel === AdmLevelCode.FOKONTANY &&
         ["regionId", "districtId"].includes(attr)
       ) return this.config.isFkRepeated;
       return true;
@@ -243,26 +246,23 @@ export class BaseAdmTableMySQLDML {
   /**
    * Internal helper to delete duplicate records from a table.
    *
-   * @param admLevel - The administrative level of the table.
    * @param transactionContext - Optional database transaction context.
    */
   protected async _deleteDuplicates(
-    admLevel: AdmLevelCode,
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
     const client = ensureIsMySQLDbTransactionCtx(transactionContext)
       ? transactionContext.connection
       : this.db.pool;
 
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
-    const partitionKeys: string[] = [admLevelTitle];
+    const tableName = this.tableName;
+    const partitionKeys: string[] = [this.admLevelTitle];
 
     const regionAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
       AdmLevelCode.REGION,
     )!;
-    if (ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! > regionAdmLevelIndex) {
-      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(admLevel)!;
+    if (ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! > regionAdmLevelIndex) {
+      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)!;
       for (let i = admLevelIndex - 1; i >= regionAdmLevelIndex; i--) {
         const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
           ADM_LEVEL_CODES_INDEXED[i],
@@ -291,13 +291,11 @@ export class BaseAdmTableMySQLDML {
   /**
    * Retrieves multiple administrative entities by their parent IDs.
    *
-   * @param admLevel - The administrative level of the entities to retrieve.
    * @param parentsIds - An array of parent entity IDs.
    * @param transactionContext - Optional database transaction context.
    * @returns An array of administrative entities.
    */
   protected async _getManyByParentsIds(
-    admLevel: AdmLevelCode,
     parentsIds: EntityId[],
     transactionContext?: DbTransactionContext,
   ): Promise<AdmEntity[]> {
@@ -305,15 +303,14 @@ export class BaseAdmTableMySQLDML {
       ? transactionContext.connection
       : this.db.pool;
 
-    if (admLevel === AdmLevelCode.PROVINCE) {
+    if (this.#admLevel === AdmLevelCode.PROVINCE) {
       throw new Error(`There is no parent for province`);
     }
     if (parentsIds.length === 0) return [];
 
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const parentIdColumn = `${ADM_LEVEL_TITLE_BY_CODE.get(
-      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! - 1],
+      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! - 1],
     )!}_id`;
 
     const columns = ["t.*"];
@@ -333,7 +330,7 @@ export class BaseAdmTableMySQLDML {
     ];
 
     return res.map<AdmEntity>((r) => {
-      switch (admLevel) {
+      switch (this.#admLevel) {
         case AdmLevelCode.REGION:
           return mapRegionSnakeToCamel(r as RegionSnakeCased);
         case AdmLevelCode.DISTRICT:
@@ -344,7 +341,7 @@ export class BaseAdmTableMySQLDML {
           return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
         default:
           throw new Error(
-            `Unknown ADM level when getting ${admLevelTitle}: ${admLevel} by parents ids`,
+            `Unknown ADM level when getting ${this.admLevelTitle}: ${this.#admLevel} by parents ids`,
           );
       }
     });
@@ -353,7 +350,6 @@ export class BaseAdmTableMySQLDML {
   /**
    * Updates a specific field of multiple administrative entities by their IDs.
    *
-   * @param admLevel - The administrative level of the entities.
    * @param ids - An array of entity IDs.
    * @param column - The name of the field to update.
    * @param value - The new value for the field.
@@ -361,7 +357,6 @@ export class BaseAdmTableMySQLDML {
    * @returns An object containing the number of affected rows.
    */
   protected async _updateFieldByIds(
-    admLevel: AdmLevelCode,
     ids: EntityId[],
     column: string,
     value: string,
@@ -371,8 +366,8 @@ export class BaseAdmTableMySQLDML {
       ? transactionContext.connection
       : this.db.pool;
 
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    if (ids.length === 0) return { affectedRows: 0 };
+    const tableName = this.tableName;
 
     const sql = `
 			UPDATE ${tableName}

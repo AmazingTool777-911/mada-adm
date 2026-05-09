@@ -23,7 +23,7 @@ export class ProvincesMySQLDML extends BaseAdmTableMySQLDML
     config: MadaAdmConfigValues,
     db: MySQLDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.PROVINCE);
   }
 
   async getManyByNames(
@@ -31,7 +31,6 @@ export class ProvincesMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<Province[]> {
     return (await this._getManyByAttributes(
-      AdmLevelCode.PROVINCE,
       names.map((n) => ({ province: n })),
       transactionContext,
     )) as Province[];
@@ -44,7 +43,6 @@ export class ProvincesMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateFieldByIds(
-      AdmLevelCode.PROVINCE,
       ids,
       "province",
       value,
@@ -53,11 +51,11 @@ export class ProvincesMySQLDML extends BaseAdmTableMySQLDML
   }
 
   async createMany(values: ProvinceRecord[]): Promise<DMLCreateManyResult> {
-    return await this._createMany(AdmLevelCode.PROVINCE, values);
+    return await this._createMany(values);
   }
 
   async deleteDuplicates(): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.PROVINCE);
+    await this._deleteDuplicates();
   }
 
   async updateGeojsonByName(
@@ -66,7 +64,6 @@ export class ProvincesMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.PROVINCE,
       { province: name },
       geojson,
       transactionContext,

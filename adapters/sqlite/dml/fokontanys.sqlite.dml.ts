@@ -24,7 +24,7 @@ export class FokontanysSqliteDML extends BaseAdmTableSqliteDML
     config: MadaAdmConfigValues,
     db: SqliteDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.FOKONTANY);
   }
 
   getManyByAttributes(
@@ -32,7 +32,6 @@ export class FokontanysSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): Fokontany[] {
     return this._getManyByAttributes(
-      AdmLevelCode.FOKONTANY,
       attributes,
       transactionContext,
     ) as Fokontany[];
@@ -43,7 +42,6 @@ export class FokontanysSqliteDML extends BaseAdmTableSqliteDML
     _transactionContext?: DbTransactionContext,
   ): Fokontany[] {
     return this._getManyByParentsIds(
-      AdmLevelCode.FOKONTANY,
       communeIds,
     ) as Fokontany[];
   }
@@ -60,21 +58,15 @@ export class FokontanysSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return this._updateFieldByIds(
-      AdmLevelCode.FOKONTANY,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   createMany(values: FokontanyRecord[]): DMLCreateManyResult {
-    return this._createMany(AdmLevelCode.FOKONTANY, values);
+    return this._createMany(values);
   }
 
   deleteDuplicates(): void {
-    this._deleteDuplicates(AdmLevelCode.FOKONTANY);
+    this._deleteDuplicates();
   }
 
   updateGeojsonByAttributes(
@@ -83,7 +75,6 @@ export class FokontanysSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     return this._updateGeojsonByIdentifiers(
-      AdmLevelCode.FOKONTANY,
       attributes,
       geojson,
       transactionContext,

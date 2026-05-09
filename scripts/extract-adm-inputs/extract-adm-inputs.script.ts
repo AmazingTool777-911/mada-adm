@@ -280,7 +280,12 @@ try {
 
   // Ensure PostGIS extension is enabled for spatial data support
   console.log("🛰️  Enabling PostGIS extension...");
-  await pg.client.queryObject("CREATE EXTENSION IF NOT EXISTS postgis;");
+  const client = await pg.pool.connect();
+  try {
+    await client.queryObject("CREATE EXTENSION IF NOT EXISTS postgis;");
+  } finally {
+    client.release();
+  }
 
   let mediator: QueueWorkersMediator<
     ExtractAdmInputJobContext,

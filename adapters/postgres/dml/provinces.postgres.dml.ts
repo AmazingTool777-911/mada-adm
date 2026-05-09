@@ -25,9 +25,9 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
   constructor(
     config: MadaAdmConfigValues,
     db: PostgresDbConnection,
-    schema: string = "public",
+    schema?: string,
   ) {
-    super(config, db, schema);
+    super(config, db, AdmLevelCode.PROVINCE, schema);
   }
 
   /**
@@ -74,13 +74,7 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.PROVINCE,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   /**
@@ -93,11 +87,7 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
     values: ProvinceRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
-    return await this._createMany(
-      AdmLevelCode.PROVINCE,
-      values,
-      transactionContext,
-    );
+    return await this._createMany(values, transactionContext);
   }
 
   /**
@@ -106,7 +96,7 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
   async deleteDuplicates(
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.PROVINCE, transactionContext);
+    await this._deleteDuplicates(transactionContext);
   }
 
   /**
@@ -123,7 +113,6 @@ export class ProvincesPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.PROVINCE,
       { province: name },
       geojson,
       transactionContext,

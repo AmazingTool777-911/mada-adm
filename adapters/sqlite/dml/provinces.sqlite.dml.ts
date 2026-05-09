@@ -23,7 +23,7 @@ export class ProvincesSqliteDML extends BaseAdmTableSqliteDML
     config: MadaAdmConfigValues,
     db: SqliteDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.PROVINCE);
   }
 
   getManyByNames(
@@ -31,7 +31,6 @@ export class ProvincesSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): Province[] {
     return this._getManyByAttributes(
-      AdmLevelCode.PROVINCE,
       names.map((n) => ({ province: n })),
       transactionContext,
     ) as Province[];
@@ -44,7 +43,6 @@ export class ProvincesSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     return this._updateFieldByIds(
-      AdmLevelCode.PROVINCE,
       ids,
       "province",
       value,
@@ -53,11 +51,11 @@ export class ProvincesSqliteDML extends BaseAdmTableSqliteDML
   }
 
   createMany(values: ProvinceRecord[]): DMLCreateManyResult {
-    return this._createMany(AdmLevelCode.PROVINCE, values);
+    return this._createMany(values);
   }
 
   deleteDuplicates(): void {
-    this._deleteDuplicates(AdmLevelCode.PROVINCE);
+    this._deleteDuplicates();
   }
 
   updateGeojsonByName(
@@ -66,7 +64,6 @@ export class ProvincesSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     return this._updateGeojsonByIdentifiers(
-      AdmLevelCode.PROVINCE,
       { province: name },
       geojson,
       transactionContext,

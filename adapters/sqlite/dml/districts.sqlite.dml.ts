@@ -24,7 +24,7 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     config: MadaAdmConfigValues,
     db: SqliteDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.DISTRICT);
   }
 
   getManyByAttributes(
@@ -32,7 +32,6 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): District[] {
     return this._getManyByAttributes(
-      AdmLevelCode.DISTRICT,
       attributes,
       transactionContext,
     ) as District[];
@@ -43,7 +42,6 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     _transactionContext?: DbTransactionContext,
   ): District[] {
     return this._getManyByParentsIds(
-      AdmLevelCode.DISTRICT,
       regionIds,
     ) as District[];
   }
@@ -58,21 +56,15 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return this._updateFieldByIds(
-      AdmLevelCode.DISTRICT,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   createMany(values: DistrictRecord[]): DMLCreateManyResult {
-    return this._createMany(AdmLevelCode.DISTRICT, values);
+    return this._createMany(values);
   }
 
   deleteDuplicates(): void {
-    this._deleteDuplicates(AdmLevelCode.DISTRICT);
+    this._deleteDuplicates();
   }
 
   updateGeojsonByAttributes(
@@ -81,7 +73,6 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     return this._updateGeojsonByIdentifiers(
-      AdmLevelCode.DISTRICT,
       attributes,
       geojson,
       transactionContext,

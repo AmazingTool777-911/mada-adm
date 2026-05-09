@@ -128,7 +128,7 @@ executor.run({
         const parentRegionsByDistrictResult = await getParentRegionsOfDistricts(
           inputs,
           _context.config,
-          pg.client,
+          pg.pool,
         );
         return parentRegionsByDistrictResult.map<DistrictRecord>(
           ([districtEncoded, region]) => {
@@ -151,7 +151,7 @@ executor.run({
           await getParentDistrictsOfCommunes(
             inputs,
             _context.config,
-            pg.client,
+            pg.pool,
           );
         return parentDistrictsByCommuneResult.map<CommuneRecord>(
           ([communeEncoded, district]) => {
@@ -176,7 +176,7 @@ executor.run({
           await getParentCommunesOfFokontanys(
             inputs,
             _context.config,
-            pg.client,
+            pg.pool,
           );
         return parentCommunesByFokontanyResult.map<FokontanyRecord>(
           ([fokontanyEncoded, commune]) => {

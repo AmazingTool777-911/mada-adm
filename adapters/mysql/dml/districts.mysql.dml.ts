@@ -24,7 +24,7 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     config: MadaAdmConfigValues,
     db: MySQLDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.DISTRICT);
   }
 
   async getManyByAttributes(
@@ -32,7 +32,6 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
     return (await this._getManyByAttributes(
-      AdmLevelCode.DISTRICT,
       attributes,
       transactionContext,
     )) as District[];
@@ -43,7 +42,6 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
     return (await this._getManyByParentsIds(
-      AdmLevelCode.DISTRICT,
       regionIds,
       transactionContext,
     )) as District[];
@@ -59,21 +57,20 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.DISTRICT,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
-  async createMany(values: DistrictRecord[]): Promise<DMLCreateManyResult> {
-    return await this._createMany(AdmLevelCode.DISTRICT, values);
+  async createMany(
+    values: DistrictRecord[],
+    transactionContext?: DbTransactionContext,
+  ): Promise<DMLCreateManyResult> {
+    return await this._createMany(values, transactionContext);
   }
 
-  async deleteDuplicates(): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.DISTRICT);
+  async deleteDuplicates(
+    transactionContext?: DbTransactionContext,
+  ): Promise<void> {
+    await this._deleteDuplicates(transactionContext);
   }
 
   async updateGeojsonByAttributes(
@@ -82,7 +79,6 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.DISTRICT,
       attributes,
       geojson,
       transactionContext,

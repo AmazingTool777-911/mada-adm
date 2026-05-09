@@ -273,7 +273,7 @@ export abstract class BaseAdmPostgresTableDML {
     }
 
     const sql = `
-      WITH CTE AS (
+      WITH ranked AS (
         SELECT id, 
           ROW_NUMBER() OVER (
             PARTITION BY ${partitionKeys.join(", ")}
@@ -283,7 +283,7 @@ export abstract class BaseAdmPostgresTableDML {
       )
       DELETE FROM ${tableName}
       WHERE id IN (
-        SELECT id FROM CTE WHERE row_num > 1
+        SELECT id FROM ranked WHERE row_num > 1
       );
     `;
     const isTx = DbHelper.ensureIsPostgresDbTransactionCtx(transactionContext);

@@ -268,6 +268,8 @@ export type AdmRecord =
   | CommuneRecord
   | FokontanyRecord;
 
+export type AdmEntityFks = RegionFks | DistrictFks | CommuneFks | FokontanyFks;
+
 export type AdmValuesDiscriminated =
   | {
     admLevelCode: AdmLevelCode.PROVINCE;
@@ -296,6 +298,20 @@ export type AdmEntityBSON =
   | DistrictBSON
   | CommuneBSON
   | FokontanyBSON;
+
+export type AdmRecordBSON =
+  | ProvinceBSONRecord
+  | RegionBSONRecord
+  | DistrictBSONRecord
+  | CommuneBSONRecord
+  | FokontanyBSONRecord;
+
+export type AdmRecordBSONWithTimestamps =
+  | ProvinceBSONRecordWithTimestamps
+  | RegionBSONRecordWithTimestamps
+  | DistrictBSONRecordWithTimestamps
+  | CommuneBSONRecordWithTimestamps
+  | FokontanyBSONRecordWithTimestamps;
 
 /**
  * Attributes used to uniquely identify a province.

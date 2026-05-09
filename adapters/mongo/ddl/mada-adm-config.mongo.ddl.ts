@@ -45,18 +45,13 @@ export class MadaAdmConfigMongoDDL implements TableDDL {
     });
   }
 
-  async drop(transactionContext?: DbTransactionContext): Promise<void> {
-    await this.#dbConnection.db.dropCollection(this.tableName, {
-      session: this.extractSession(transactionContext),
-    });
+  async drop(_transactionContext?: DbTransactionContext): Promise<void> {
+    await this.#dbConnection.db.dropCollection(this.tableName);
   }
 
-  exists(transactionContext?: DbTransactionContext): Promise<boolean> {
+  exists(_transactionContext?: DbTransactionContext): Promise<boolean> {
     const collections = this.#dbConnection.db.listCollections(
       { name: this.tableName },
-      {
-        session: this.extractSession(transactionContext),
-      },
     );
     return collections.hasNext();
   }
@@ -70,7 +65,9 @@ export class MadaAdmConfigMongoDDL implements TableDDL {
 
 let _instance: MadaAdmConfigMongoDDL;
 
-export function injectMadaAdmConfigMongoDDL(dbConnection: MongoDbConnection) {
+export function injectMadaAdmConfigMongoDDL(
+  dbConnection: MongoDbConnection,
+): MadaAdmConfigMongoDDL {
   if (_instance) return _instance;
   _instance = new MadaAdmConfigMongoDDL(dbConnection);
   return _instance;

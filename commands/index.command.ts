@@ -967,11 +967,22 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
                 regionsDDL,
                 provincesDDL,
               ];
+              console.log(
+                colors.red(
+                  `\n🗑️  Dropping all tables for the previous configuration...`,
+                ),
+              );
               await this.#db.transaction(async (transactionContext) => {
                 for (const admTableDDL of admTablesDDLs) {
+                  console.log(`Dropping table ${admTableDDL.tableName} ...`);
                   await admTableDDL.drop(transactionContext);
                 }
               }, DDL_TRANSACTION_OPTIONS);
+              console.log(
+                colors.green.bold(
+                  `✅  All tables for the previous configuration dropped successfully.`,
+                ),
+              );
             }
           }
           resetProvincesDDL(args.dbType);

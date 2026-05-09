@@ -582,9 +582,15 @@ export function mapFokontanyBsonToEntity(bson: FokontanyBSON): Fokontany {
  */
 export function mapAdmEntityBsonToEntity(bson: AdmEntityBSON): AdmEntity {
   const record = bson as unknown as AdmRecord;
-  if (isFokontanyValues(record)) return mapFokontanyBsonToEntity(bson as FokontanyBSON);
-  if (isCommuneValues(record)) return mapCommuneBsonToEntity(bson as CommuneBSON);
-  if (isDistrictValues(record)) return mapDistrictBsonToEntity(bson as DistrictBSON);
+  if (isFokontanyValues(record)) {
+    return mapFokontanyBsonToEntity(bson as FokontanyBSON);
+  }
+  if (isCommuneValues(record)) {
+    return mapCommuneBsonToEntity(bson as CommuneBSON);
+  }
+  if (isDistrictValues(record)) {
+    return mapDistrictBsonToEntity(bson as DistrictBSON);
+  }
   if (isRegionValues(record)) return mapRegionBsonToEntity(bson as RegionBSON);
   return mapProvinceBsonToEntity(bson as ProvinceBSON);
 }

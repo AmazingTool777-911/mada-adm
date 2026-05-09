@@ -98,11 +98,8 @@ export class ProvincesMongoDDL extends BaseAdmTableDDL {
    *
    * @returns A promise that resolves when the collection drop is complete.
    */
-  async drop(transactionContext?: DbTransactionContext): Promise<void> {
-    const session = this.extractSession(transactionContext);
-    if (await this.exists(transactionContext)) {
-      await this.db.db.dropCollection(this.tableName, { session });
-    }
+  async drop(_transactionContext?: DbTransactionContext): Promise<void> {
+    await this.db.db.dropCollection(this.tableName);
   }
 
   /**
@@ -110,10 +107,9 @@ export class ProvincesMongoDDL extends BaseAdmTableDDL {
    *
    * @returns A promise that resolves to true if the collection exists, false otherwise.
    */
-  async exists(transactionContext?: DbTransactionContext): Promise<boolean> {
+  async exists(_transactionContext?: DbTransactionContext): Promise<boolean> {
     const collections = await this.db.db.listCollections(
       { name: this.tableName },
-      { session: this.extractSession(transactionContext) },
     ).toArray();
     return collections.length > 0;
   }

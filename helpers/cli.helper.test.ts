@@ -236,7 +236,11 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
   );
   await t.step("MongoDB options and env-var shadow keys", () => {
     const result = resolveGlobalCliConfig({
-      mongo: { uri: "mongodb://flag-host:27017", poolSize: 20, database: "test_db" },
+      mongo: {
+        uri: "mongodb://flag-host:27017",
+        poolSize: 20,
+        database: "test_db",
+      },
       mongoTls: true,
       mongoTlsCaPath: "/path/to/ca.pem",
       mongoTlsAllowInvalidCertificates: true,

@@ -1,3 +1,5 @@
 [] `Initializing Administrative Data pipeline` log in global action []
-mada-adm-config table name to plural [] import remote modules first before local modules
-in ts files [] Collation remarks in README [] Change MySQL collation to utf8mb4_0900_as_ci and store it as a constant [] Replica set required for MongoDB in README
+mada-adm-config table name to plural [] import remote modules first before local
+modules in ts files [] Collation remarks in README [] Change MySQL collation to
+utf8mb4_0900_as_ci and store it as a constant [] Replica set required for
+MongoDB in README

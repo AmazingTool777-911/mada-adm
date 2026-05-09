@@ -339,6 +339,11 @@ export interface ProvinceTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple province records.
+   *
+   * @param values - The province records to create.
+   */
   createMany(values: ProvinceRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
@@ -393,6 +398,11 @@ export interface RegionTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple region records.
+   *
+   * @param values - The region records to create.
+   */
   createMany(values: RegionRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
@@ -508,6 +518,11 @@ export interface CommuneTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple commune records.
+   *
+   * @param values - The commune records to create.
+   */
   createMany(values: CommuneRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
@@ -567,6 +582,11 @@ export interface FokontanyTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple fokontany records.
+   *
+   * @param values - The fokontany records to create.
+   */
   createMany(values: FokontanyRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**

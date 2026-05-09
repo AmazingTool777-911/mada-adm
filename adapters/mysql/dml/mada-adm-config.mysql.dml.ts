@@ -1,4 +1,4 @@
-import { MADA_ADM_CONFIG_TABLE_NAME_SNAKE } from "@scope/consts/models";
+import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
 import type { MadaAdmConfigDML } from "@scope/types/db";
 import type {
   MadaAdmConfig,
@@ -32,7 +32,8 @@ export class MadaAdmConfigMySQLDML implements MadaAdmConfigDML {
    * Retrieves the first MadaAdmConfig record from the database.
    */
   async get(): Promise<MadaAdmConfig | null> {
-    const query = `SELECT * FROM ${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} LIMIT 1;`;
+    const query =
+      `SELECT * FROM ${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} LIMIT 1;`;
     const [rows] = (await this.db.pool.query(query)) as unknown as [
       MadaAdmConfigSnakeCased[],
       unknown,
@@ -56,7 +57,7 @@ export class MadaAdmConfigMySQLDML implements MadaAdmConfigDML {
       }
       const connection = transactionContext.connection;
       const checkQuery =
-        `SELECT id FROM ${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} LIMIT 1;`;
+        `SELECT id FROM ${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} LIMIT 1;`;
       const [rows] = (await connection.query(checkQuery)) as unknown as [
         { id: number }[],
         unknown,
@@ -65,7 +66,7 @@ export class MadaAdmConfigMySQLDML implements MadaAdmConfigDML {
 
       if (existingRow) {
         const updateQuery = `
-          UPDATE ${MADA_ADM_CONFIG_TABLE_NAME_SNAKE}
+          UPDATE ${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED}
           SET
             tables_prefix = ?,
             is_fk_repeated = ?,
@@ -86,14 +87,14 @@ export class MadaAdmConfigMySQLDML implements MadaAdmConfigDML {
         ]);
 
         const selectQuery =
-          `SELECT * FROM ${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} WHERE id = ?;`;
+          `SELECT * FROM ${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} WHERE id = ?;`;
         const [updatedRows] = (await connection.query(selectQuery, [
           existingRow.id,
         ])) as unknown as [MadaAdmConfigSnakeCased[], unknown];
         return this._mapRowToConfig(updatedRows[0]);
       } else {
         const insertQuery = `
-          INSERT INTO ${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} (
+          INSERT INTO ${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} (
             tables_prefix,
             is_fk_repeated,
             is_province_repeated,
@@ -113,7 +114,7 @@ export class MadaAdmConfigMySQLDML implements MadaAdmConfigDML {
         ])) as unknown as [{ insertId: number }, unknown];
 
         const selectQuery =
-          `SELECT * FROM ${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} WHERE id = ?;`;
+          `SELECT * FROM ${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} WHERE id = ?;`;
         const [insertedRows] = (await connection.query(selectQuery, [
           result.insertId,
         ])) as unknown as [MadaAdmConfigSnakeCased[], unknown];

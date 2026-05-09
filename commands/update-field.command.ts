@@ -355,7 +355,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
       const config = await madaAdmConfigDML.get();
       if (!config) {
         console.error(
-          `\n${
+          `${
             colors.red("❌ Error:")
           } ${"Mada ADM configuration not found. Run index command first."}`,
         );
@@ -697,7 +697,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
         geojson = JSON.parse(value);
       } catch (_error) {
         console.error(
-          `\n${colors.red("❌ Error:")} Provided value is not a valid JSON.`,
+          `${colors.red("❌ Error:")} Provided value is not a valid JSON.`,
         );
         Deno.exit(1);
       }
@@ -707,7 +707,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
         !["Polygon", "MultiPolygon"].includes(geojson.type)
       ) {
         console.error(
-          `\n${
+          `${
             colors.red("❌ Error:")
           } Provided value is not a valid geojson geometry value.`,
         );
@@ -724,7 +724,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
       const config = await madaAdmConfigDML.get();
       if (!config) {
         console.error(
-          `\n${
+          `${
             colors.red("❌ Error:")
           } Mada ADM configuration not found. Run index command first.`,
         );

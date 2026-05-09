@@ -1,4 +1,4 @@
-import { MADA_ADM_CONFIG_TABLE_NAME_SNAKE } from "@scope/consts/models";
+import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
 import type { DbTransactionContext, TableDDL } from "@scope/types/db";
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
@@ -9,7 +9,7 @@ import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
  */
 export class MadaAdmConfigMySQLDDL implements TableDDL {
   /** The physical database table name. */
-  static readonly TABLE_NAME = MADA_ADM_CONFIG_TABLE_NAME_SNAKE;
+  static readonly TABLE_NAME = MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED;
 
   /**
    * Initializes a new instance of MadaAdmConfigMySQLDDL.

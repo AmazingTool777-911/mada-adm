@@ -43,7 +43,13 @@ export const DEFAULT_PG_SCHEMA: string = "public";
 export const DEFAULT_DB_TYPE: DbType = DbType.SQLite;
 
 /**
- * Camel-cased name of the `MadaAdmConfig` collection.
+ * The physical table name of MadaAdmConfig.
+ */
+export const MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED: string =
+  "mada_adm_configs";
+
+/**
+ * The physical table name (or collection name in MongoDB) of MadaAdmConfig.
  */
 export const MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED: string = "madaAdmConfigs";
 

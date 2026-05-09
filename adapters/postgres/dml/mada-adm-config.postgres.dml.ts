@@ -1,4 +1,4 @@
-import { MADA_ADM_CONFIG_TABLE_NAME_SNAKE } from "@scope/consts/models";
+import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
 import type { MadaAdmConfigDML } from "@scope/types/db";
 import type {
   MadaAdmConfig,
@@ -37,7 +37,7 @@ export class MadaAdmConfigPostgresDML implements MadaAdmConfigDML {
    */
   async get(): Promise<MadaAdmConfig | null> {
     const query =
-      `SELECT * FROM ${this.schema}.${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} LIMIT 1;`;
+      `SELECT * FROM ${this.schema}.${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} LIMIT 1;`;
     const client = await this.db.pool.connect();
     try {
       const result = await client.queryObject<MadaAdmConfigSnakeCased>(query);
@@ -59,13 +59,13 @@ export class MadaAdmConfigPostgresDML implements MadaAdmConfigDML {
       }
       const tx = transactionContext.tx;
       const checkQuery =
-        `SELECT id FROM ${this.schema}.${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} LIMIT 1;`;
+        `SELECT id FROM ${this.schema}.${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} LIMIT 1;`;
       const checkResult = await tx.queryObject<{ id: number }>(checkQuery);
       const existingRow = checkResult.rows[0];
 
       if (existingRow) {
         const updateQuery = `
-          UPDATE ${this.schema}.${MADA_ADM_CONFIG_TABLE_NAME_SNAKE}
+          UPDATE ${this.schema}.${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED}
           SET
             tables_prefix = $1,
             is_fk_repeated = $2,
@@ -92,7 +92,7 @@ export class MadaAdmConfigPostgresDML implements MadaAdmConfigDML {
         return this._mapRowToConfig(result.rows[0]);
       } else {
         const insertQuery = `
-          INSERT INTO ${this.schema}.${MADA_ADM_CONFIG_TABLE_NAME_SNAKE} (
+          INSERT INTO ${this.schema}.${MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED} (
             tables_prefix,
             is_fk_repeated,
             is_province_repeated,

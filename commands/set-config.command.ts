@@ -107,7 +107,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
       } else {
         console.log(
           colors.yellow(
-            `\nℹ️  No existing Mada ADM configuration found in the database.`,
+            `ℹ️  No existing Mada ADM configuration found in the database.`,
           ),
         );
       }
@@ -121,7 +121,9 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
         );
       console.log(configPromptTitle);
 
-      const result = await promptMadaAdmConfig(prevAdmConfigValues ?? undefined);
+      const result = await promptMadaAdmConfig(
+        prevAdmConfigValues ?? undefined,
+      );
 
       const rawTablesPrefix = (result.tablesPrefix as string) ?? "";
       const tablesPrefix = rawTablesPrefix.trim() || null;
@@ -224,6 +226,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
                     provincesDDL,
                   ]
                 ) {
+                  console.log(`   Dropping the ${ddl.tableName} table ...`);
                   await ddl.drop(txCtx);
                 }
               },

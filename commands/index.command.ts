@@ -843,7 +843,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         );
       } else {
         console.log(
-          colors.yellow(`\nℹ️  Redis disabled. Using in-memory mediator.`),
+          colors.yellow(`ℹ️  Redis disabled. Using in-memory mediator.`),
         );
 
         mediator = injectInMemoryQueueWorkersMediator<
@@ -1133,7 +1133,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           await this.#db.transaction(async (transactionContext) => {
             console.log(colors.red("\nDeleting all Mada ADM tables..."));
             for (const ddl of ddls.toReversed()) {
-              console.log(`Deleting table ${ddl.tableName}...`);
+              console.log(`   Dropping the table ${ddl.tableName}...`);
               await ddl.drop(transactionContext);
             }
             console.log(

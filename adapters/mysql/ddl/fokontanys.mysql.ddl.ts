@@ -4,6 +4,7 @@ import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { DbTransactionContext } from "@scope/types/db";
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
+import { MYSQL_TEXT_COLUMN_COLLATION } from "@scope/consts/db";
 
 /**
  * Concrete implementation of the DDL abstract class for the fokontanys table
@@ -78,7 +79,7 @@ export class FokontanysMySQLDDL extends BaseAdmTableDDL {
         INDEX idx_${this.tableName}_commune_id_main (commune_id),
         CONSTRAINT fk_${this.tableName}_commune_main FOREIGN KEY (commune_id) REFERENCES ${communesTable}(id) ON DELETE CASCADE
         ${optionalFk ? optionalFk : ""}
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=${MYSQL_TEXT_COLUMN_COLLATION};
     `;
     const client = ensureIsMySQLDbTransactionCtx(transactionContext)
       ? transactionContext.connection

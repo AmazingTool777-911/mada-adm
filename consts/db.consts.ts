@@ -48,6 +48,11 @@ export const DEFAULT_DB_TYPE: DbType = DbType.SQLite;
 export const MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED: string = "madaAdmConfigs";
 
 /**
+ * MySQL collation for text columns.
+ */
+export const MYSQL_TEXT_COLUMN_COLLATION: string = "utf8mb4_0900_as_ci";
+
+/**
  * Standard collation settings used for text fields and indices in MongoDB collections
  * for the ADM tables to support French language features like accents and case insensitivity.
  */

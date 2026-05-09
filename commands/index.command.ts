@@ -1423,7 +1423,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
             },
           });
 
-          console.log(`\n🧹 Deleting duplicates for ${levelTitle}...\n`);
+          console.log(`\n🧹 Deleting duplicates for ${levelTitle}...`);
           const dmlArgs = [activeAdmConfigValues, args.dbType, this.#db, {
             pgSchema: args.pgSchema,
           }] as const;
@@ -1439,7 +1439,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
 
           await tableDML.deleteDuplicates();
           console.log(
-            colors.green(`✅ Duplicates removed for ${levelTitle}.\n`),
+            colors.green(`✅ Duplicates removed for ${levelTitle}.`),
           );
 
           // Cleanup for this level
@@ -1454,7 +1454,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
 
         console.log(
           colors.green(
-            "🏁 Mada ADM data seeding process completed successfully.",
+            "\n🏁 Mada ADM data seeding process completed successfully.",
           ),
         );
       } catch (error) {
@@ -1468,7 +1468,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         );
       }
     } catch (error) {
-      console.error(`❌ Fatal Error: ${(error as Error).message}`);
+      console.error(`\n❌ Fatal Error: ${(error as Error).message}`);
     } finally {
       if (redis) {
         console.log("\n🔌 Closing Redis connection...\n");

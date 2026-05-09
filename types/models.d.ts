@@ -299,13 +299,6 @@ export type AdmEntityBSON =
   | CommuneBSON
   | FokontanyBSON;
 
-export type AdmRecordBSON =
-  | ProvinceBSONRecord
-  | RegionBSONRecord
-  | DistrictBSONRecord
-  | CommuneBSONRecord
-  | FokontanyBSONRecord;
-
 export type AdmRecordBSONWithTimestamps =
   | ProvinceBSONRecordWithTimestamps
   | RegionBSONRecordWithTimestamps

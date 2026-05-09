@@ -27,6 +27,7 @@ import {
   resetRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
 
 /**
  * CLI sub-command that interactively sets or updates the Mada ADM configuration
@@ -250,19 +251,22 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
                 `\n🗑️  Dropping ADM tables built with the previous configuration...`,
               ),
             );
-            await db.transaction(async (txCtx) => {
-              for (
-                const ddl of [
-                  fokontanysDDL,
-                  communesDDL,
-                  districtsDDL,
-                  regionsDDL,
-                  provincesDDL,
-                ]
-              ) {
-                await ddl.drop(txCtx);
-              }
-            });
+            await db.transaction(
+              async (txCtx) => {
+                for (
+                  const ddl of [
+                    fokontanysDDL,
+                    communesDDL,
+                    districtsDDL,
+                    regionsDDL,
+                    provincesDDL,
+                  ]
+                ) {
+                  await ddl.drop(txCtx);
+                }
+              },
+              DDL_TRANSACTION_OPTIONS,
+            );
             console.log(
               colors.green(`✅ Old ADM tables dropped successfully.`),
             );

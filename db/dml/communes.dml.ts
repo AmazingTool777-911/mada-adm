@@ -17,6 +17,12 @@ import {
   type MySQLDbConnection,
 } from "@scope/adapters/mysql";
 
+import {
+  injectCommunesMongoDML,
+  type MongoDbConnection,
+} from "@scope/adapters/mongo";
+import type { MadaAdmConfig } from "@scope/types/models";
+
 /**
  * Injects (or creates) an instance of the communes table DML adapter based on the database type.
  *
@@ -49,6 +55,11 @@ export function injectCommunesDML(
       return injectCommunesMySQLDML(
         config,
         db as MySQLDbConnection,
+      );
+    case DbType.MongoDB:
+      return injectCommunesMongoDML(
+        config as MadaAdmConfig,
+        db as MongoDbConnection,
       );
     default:
       throw new Error(

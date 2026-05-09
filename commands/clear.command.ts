@@ -21,6 +21,7 @@ import {
   injectRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
 
 /**
  * CLI sub-command that drops all ADM tables and the configuration table from
@@ -160,19 +161,22 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
         console.log(
           colors.yellow(`\n🗑️  Dropping ADM tables...`),
         );
-        await db.transaction(async (txCtx) => {
-          for (
-            const ddl of [
-              fokontanysDDL,
-              communesDDL,
-              districtsDDL,
-              regionsDDL,
-              provincesDDL,
-            ]
-          ) {
-            await ddl.drop(txCtx);
-          }
-        });
+        await db.transaction(
+          async (txCtx) => {
+            for (
+              const ddl of [
+                fokontanysDDL,
+                communesDDL,
+                districtsDDL,
+                regionsDDL,
+                provincesDDL,
+              ]
+            ) {
+              await ddl.drop(txCtx);
+            }
+          },
+          DDL_TRANSACTION_OPTIONS,
+        );
         console.log(colors.green(`✅ ADM tables dropped successfully.`));
       } else {
         console.log(
@@ -196,12 +200,12 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
         await madaAdmConfigDDL.drop();
         console.log(
           colors.bold.green(
-            `\n✅ Mada ADM configuration table dropped successfully.`,
+            `✅ Mada ADM configuration table dropped successfully.`,
           ),
         );
       } else {
         console.log(
-          colors.gray(`\nℹ️  Mada ADM configuration table kept.`),
+          colors.gray(`ℹ️  Mada ADM configuration table kept.`),
         );
       }
 

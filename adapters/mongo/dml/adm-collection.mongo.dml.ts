@@ -23,6 +23,11 @@ import type {
 import type {
   AdmEntityFks,
   AdmRecordBSONWithTimestamps,
+  CommuneBSONRecordWithTimestamps,
+  DistrictBSONRecordWithTimestamps,
+  FokontanyBSONRecordWithTimestamps,
+  ProvinceBSONRecordWithTimestamps,
+  RegionBSONRecordWithTimestamps,
 } from "@scope/types/models";
 import { ensureIsMongoDbTransactionCtx } from "@scope/helpers/db";
 import {
@@ -36,7 +41,7 @@ import {
 import type { GeoJSONGeometry } from "@scope/types/utils";
 import { ObjectId } from "mongodb";
 
-export class BaseAdmCollectionMongoDDL {
+export class BaseAdmCollectionMongoDML {
   #dbConnection!: MongoDbConnection;
 
   #config!: MadaAdmConfig;
@@ -165,76 +170,108 @@ export class BaseAdmCollectionMongoDDL {
     const bsonRecords = records.map<AdmRecordBSONWithTimestamps>((r) => {
       const now = new Date();
       if (isFokontanyValues(r)) {
-        const provinceId = r.provinceId && this.#config.isProvinceFkRepeated
-          ? new ObjectId(r.provinceId)
-          : undefined;
-        let districtId: ObjectId | undefined, regionId: ObjectId | undefined;
-        if (this.#config.isFkRepeated) {
-          districtId = r.districtId ? new ObjectId(r.districtId) : undefined;
-          regionId = r.regionId ? new ObjectId(r.regionId) : undefined;
-        }
-        return {
-          ...r,
+        const bsonRecord: FokontanyBSONRecordWithTimestamps = {
+          fokontany: r.fokontany,
+          commune: r.commune,
+          district: r.district,
+          region: r.region,
           communeId: new ObjectId(r.communeId),
-          districtId,
-          regionId,
-          provinceId,
-          province: this.#config.isProvinceRepeated ? r.province : undefined,
-          admLevel: this.#config.hasAdmLevel ? r.admLevel : undefined,
-          geojson: this.#config.hasGeojson ? r.geojson : undefined,
           createdAt: now,
           updatedAt: now,
         };
-      } else if (isCommuneValues(r)) {
-        const provinceId = r.provinceId && this.#config.isProvinceFkRepeated
-          ? new ObjectId(r.provinceId)
-          : undefined;
-        let regionId: ObjectId | undefined;
-        if (this.#config.isFkRepeated) {
-          regionId = r.regionId ? new ObjectId(r.regionId) : undefined;
+        if (this.#config.isProvinceRepeated && r.province) {
+          bsonRecord.province = r.province;
         }
-        return {
-          ...r,
+        if (this.#config.isFkRepeated && r.districtId) {
+          bsonRecord.districtId = new ObjectId(r.districtId);
+        }
+        if (this.#config.isFkRepeated && r.regionId) {
+          bsonRecord.regionId = new ObjectId(r.regionId);
+        }
+        if (this.#config.isProvinceFkRepeated && r.provinceId) {
+          bsonRecord.provinceId = new ObjectId(r.provinceId);
+        }
+        if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
+          bsonRecord.admLevel = r.admLevel;
+        }
+        if (this.#config.hasGeojson && r.geojson !== undefined) {
+          bsonRecord.geojson = r.geojson;
+        }
+        return bsonRecord;
+      } else if (isCommuneValues(r)) {
+        const bsonRecord: CommuneBSONRecordWithTimestamps = {
+          commune: r.commune,
+          district: r.district,
+          region: r.region,
           districtId: new ObjectId(r.districtId),
-          regionId,
-          provinceId,
-          province: this.#config.isProvinceRepeated ? r.province : undefined,
-          admLevel: this.#config.hasAdmLevel ? r.admLevel : undefined,
-          geojson: this.#config.hasGeojson ? r.geojson : undefined,
           createdAt: now,
           updatedAt: now,
         };
+        if (this.#config.isProvinceRepeated && r.province) {
+          bsonRecord.province = r.province;
+        }
+        if (this.#config.isFkRepeated && r.regionId) {
+          bsonRecord.regionId = new ObjectId(r.regionId);
+        }
+        if (this.#config.isProvinceFkRepeated && r.provinceId) {
+          bsonRecord.provinceId = new ObjectId(r.provinceId);
+        }
+        if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
+          bsonRecord.admLevel = r.admLevel;
+        }
+        if (this.#config.hasGeojson && r.geojson !== undefined) {
+          bsonRecord.geojson = r.geojson;
+        }
+        return bsonRecord;
       } else if (isDistrictValues(r)) {
-        const provinceId = r.provinceId && this.#config.isProvinceFkRepeated
-          ? new ObjectId(r.provinceId)
-          : undefined;
-        return {
-          ...r,
+        const bsonRecord: DistrictBSONRecordWithTimestamps = {
+          district: r.district,
+          region: r.region,
           regionId: new ObjectId(r.regionId),
-          provinceId,
-          province: this.#config.isProvinceRepeated ? r.province : undefined,
-          admLevel: this.#config.hasAdmLevel ? r.admLevel : undefined,
-          geojson: this.#config.hasGeojson ? r.geojson : undefined,
           createdAt: now,
           updatedAt: now,
         };
+        if (this.#config.isProvinceRepeated && r.province) {
+          bsonRecord.province = r.province;
+        }
+        if (this.#config.isProvinceFkRepeated && r.provinceId) {
+          bsonRecord.provinceId = new ObjectId(r.provinceId);
+        }
+        if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
+          bsonRecord.admLevel = r.admLevel;
+        }
+        if (this.#config.hasGeojson && r.geojson !== undefined) {
+          bsonRecord.geojson = r.geojson;
+        }
+        return bsonRecord;
       } else if (isRegionValues(r)) {
-        return {
-          ...r,
+        const bsonRecord: RegionBSONRecordWithTimestamps = {
+          region: r.region,
+          province: r.province,
           provinceId: new ObjectId((r as RegionRecord).provinceId),
-          admLevel: this.#config.hasAdmLevel ? r.admLevel : undefined,
-          geojson: this.#config.hasGeojson ? r.geojson : undefined,
           createdAt: now,
           updatedAt: now,
         };
+        if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
+          bsonRecord.admLevel = r.admLevel;
+        }
+        if (this.#config.hasGeojson && r.geojson !== undefined) {
+          bsonRecord.geojson = r.geojson;
+        }
+        return bsonRecord;
       } else if (isProvinceValues(r)) {
-        return {
-          ...r,
-          admLevel: this.#config.hasAdmLevel ? r.admLevel : undefined,
-          geojson: this.#config.hasGeojson ? r.geojson : undefined,
+        const bsonRecord: ProvinceBSONRecordWithTimestamps = {
+          province: r.province,
           createdAt: now,
           updatedAt: now,
         };
+        if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
+          bsonRecord.admLevel = r.admLevel;
+        }
+        if (this.#config.hasGeojson && r.geojson !== undefined) {
+          bsonRecord.geojson = r.geojson;
+        }
+        return bsonRecord;
       }
       throw new Error("Invalid ADM record to insert");
     });
@@ -253,7 +290,7 @@ export class BaseAdmCollectionMongoDDL {
    * @param transactionContext - Optional database transaction context.
    * @returns An object containing the number of deleted duplicate rows.
    */
-  protected async _deleteDuplicates(transactionContext: DbTransactionContext) {
+  protected async _deleteDuplicates(transactionContext?: DbTransactionContext) {
     const session = ensureIsMongoDbTransactionCtx(transactionContext)
       ? transactionContext.session
       : undefined;

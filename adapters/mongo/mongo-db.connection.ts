@@ -107,7 +107,7 @@ export class MongoDbConnection implements DbConnection {
       },
 
       // Connection pool
-      maxPoolSize: config.poolSize ?? 10,
+      maxPoolSize: config.poolSize,
       connectTimeoutMS: 10000,
       socketTimeoutMS: 45000,
 

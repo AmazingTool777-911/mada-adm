@@ -321,9 +321,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
       console.error(error);
     } finally {
       await db.close();
-      console.log(
-        `\n${colors.green("✅ Database connection closed successfully")}`,
-      );
+      console.log(colors.gray("\n🔌 Database connection closed successfully"));
     }
   }
 }

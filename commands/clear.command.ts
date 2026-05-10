@@ -186,8 +186,6 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
         );
       }
 
-      console.log();
-
       // ── 4. Drop the config table ───────────────────────────────────────────
 
       const dropConfigTable = await Confirm.prompt({
@@ -216,9 +214,7 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
       );
     } finally {
       await db.close();
-      console.log(
-        `${colors.green("✅ Database connection closed successfully")}`,
-      );
+      console.log(colors.gray("🔌 Database connection closed successfully"));
     }
   }
 }

@@ -680,9 +680,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
       throw error;
     } finally {
       await db.close();
-      console.log(
-        `\n${colors.green("✅ Database connection closed successfully")}`,
-      );
+      console.log(colors.gray("🔌 Database connection closed successfully"));
     }
   }
 
@@ -837,9 +835,7 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
       throw error;
     } finally {
       await db.close();
-      console.log(
-        `\n${colors.green("✅ Database connection closed successfully")}`,
-      );
+      console.log(colors.gray("🔌 Database connection closed successfully"));
     }
   }
 }

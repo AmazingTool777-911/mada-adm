@@ -194,11 +194,11 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalOption("--pg.user <username:string>", PG_USER_DESCRIPTION)
       .globalOption(
         "--pg.password <password:string>",
-        PG_PASSWORD_DESCRIPTION
+        PG_PASSWORD_DESCRIPTION,
       )
       .globalOption(
         "--pg.database <database:string>",
-        PG_DATABASE_DESCRIPTION
+        PG_DATABASE_DESCRIPTION,
       )
       .globalOption("--pg.ssl [ssl:boolean]", PG_SSL_DESCRIPTION)
       .globalOption(
@@ -214,7 +214,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       )
       .globalOption(
         "--pg.connection-limit <limit:number>",
-        PG_CONNECTION_LIMIT_DESCRIPTION
+        PG_CONNECTION_LIMIT_DESCRIPTION,
       )
       .group("MySQL configuration")
       .globalOption("--mysql.url <url:string>", MYSQL_URL_DESCRIPTION)
@@ -223,33 +223,33 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalOption("--mysql.user <username:string>", MYSQL_USER_DESCRIPTION)
       .globalOption(
         "--mysql.password <password:string>",
-        MYSQL_PASSWORD_DESCRIPTION
+        MYSQL_PASSWORD_DESCRIPTION,
       )
       .globalOption(
         "--mysql.database <database:string>",
-        MYSQL_DATABASE_DESCRIPTION
+        MYSQL_DATABASE_DESCRIPTION,
       )
       .globalOption("--mysql.ssl [ssl:boolean]", MYSQL_SSL_DESCRIPTION)
       .globalOption(
         "--mysql.ca-cert-file <filename:string>",
-        MYSQL_CA_CERT_FILE_DESCRIPTION
+        MYSQL_CA_CERT_FILE_DESCRIPTION,
       )
       .globalOption(
         "--mysql.ca-cert-path <path:string>",
         MYSQL_CA_CERT_PATH_DESCRIPTION,
         {
-          conflicts: ["--mysql.ca-cert-file"]
+          conflicts: ["--mysql.ca-cert-file"],
         },
       )
       .globalOption(
         "--mysql.cert-file <filename:string>",
-        MYSQL_CERT_FILE_DESCRIPTION
+        MYSQL_CERT_FILE_DESCRIPTION,
       )
       .globalOption(
         "--mysql.cert-path <path:string>",
         MYSQL_CERT_PATH_DESCRIPTION,
         {
-          conflicts: ["--mysql.cert-file"]
+          conflicts: ["--mysql.cert-file"],
         },
       )
       .globalOption(
@@ -292,37 +292,37 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalOption("--mongo.tls [tls:boolean]", MONGO_TLS_DESCRIPTION)
       .globalOption(
         "--mongo.tls-ca-file <filename:string>",
-        MONGO_TLS_CA_FILE_DESCRIPTION
+        MONGO_TLS_CA_FILE_DESCRIPTION,
       )
       .globalOption(
         "--mongo.tls-ca-path <path:string>",
         MONGO_TLS_CA_PATH_DESCRIPTION,
         {
-          conflicts: ["--mongo.tls-ca-file"]
+          conflicts: ["--mongo.tls-ca-file"],
         },
       )
       .globalOption(
         "--mongo.tls-certificate-key-file <filename:string>",
-        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION
+        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
       )
       .globalOption(
         "--mongo.tls-certificate-key-path <path:string>",
         MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
         {
-          conflicts: ["--mongo.tls-certificate-key-file"]
+          conflicts: ["--mongo.tls-certificate-key-file"],
         },
       )
       .globalOption(
         "--mongo.tls-certificate-key-file-password <password:string>",
-        MONGO_TLS_CERT_PASSWORD_DESCRIPTION
+        MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
       )
       .globalOption(
         "--mongo.tls-allow-invalid-certificates [allow:boolean]",
-        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION
+        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
       )
       .globalOption(
         "--mongo.tls-allow-invalid-hostnames [allow:boolean]",
-        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION
+        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
       )
       // ── Global env variables ────────────────────────────────────────────
       .globalEnv("DB_TYPE=<type:string>", DB_TYPE_DESCRIPTION)
@@ -576,7 +576,9 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
    */
   private async handleGlobalAction(args: GlobalCliConfigResolved) {
     console.log(
-      colors.blue.bold(`\n🚀 Initializing Madagascar Administrative Data Management (Mada ADM)`),
+      colors.blue.bold(
+        `\n🚀 Initializing Madagascar Administrative Boundaries (Mada ADM) CLI...`,
+      ),
     );
     console.log(colors.gray(`   Database Type: ${args.dbType}`));
     switch (args.dbType) {
@@ -1069,7 +1071,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           await this.#db.transaction(async (transactionContext) => {
             console.log(colors.red("\nDeleting all Mada ADM tables..."));
             for (const ddl of ddls.toReversed()) {
-              console.log(`   Dropping the table ${ddl.tableName}...`);
+              console.log(`Dropping the table ${ddl.tableName}...`);
               await ddl.drop(transactionContext);
             }
             console.log(
@@ -1216,11 +1218,17 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
               },
             });
           } else {
-            const inputFilePath = path.join(
-              Deno.cwd(),
+            const inputFilePathItems: string[] = [];
+            if (import.meta.dirname) {
+              inputFilePathItems.push(import.meta.dirname, "../");
+            } else {
+              inputFilePathItems.push(Deno.cwd());
+            }
+            inputFilePathItems.push(
               ADM_SEEDING_INPUTS_DIR,
               ADM_SEEDING_INPUT_FILENAMES_BY_CODE.get(admLevelCode)!,
             );
+            const inputFilePath = path.join(...inputFilePathItems);
             const lastPersistedMessage = await mediator.persistedLastMessage;
             if (lastPersistedMessage) {
               console.log(
@@ -1369,11 +1377,13 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       console.error(`\n❌ Fatal Error: ${(error as Error).message}`);
     } finally {
       if (redis) {
-        console.log("\n🔌 Closing Redis connection...\n");
         redis.close();
+        console.log(
+          colors.gray("\n🔌 Redis connection closed successfully...\n"),
+        );
       }
       await this.#db.close();
-      console.log(`🔌 Closing database connection...`);
+      console.log(colors.gray("🔌 Database connection closed successfully..."));
     }
   }
 }

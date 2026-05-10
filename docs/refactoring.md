@@ -1,9 +1,7 @@
 [] Collation remarks in
 README [] Replica set required for MongoDB in README [] Explanation of
 processing worker and insert worker in README [] Fix not clearing context at the
-end of a job [] Rename build task to compile task [] exclude ca certs
-directories in compile [] add a compile task for current machine architecture
-and OS
+end of a job
 
 ### Recently Completed Refactorings
 

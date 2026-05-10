@@ -190,128 +190,82 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalOption("--pg.schema <schema:string>", PG_SCHEMA_DESCRIPTION)
       .globalOption("--pg.url <url:string>", PG_URL_DESCRIPTION)
       .globalOption("--pg.host <host:string>", PG_HOST_DESCRIPTION)
-      .globalOption("--pg.port <port:number>", PG_PORT_DESCRIPTION, {
-        depends: ["pg.host"],
-      })
-      .globalOption("--pg.user <username:string>", PG_USER_DESCRIPTION, {
-        depends: ["pg.host"],
-      })
+      .globalOption("--pg.port <port:number>", PG_PORT_DESCRIPTION)
+      .globalOption("--pg.user <username:string>", PG_USER_DESCRIPTION)
       .globalOption(
         "--pg.password <password:string>",
-        PG_PASSWORD_DESCRIPTION,
-        {
-          depends: ["pg.user"],
-        },
+        PG_PASSWORD_DESCRIPTION
       )
       .globalOption(
         "--pg.database <database:string>",
-        PG_DATABASE_DESCRIPTION,
-        {
-          depends: ["pg.user"],
-        },
+        PG_DATABASE_DESCRIPTION
       )
-      .globalOption("--pg.ssl [ssl:boolean]", PG_SSL_DESCRIPTION, {
-        depends: ["pg.user"],
-      })
+      .globalOption("--pg.ssl [ssl:boolean]", PG_SSL_DESCRIPTION)
       .globalOption(
         "--pg.ca-cert-file <filename:string>",
         PG_CA_CERT_FILE_DESCRIPTION,
-        {
-          depends: ["pg.ssl"],
-        },
       )
       .globalOption(
         "--pg.ca-cert-path <path:string>",
         PG_CA_CERT_PATH_DESCRIPTION,
         {
           conflicts: ["--pg.ca-cert-file"],
-          depends: ["pg.ssl"],
         },
       )
       .globalOption(
         "--pg.connection-limit <limit:number>",
-        PG_CONNECTION_LIMIT_DESCRIPTION,
-        {
-          depends: ["pg.host"],
-        },
+        PG_CONNECTION_LIMIT_DESCRIPTION
       )
       .group("MySQL configuration")
       .globalOption("--mysql.url <url:string>", MYSQL_URL_DESCRIPTION)
       .globalOption("--mysql.host <host:string>", MYSQL_HOST_DESCRIPTION)
-      .globalOption("--mysql.port <port:number>", MYSQL_PORT_DESCRIPTION, {
-        depends: ["mysql.host"],
-      })
-      .globalOption("--mysql.user <username:string>", MYSQL_USER_DESCRIPTION, {
-        depends: ["mysql.host"],
-      })
+      .globalOption("--mysql.port <port:number>", MYSQL_PORT_DESCRIPTION)
+      .globalOption("--mysql.user <username:string>", MYSQL_USER_DESCRIPTION)
       .globalOption(
         "--mysql.password <password:string>",
-        MYSQL_PASSWORD_DESCRIPTION,
-        {
-          depends: ["mysql.user"],
-        },
+        MYSQL_PASSWORD_DESCRIPTION
       )
       .globalOption(
         "--mysql.database <database:string>",
-        MYSQL_DATABASE_DESCRIPTION,
-        {
-          depends: ["mysql.user"],
-        },
+        MYSQL_DATABASE_DESCRIPTION
       )
-      .globalOption("--mysql.ssl [ssl:boolean]", MYSQL_SSL_DESCRIPTION, {
-        depends: ["mysql.user"],
-      })
+      .globalOption("--mysql.ssl [ssl:boolean]", MYSQL_SSL_DESCRIPTION)
       .globalOption(
         "--mysql.ca-cert-file <filename:string>",
-        MYSQL_CA_CERT_FILE_DESCRIPTION,
-        {
-          depends: ["mysql.ssl"],
-        },
+        MYSQL_CA_CERT_FILE_DESCRIPTION
       )
       .globalOption(
         "--mysql.ca-cert-path <path:string>",
         MYSQL_CA_CERT_PATH_DESCRIPTION,
         {
-          conflicts: ["--mysql.ca-cert-file"],
-          depends: ["mysql.ssl"],
+          conflicts: ["--mysql.ca-cert-file"]
         },
       )
       .globalOption(
         "--mysql.cert-file <filename:string>",
-        MYSQL_CERT_FILE_DESCRIPTION,
-        {
-          depends: ["mysql.ssl"],
-        },
+        MYSQL_CERT_FILE_DESCRIPTION
       )
       .globalOption(
         "--mysql.cert-path <path:string>",
         MYSQL_CERT_PATH_DESCRIPTION,
         {
-          conflicts: ["--mysql.cert-file"],
-          depends: ["mysql.ssl"],
+          conflicts: ["--mysql.cert-file"]
         },
       )
       .globalOption(
         "--mysql.key-file <filename:string>",
         MYSQL_KEY_FILE_DESCRIPTION,
-        {
-          depends: ["mysql.ssl"],
-        },
       )
       .globalOption(
         "--mysql.key-path <path:string>",
         MYSQL_KEY_PATH_DESCRIPTION,
         {
           conflicts: ["--mysql.key-file"],
-          depends: ["mysql.ssl"],
         },
       )
       .globalOption(
         "--mysql.connection-limit <limit:number>",
         MYSQL_CONNECTION_LIMIT_DESCRIPTION,
-        {
-          depends: ["mysql.host"],
-        },
       )
       .group("SQLite configuration")
       .globalOption(
@@ -338,54 +292,37 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalOption("--mongo.tls [tls:boolean]", MONGO_TLS_DESCRIPTION)
       .globalOption(
         "--mongo.tls-ca-file <filename:string>",
-        MONGO_TLS_CA_FILE_DESCRIPTION,
-        {
-          depends: ["mongo.tls"],
-        },
+        MONGO_TLS_CA_FILE_DESCRIPTION
       )
       .globalOption(
         "--mongo.tls-ca-path <path:string>",
         MONGO_TLS_CA_PATH_DESCRIPTION,
         {
-          conflicts: ["--mongo.tls-ca-file"],
-          depends: ["mongo.tls"],
+          conflicts: ["--mongo.tls-ca-file"]
         },
       )
       .globalOption(
         "--mongo.tls-certificate-key-file <filename:string>",
-        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
-        {
-          depends: ["mongo.tls"],
-        },
+        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION
       )
       .globalOption(
         "--mongo.tls-certificate-key-path <path:string>",
         MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
         {
-          conflicts: ["--mongo.tls-certificate-key-file"],
-          depends: ["mongo.tls"],
+          conflicts: ["--mongo.tls-certificate-key-file"]
         },
       )
       .globalOption(
         "--mongo.tls-certificate-key-file-password <password:string>",
-        MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
-        {
-          // depends: ["mongo.tls-certificate-key-path", "mongo.tls-certificate-key-file"],
-        },
+        MONGO_TLS_CERT_PASSWORD_DESCRIPTION
       )
       .globalOption(
         "--mongo.tls-allow-invalid-certificates [allow:boolean]",
-        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
-        {
-          depends: ["mongo.tls"],
-        },
+        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION
       )
       .globalOption(
         "--mongo.tls-allow-invalid-hostnames [allow:boolean]",
-        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
-        {
-          depends: ["mongo.tls"],
-        },
+        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION
       )
       // ── Global env variables ────────────────────────────────────────────
       .globalEnv("DB_TYPE=<type:string>", DB_TYPE_DESCRIPTION)

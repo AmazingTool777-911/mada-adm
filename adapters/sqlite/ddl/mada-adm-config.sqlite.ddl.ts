@@ -1,7 +1,8 @@
-import type { DbTransactionContext, TableDDL } from "@scope/types/db";
-import type { MaybePromise } from "@scope/types/utils";
 import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
 import { ensureIsSqliteDbTransactionCtx } from "@scope/helpers/db";
+import type { DbTransactionContext, TableDDL } from "@scope/types/db";
+import type { MaybePromise } from "@scope/types/utils";
+
 import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 
 export class MadaAdmConfigSqliteDDL implements TableDDL {

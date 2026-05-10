@@ -1,6 +1,25 @@
+import { ansi } from "@cliffy/ansi";
+import { colors } from "@cliffy/ansi/colors";
+
+import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { injectDbConnection, injectProvincesDML } from "@scope/db";
-import { injectRedisQueueWorkerExecutor } from "@scope/lib/redis-workers-mediators";
+import {
+  injectCommunesDML,
+  injectDistrictsDML,
+  injectFokontanysDML,
+  injectRegionsDML,
+} from "@scope/db/dml";
+import {
+  isCommuneValues,
+  isDistrictValues,
+  isFokontanyValues,
+  isProvinceValues,
+  isRegionValues,
+} from "@scope/helpers/models";
 import { injectInMemoryQueueWorkerExecutor } from "@scope/lib/in-memory-workers-mediators";
+import { injectRedisQueueWorkerExecutor } from "@scope/lib/redis-workers-mediators";
+import { QueueWorkerExecutor } from "@scope/lib/workers-mediators";
+import type { SeedAdmJobContext } from "@scope/types/command";
 import type {
   CommuneTableDML,
   DbConnection,
@@ -9,7 +28,6 @@ import type {
   ProvinceTableDML,
   RegionTableDML,
 } from "@scope/types/db";
-import type { SeedAdmJobContext } from "@scope/types/command";
 import type {
   AdmRecord,
   CommuneRecord,
@@ -18,23 +36,6 @@ import type {
   ProvinceRecord,
   RegionRecord,
 } from "@scope/types/models";
-import { colors } from "@cliffy/ansi/colors";
-import { ansi } from "@cliffy/ansi";
-import {
-  injectCommunesDML,
-  injectDistrictsDML,
-  injectFokontanysDML,
-  injectRegionsDML,
-} from "@scope/db/dml";
-import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import {
-  isCommuneValues,
-  isDistrictValues,
-  isFokontanyValues,
-  isProvinceValues,
-  isRegionValues,
-} from "@scope/helpers/models";
-import { QueueWorkerExecutor } from "@scope/lib/workers-mediators";
 
 let db!: DbConnection;
 

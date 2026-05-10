@@ -1,5 +1,11 @@
 import * as path from "node:path";
 import { DatabaseSync } from "node:sqlite";
+
+import {
+  DbType,
+  SQLITE_DB_DEFAULT_FILE,
+  SQLITE_DB_DIR,
+} from "@scope/consts/db";
 import type {
   DbConnection,
   DbConnectionParams,
@@ -7,11 +13,6 @@ import type {
   SQLiteConnectionParams,
 } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
-import {
-  DbType,
-  SQLITE_DB_DEFAULT_FILE,
-  SQLITE_DB_DIR,
-} from "@scope/consts/db";
 
 export class SqliteDbConnection implements DbConnection {
   #client: DatabaseSync | null = null;

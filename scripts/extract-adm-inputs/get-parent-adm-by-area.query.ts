@@ -1,5 +1,5 @@
 import type { Pool, PoolClient } from "@db/postgres";
-import { StringUtils } from "@scope/utils";
+
 import type { PostgresTransactionContext } from "@scope/types/db";
 import type {
   AdmProperties,
@@ -9,6 +9,7 @@ import type {
   Region,
 } from "@scope/types/models";
 import type { GeoJSONFeature } from "@scope/types/utils";
+import { StringUtils } from "@scope/utils";
 
 /**
  * Represents an input ADM record for parent matching.

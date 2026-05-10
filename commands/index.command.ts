@@ -1,11 +1,12 @@
 import * as path from "node:path";
-import { DateUtils } from "@scope/utils";
-import { Confirm } from "@cliffy/prompt";
-import { Command } from "@cliffy/command";
-import { colors } from "@cliffy/ansi/colors";
+
+import { TextLineStream } from "@std/streams";
+
 import { ansi } from "@cliffy/ansi";
-import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
-import { injectMadaAdmConfigDML, injectProvincesDML } from "@scope/db/dml";
+import { colors } from "@cliffy/ansi/colors";
+import { Command } from "@cliffy/command";
+import { Confirm } from "@cliffy/prompt";
+
 import {
   CLI_DESCRIPTION,
   CLI_NAME,
@@ -79,17 +80,15 @@ import {
   SQLITE_DB_DEFAULT_FILE,
   SQLITE_DB_DIR,
 } from "@scope/consts/db";
-import type {
-  GlobalCliConfig,
-  GlobalCliConfigResolved,
-  IndexActionCliConfigResolved,
-} from "@scope/types/cli";
-import type {
-  AdmRecord,
-  AdmValues,
-  MadaAdmConfigValues,
-} from "@scope/types/models";
-import { DbConnection, TableDDL } from "@scope/types/db";
+import {
+  ADM_LEVEL_CODES_INDEXED,
+  ADM_LEVEL_ENTRIES_COUNT_BY_CODE,
+  ADM_LEVEL_INDEX_BY_CODE,
+  ADM_LEVEL_TITLE_BY_CODE,
+  ADM_SEEDING_INPUT_FILENAMES_BY_CODE,
+  ADM_SEEDING_INPUTS_DIR,
+  AdmLevelCode,
+} from "@scope/consts/models";
 import {
   attemptDbConnection,
   injectCommunesDDL,
@@ -108,28 +107,14 @@ import {
   resetProvincesDDL,
   resetRegionsDDL,
 } from "@scope/db";
-import { injectRedisConnection, RedisConnection } from "@scope/redis";
+import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import { injectMadaAdmConfigDML, injectProvincesDML } from "@scope/db/dml";
 import {
-  type QueueWorkersMediator,
-  WorkerPool,
-} from "@scope/lib/workers-mediators";
-import {
-  injectInMemoryQueueWorkersMediator,
-} from "@scope/lib/in-memory-workers-mediators";
-import {
-  injectRedisQueueWorkersMediator,
-} from "@scope/lib/redis-workers-mediators";
-import type { SeedAdmJobContext } from "@scope/types/command";
-import {
-  ADM_LEVEL_CODES_INDEXED,
-  ADM_LEVEL_ENTRIES_COUNT_BY_CODE,
-  ADM_LEVEL_INDEX_BY_CODE,
-  ADM_LEVEL_TITLE_BY_CODE,
-  ADM_SEEDING_INPUT_FILENAMES_BY_CODE,
-  ADM_SEEDING_INPUTS_DIR,
-  AdmLevelCode,
-} from "@scope/consts/models";
-import { TextLineStream } from "@std/streams";
+  displayMadaAdmConfig,
+  promptMadaAdmConfig,
+  resolveGlobalCliConfig,
+  resolveIndexCliConfig,
+} from "@scope/helpers/cli";
 import {
   compareAdmValues,
   isCommuneValues,
@@ -139,11 +124,29 @@ import {
   isRegionValues,
 } from "@scope/helpers/models";
 import {
-  displayMadaAdmConfig,
-  promptMadaAdmConfig,
-  resolveGlobalCliConfig,
-  resolveIndexCliConfig,
-} from "@scope/helpers/cli";
+  injectInMemoryQueueWorkersMediator,
+} from "@scope/lib/in-memory-workers-mediators";
+import {
+  injectRedisQueueWorkersMediator,
+} from "@scope/lib/redis-workers-mediators";
+import {
+  type QueueWorkersMediator,
+  type WorkerPool,
+} from "@scope/lib/workers-mediators";
+import { injectRedisConnection, RedisConnection } from "@scope/redis";
+import type {
+  GlobalCliConfig,
+  GlobalCliConfigResolved,
+  IndexActionCliConfigResolved,
+} from "@scope/types/cli";
+import type { SeedAdmJobContext } from "@scope/types/command";
+import type { DbConnection, TableDDL } from "@scope/types/db";
+import type {
+  AdmRecord,
+  AdmValues,
+  MadaAdmConfigValues,
+} from "@scope/types/models";
+import { DateUtils } from "@scope/utils";
 
 const PROGRESS_BARS_LINES_COUNT = 5;
 

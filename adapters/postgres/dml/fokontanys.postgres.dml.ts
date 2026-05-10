@@ -1,6 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-
-import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -14,7 +12,9 @@ import type {
   FokontanyRecord,
   MadaAdmConfigValues,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
+import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 
 /**
  * PostgreSQL DML implementation for the fokontanys table.

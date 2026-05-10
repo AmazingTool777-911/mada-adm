@@ -1,29 +1,10 @@
-import { StringUtils } from "@scope/utils";
-import type { MadaAdmConfigValues } from "@scope/types/models";
-import type { PostgresDbConnection } from "../postgres-db.connection.ts";
-import type {
-  AdmAttributes,
-  AdmEntity,
-  AdmRecord,
-  CommuneSnakeCased,
-  DistrictSnakeCased,
-  FokontanySnakeCased,
-  ProvinceSnakeCased,
-  RegionSnakeCased,
-} from "@scope/types/models";
-import type {
-  DbTransactionContext,
-  DMLCreateManyResult,
-  DMLUpdateResult,
-  EntityId,
-} from "@scope/types/db";
-import { DbHelper } from "@scope/helpers";
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_INDEX_BY_CODE,
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
+import { DbHelper } from "@scope/helpers";
 import {
   isGeoJSONGeometry,
   mapCommuneSnakeToCamel,
@@ -32,6 +13,26 @@ import {
   mapProvinceSnakeToCamel,
   mapRegionSnakeToCamel,
 } from "@scope/helpers/models";
+import type {
+  DbTransactionContext,
+  DMLCreateManyResult,
+  DMLUpdateResult,
+  EntityId,
+} from "@scope/types/db";
+import type {
+  AdmAttributes,
+  AdmEntity,
+  AdmRecord,
+  CommuneSnakeCased,
+  DistrictSnakeCased,
+  FokontanySnakeCased,
+  MadaAdmConfigValues,
+  ProvinceSnakeCased,
+  RegionSnakeCased,
+} from "@scope/types/models";
+import { StringUtils } from "@scope/utils";
+
+import type { PostgresDbConnection } from "../postgres-db.connection.ts";
 
 /**
  * Abstract base class for ADM Data Manipulation Layer (DML) implementations

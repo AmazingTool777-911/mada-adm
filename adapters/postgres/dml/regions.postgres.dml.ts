@@ -1,7 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { mapRegionSnakeToCamel } from "@scope/helpers/models";
 import { DbHelper } from "@scope/helpers";
-import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
+import { mapRegionSnakeToCamel } from "@scope/helpers/models";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -15,7 +14,9 @@ import type {
   RegionRecord,
   RegionSnakeCased,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
+import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 
 /**
  * PostgreSQL DML implementation for the regions table.

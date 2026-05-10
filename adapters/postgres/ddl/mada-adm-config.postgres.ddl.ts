@@ -1,10 +1,13 @@
-import { DbType } from "@scope/consts/db";
-import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
+import {
+  DbType,
+  MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED,
+} from "@scope/consts/db";
 import type {
   DbTransactionContext,
   PostgresTransactionContext,
   TableDDL,
 } from "@scope/types/db";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
 
 /**

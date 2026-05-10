@@ -1,6 +1,7 @@
 import { colors } from "@cliffy/ansi/colors";
 import { Confirm, Input, prompt } from "@cliffy/prompt";
 import { Table } from "@cliffy/table";
+
 import {
   type DbType,
   DEFAULT_DB_TYPE,

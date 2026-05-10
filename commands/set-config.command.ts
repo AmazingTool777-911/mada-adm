@@ -1,18 +1,12 @@
+import { colors } from "@cliffy/ansi/colors";
 import { Command } from "@cliffy/command";
 import { Confirm } from "@cliffy/prompt";
-import { colors } from "@cliffy/ansi/colors";
+
 import {
   SET_CONFIG_COMMAND_DESCRIPTION,
   SET_CONFIG_COMMAND_NAME,
 } from "@scope/consts/cli";
-import type { GlobalCliConfig } from "@scope/types/cli";
-import type { MadaAdmConfigValues } from "@scope/types/models";
-import type { DbConnection } from "@scope/types/db";
-import {
-  displayMadaAdmConfig,
-  promptMadaAdmConfig,
-  resolveCommonGlobalCliConfig,
-} from "@scope/helpers/cli";
+import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
 import {
   injectCommunesDDL,
   injectDbConnection,
@@ -28,7 +22,14 @@ import {
   resetRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
-import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
+import {
+  displayMadaAdmConfig,
+  promptMadaAdmConfig,
+  resolveCommonGlobalCliConfig,
+} from "@scope/helpers/cli";
+import type { GlobalCliConfig } from "@scope/types/cli";
+import type { DbConnection } from "@scope/types/db";
+import type { MadaAdmConfigValues } from "@scope/types/models";
 
 /**
  * CLI sub-command that interactively sets or updates the Mada ADM configuration

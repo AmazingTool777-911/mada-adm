@@ -1,6 +1,7 @@
 import type { RedisClient } from "@iuioiua/redis";
-import type { RedisConnectionParams } from "@scope/redis";
+
 import { injectRedisConnection } from "@scope/redis";
+import type { RedisConnectionParams } from "@scope/redis";
 import type {
   QueueOptions,
   QueueWorkerExecutor,

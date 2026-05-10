@@ -1,12 +1,14 @@
-import { Pool } from "@db/postgres";
 import * as path from "@std/path";
+
+import { Pool } from "@db/postgres";
+
+import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 import type {
   DbConnection,
   DbConnectionParams,
   DbTransactionContext,
 } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
-import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 
 /** Default number of connections in the PostgreSQL pool. */
 const DEFAULT_PG_POOL_SIZE = 10;

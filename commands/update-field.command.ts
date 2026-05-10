@@ -1,8 +1,8 @@
-import { Command, EnumType } from "@cliffy/command";
 import { join } from "@std/path";
+
 import { colors } from "@cliffy/ansi/colors";
-import type { EntityId } from "@scope/types/db";
-import type { GeoJSONGeometry } from "@scope/types/utils";
+import { Command, EnumType } from "@cliffy/command";
+
 import {
   CLI_LARGE_CONTENT_ARGS_DIR,
   CLI_VALUE_ARG_FILE,
@@ -14,12 +14,6 @@ import {
   UPDATE_FIELD_COMMAND_VALUE_OPTION_DESCRIPTION,
   UPDATE_FIELD_COMMAND_VALUE_PATH_OPTION_DESCRIPTION,
 } from "@scope/consts/cli";
-import type {
-  GlobalCliConfig,
-  UpdateFieldCliConfig,
-  UpdateFieldIdentifiersCliConfig,
-} from "@scope/types/cli";
-import type { DbConnection } from "@scope/types/db";
 import {
   ADM_LEVEL_CODE_BY_TITLE,
   ADM_LEVEL_CODES_INDEXED,
@@ -27,7 +21,6 @@ import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import { resolveCommonGlobalCliConfig } from "@scope/helpers/cli";
 import {
   injectCommunesDML,
   injectDbConnection,
@@ -37,7 +30,15 @@ import {
   injectProvincesDML,
   injectRegionsDML,
 } from "@scope/db";
+import { resolveCommonGlobalCliConfig } from "@scope/helpers/cli";
+import type {
+  GlobalCliConfig,
+  UpdateFieldCliConfig,
+  UpdateFieldIdentifiersCliConfig,
+} from "@scope/types/cli";
+import type { DbConnection, EntityId } from "@scope/types/db";
 import { AdmEntity } from "@scope/types/models";
+import type { GeoJSONGeometry } from "@scope/types/utils";
 
 type AdmLevelIdentifiers = {
   admLevel: AdmLevelCode.PROVINCE;

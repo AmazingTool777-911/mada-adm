@@ -1,31 +1,9 @@
-import type {
-  AdmAttributes,
-  AdmRecord,
-  MadaAdmConfigValues,
-  ProvinceSnakeCased,
-} from "@scope/types/models";
-import type { SqliteDbConnection } from "@scope/adapters/sqlite";
-import { StringUtils } from "@scope/utils";
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_INDEX_BY_CODE,
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import type {
-  AdmEntity,
-  AdmEntitySnakeCased,
-  CommuneSnakeCased,
-  DistrictSnakeCased,
-  FokontanySnakeCased,
-  RegionSnakeCased,
-} from "@scope/types/models";
-import type {
-  DbTransactionContext,
-  DMLCreateManyResult,
-  DMLUpdateResult,
-  EntityId,
-} from "@scope/types/db";
 import { ensureIsSqliteDbTransactionCtx } from "@scope/helpers/db";
 import {
   isGeoJSONGeometry,
@@ -35,7 +13,27 @@ import {
   mapProvinceSnakeToCamel,
   mapRegionSnakeToCamel,
 } from "@scope/helpers/models";
-import { camelToSnakeCase } from "../../../utils/string.utils.ts";
+import type {
+  DbTransactionContext,
+  DMLCreateManyResult,
+  DMLUpdateResult,
+  EntityId,
+} from "@scope/types/db";
+import type {
+  AdmAttributes,
+  AdmEntity,
+  AdmEntitySnakeCased,
+  AdmRecord,
+  CommuneSnakeCased,
+  DistrictSnakeCased,
+  FokontanySnakeCased,
+  MadaAdmConfigValues,
+  ProvinceSnakeCased,
+  RegionSnakeCased,
+} from "@scope/types/models";
+import { StringUtils } from "@scope/utils";
+
+import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 
 /**
  * Base class for SQLite Data Manipulation Layer (DML) implementations
@@ -220,7 +218,7 @@ export class BaseAdmTableSqliteDML {
 
     const sql = `
 			INSERT INTO ${tableName} (${
-      columns.map((c) => camelToSnakeCase(c)).join(",")
+      columns.map((c) => StringUtils.camelToSnakeCase(c)).join(",")
     })
 			VALUES ${
       values.map(() =>

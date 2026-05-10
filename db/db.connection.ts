@@ -1,22 +1,24 @@
 import {
-  injectPostgresDbConnection,
-  PostgresDbConnection,
-} from "@scope/adapters/postgres";
+  injectMongoDbConnection,
+  MongoDbConnection,
+} from "@scope/adapters/mongo";
 import {
   injectMySQLDbConnection,
   MySQLDbConnection,
 } from "@scope/adapters/mysql";
 import {
+  injectPostgresDbConnection,
+  PostgresDbConnection,
+} from "@scope/adapters/postgres";
+import {
   injectSqliteDbConnection,
   SqliteDbConnection,
 } from "@scope/adapters/sqlite";
-import {
-  injectMongoDbConnection,
-  MongoDbConnection,
-} from "@scope/adapters/mongo";
+
 import { DbType } from "@scope/consts/db";
-import type { DbConnection, DbConnectionParams } from "@scope/types/db";
+
 import type { DbConnectionCliConfig } from "@scope/types/cli";
+import type { DbConnection, DbConnectionParams } from "@scope/types/db";
 
 /**
  * Injects a database connection instance based on the specified database type.

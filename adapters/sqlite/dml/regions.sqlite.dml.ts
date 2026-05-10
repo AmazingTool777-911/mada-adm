@@ -1,5 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmTableSqliteDML } from "./adm-table.sqlite.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -12,7 +11,9 @@ import type {
   Region,
   RegionRecord,
 } from "@scope/types/models";
+
 import type { SqliteDbConnection } from "../sqlite-db.connection.ts";
+import { BaseAdmTableSqliteDML } from "./adm-table.sqlite.dml.ts";
 
 /**
  * SQLite DML implementation for the regions table.

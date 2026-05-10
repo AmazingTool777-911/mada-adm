@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+
 import { formatDuration } from "./dates.utils.ts";
 
 Deno.test("formatDuration", async (t) => {

@@ -1,5 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
 import { assertEquals } from "@std/assert";
+
+import type {
+  CommuneRecord,
+  CommuneSnakeCased,
+  DistrictRecord,
+  DistrictSnakeCased,
+  FokontanyRecord,
+  FokontanySnakeCased,
+  MadaAdmConfigSnakeCased,
+  ProvinceRecord,
+  ProvinceSnakeCased,
+  RegionRecord,
+  RegionSnakeCased,
+} from "@scope/types/models";
+
 import {
   compareAdmValues,
   encodeCommuneAttributes,
@@ -25,19 +40,6 @@ import {
   mapRegionSnakeToCamel,
   parseTimestamp,
 } from "./models.helper.ts";
-import type {
-  CommuneRecord,
-  CommuneSnakeCased,
-  DistrictRecord,
-  DistrictSnakeCased,
-  FokontanyRecord,
-  FokontanySnakeCased,
-  MadaAdmConfigSnakeCased,
-  ProvinceRecord,
-  ProvinceSnakeCased,
-  RegionRecord,
-  RegionSnakeCased,
-} from "@scope/types/models";
 
 Deno.test("models.helper", async (t) => {
   const dateStr = "2024-01-01T00:00:00.000Z";

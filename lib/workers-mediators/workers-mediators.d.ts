@@ -1,4 +1,4 @@
-import type { MaybePromise } from "../../types/utils.d.ts";
+import type { MaybePromise } from "@scope/types/utils";
 
 /**
  * Flexible configuration for workers used in the processing and insertion pipeline.

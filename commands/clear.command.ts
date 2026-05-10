@@ -1,16 +1,12 @@
+import { colors } from "@cliffy/ansi/colors";
 import { Command } from "@cliffy/command";
 import { Confirm } from "@cliffy/prompt";
-import { colors } from "@cliffy/ansi/colors";
+
 import {
   CLEAR_COMMAND_DESCRIPTION,
   CLEAR_COMMAND_NAME,
 } from "@scope/consts/cli";
-import type { GlobalCliConfig } from "@scope/types/cli";
-import type { DbConnection } from "@scope/types/db";
-import {
-  displayMadaAdmConfig,
-  resolveCommonGlobalCliConfig,
-} from "@scope/helpers/cli";
+import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
 import {
   injectCommunesDDL,
   injectDbConnection,
@@ -21,7 +17,12 @@ import {
   injectRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
-import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
+import {
+  displayMadaAdmConfig,
+  resolveCommonGlobalCliConfig,
+} from "@scope/helpers/cli";
+import type { GlobalCliConfig } from "@scope/types/cli";
+import type { DbConnection } from "@scope/types/db";
 
 /**
  * CLI sub-command that drops all ADM tables and the configuration table from

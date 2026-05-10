@@ -1,12 +1,13 @@
 import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
+import { ensureIsPostgresDbTransactionCtx } from "@scope/helpers/db";
 import type { MadaAdmConfigDML } from "@scope/types/db";
 import type {
   MadaAdmConfig,
   MadaAdmConfigSnakeCased,
   MadaAdmConfigValues,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
-import { ensureIsPostgresDbTransactionCtx } from "@scope/helpers/db";
 
 /**
  * Concrete implementation of the MadaAdmConfigDML interface using PostgreSQL.

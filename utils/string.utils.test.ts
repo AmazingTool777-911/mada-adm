@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+
 import {
   camelToSnakeCase,
   prefixWithCamelCase,

@@ -1,13 +1,14 @@
-import type { MadaAdmConfigDML } from "@scope/types/db";
-import type { MaybePromise } from "@scope/types/utils";
-import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
+import { mapMadaAdmConfigSnakeToCamel } from "@scope/helpers/models";
+import type { MadaAdmConfigDML } from "@scope/types/db";
 import type {
   MadaAdmConfig,
   MadaAdmConfigSnakeCased,
   MadaAdmConfigValues,
 } from "@scope/types/models";
-import { mapMadaAdmConfigSnakeToCamel } from "@scope/helpers/models";
+import type { MaybePromise } from "@scope/types/utils";
+
+import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 
 export class MadaAdmConfigSqliteDML implements MadaAdmConfigDML {
   #db: SqliteDbConnection;

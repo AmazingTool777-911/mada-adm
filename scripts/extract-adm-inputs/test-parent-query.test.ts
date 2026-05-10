@@ -15,6 +15,14 @@ class MockClient {
     this.lastArgs = args;
     return Promise.resolve({ rows: [] });
   }
+
+  connect() {
+    return Promise.resolve(this);
+  }
+
+  release() {
+    // no-op
+  }
 }
 
 Deno.test("getParentRegionOfDistricts - SQL generation", async () => {

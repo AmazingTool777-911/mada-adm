@@ -1,5 +1,7 @@
-import { type Db, MongoClient, ServerApiVersion } from "mongodb";
 import * as path from "@std/path";
+import { type Db, MongoClient, ServerApiVersion } from "mongodb";
+
+import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 import type {
   DbConnection,
   DbConnectionParams,
@@ -9,7 +11,6 @@ import type {
   TransactionOptions,
 } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
-import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 
 /**
  * Implementation of a database connection specifically for MongoDB.

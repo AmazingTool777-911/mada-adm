@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+
 import { DbType } from "@scope/consts/db";
 import {
   DEFAULT_BATCH_SIZE,
@@ -13,6 +14,7 @@ import {
   DEFAULT_MAX_RETRIES,
   DEFAULT_PROCESSING_WORKERS_COUNT,
 } from "@scope/lib/workers-mediators";
+
 import {
   resolveCommonGlobalCliConfig,
   resolveGlobalCliConfig,
@@ -85,9 +87,9 @@ Deno.test("resolveGlobalCliConfig", async (t) => {
     assertEquals(result.mongo.tls, false);
     assertEquals(result.mongo.tlsCaFile, undefined);
     assertEquals(result.mongo.tlsCaPath, undefined);
-    assertEquals(result.mongo.tlsCertificateKeyFile, undefined);
-    assertEquals(result.mongo.tlsCertificateKeyPath, undefined);
-    assertEquals(result.mongo.tlsCertificateKeyFilePassword, undefined);
+    assertEquals(result.mongo.tlsCertKeyFile, undefined);
+    assertEquals(result.mongo.tlsCertKeyPath, undefined);
+    assertEquals(result.mongo.tlsCertPassword, undefined);
     assertEquals(result.mongo.tlsAllowInvalidCertificates, false);
     assertEquals(result.mongo.tlsAllowInvalidHostnames, false);
   });

@@ -19,6 +19,7 @@ seeding.
 - [Fundamental Concepts & Architecture](#fundamental-concepts--architecture)
 - [CLI Commands & Usage](#cli-commands--usage)
 - [Current Status](#current-status)
+- [Known Issues & Future Improvements](#known-issues--future-improvements)
 - [License & Attribution](#license--attribution)
 
 ## Getting Started
@@ -78,7 +79,7 @@ The compiled binaries are placed in `bin/<platform>/mada-adm` (or `mada-adm.exe`
 
 ### Using the Compiled Executable
 
-Once compiled, you can run the `mada-adm` binary directly from its output directory:
+Once compiled (or [downloaded from the releases](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/releases)), you can run the `mada-adm` binary directly from its output directory:
 
 ```bash
 # Example for Linux/macOS
@@ -89,6 +90,9 @@ Once compiled, you can run the `mada-adm` binary directly from its output direct
 ```
 
 You can optionally add the output directory to your system's `PATH` to run `mada-adm` from any location without specifying the full path.
+
+> [!WARNING]
+> **Unsigned Binaries:** The compiled executables are not digitally signed. Depending on your operating system (e.g., Windows SmartScreen or macOS Gatekeeper), you may encounter security warnings or blocks when attempting to run them. You will need to manually allow or trust the application within your system settings to proceed.
 
 ### Running CLI Tasks
 
@@ -459,6 +463,11 @@ identifier options to correctly locate the administrative boundary:
 
 - **Map Viewer**: A mini web application to visualize and query the seeded administrative boundaries.
 - **Data Catalog**: A comprehensive, public-facing catalog of administrative metadata.
+
+## Known Issues & Future Improvements
+
+- **Progress Bar Rendering**: The real-time terminal progress bar may occasionally flicker or render inconsistently depending on the terminal emulator and environment (e.g., within certain CI/CD logs or simplified shells).
+- **Topological Data Inconsistencies**: As mentioned in the [Data Quality remark](#project-structure--content), some boundary misalignments exist between regions and districts.
 
 ## License & Attribution
 

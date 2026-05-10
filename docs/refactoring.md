@@ -1,7 +1,6 @@
 [] Collation remarks in
 README [] Replica set required for MongoDB in README [] Explanation of
-processing worker and insert worker in README [] Fix not clearing context at the
-end of a job
+processing worker and insert worker in README
 
 ### Recently Completed Refactorings
 

@@ -115,9 +115,12 @@ export class RedisConnection {
       };
 
       if (typeof params !== "string") {
+        const redisCaCertificatesDir = import.meta.dirname
+          ? path.join(import.meta.dirname, "../", REDIS_CA_CERTIFICATES_DIR)
+          : path.join(Deno.cwd(), REDIS_CA_CERTIFICATES_DIR);
         const resolvePath = (file?: string, full?: string) => {
           if (file) {
-            return path.join(Deno.cwd(), REDIS_CA_CERTIFICATES_DIR, file);
+            return path.join(redisCaCertificatesDir, file);
           }
           return full;
         };

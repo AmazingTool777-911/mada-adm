@@ -81,9 +81,12 @@ export class MySQLDbConnection implements DbConnection {
         sslConfig = {};
         const resolvePath = (file?: string, fullPath?: string) => {
           if (file) {
-            return path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR, file);
+            const dbCaCertificatesDir = import.meta.dirname
+              ? path.join(import.meta.dirname, "../../", DB_CA_CERTIFICATES_DIR)
+              : path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR);
+            return path.join(dbCaCertificatesDir, file);
           }
-          return fullPath;
+          return fullPath ? path.resolve(fullPath) : undefined;
         };
 
         const caCertPath = resolvePath(config.caCertFile, config.caCertPath);

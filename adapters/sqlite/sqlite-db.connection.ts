@@ -52,18 +52,21 @@ export class SqliteDbConnection implements DbConnection {
     if (params.dbPath) {
       fullDbPath = path.join(params.dbPath);
     } else {
+      const dbDir = import.meta.dirname
+        ? path.join(import.meta.dirname, "../../", SQLITE_DB_DIR)
+        : path.join(Deno.cwd(), SQLITE_DB_DIR);
       let dbDirExists = false;
       try {
-        Deno.statSync(SQLITE_DB_DIR);
+        Deno.statSync(dbDir);
         dbDirExists = true;
       } catch {
         dbDirExists = false;
       }
       if (!dbDirExists) {
-        Deno.mkdirSync(SQLITE_DB_DIR, { recursive: true });
+        Deno.mkdirSync(dbDir, { recursive: true });
       }
       const dbFileName = params.dbFile ?? SQLITE_DB_DEFAULT_FILE;
-      fullDbPath = path.join(SQLITE_DB_DIR, dbFileName);
+      fullDbPath = path.join(dbDir, dbFileName);
     }
     this.#client = new DatabaseSync(fullDbPath, { allowExtension: true });
 

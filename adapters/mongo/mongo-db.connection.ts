@@ -87,17 +87,24 @@ export class MongoDbConnection implements DbConnection {
 
     const uri = config.uri;
 
+    const dbCaCertificatesDir = import.meta.dirname
+      ? path.join(import.meta.dirname, "../../", DB_CA_CERTIFICATES_DIR)
+      : path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR);
+
     const tlsCAFile = config.tlsCaFile
-      ? path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR, config.tlsCaFile)
-      : config.tlsCaPath;
+      ? path.join(dbCaCertificatesDir, config.tlsCaFile)
+      : config.tlsCaPath
+      ? path.resolve(config.tlsCaPath)
+      : undefined;
 
     const tlsCertificateKeyFile = config.tlsCertKeyFile
       ? path.join(
-        Deno.cwd(),
-        DB_CA_CERTIFICATES_DIR,
+        dbCaCertificatesDir,
         config.tlsCertKeyFile,
       )
-      : config.tlsCertKeyPath;
+      : config.tlsCertKeyPath
+      ? path.resolve(config.tlsCertKeyPath)
+      : undefined;
 
     this.#client = new MongoClient(uri, {
       // API versioning

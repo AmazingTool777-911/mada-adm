@@ -1,5 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmCollectionMongoDML } from "./adm-collection.mongo.dml.ts";
 import type {
   CommuneTableDML,
   DbTransactionContext,
@@ -13,7 +12,9 @@ import type {
   CommuneRecord,
   MadaAdmConfig,
 } from "@scope/types/models";
+
 import type { MongoDbConnection } from "../mongo-db.connection.ts";
+import { BaseAdmCollectionMongoDML } from "./adm-collection.mongo.dml.ts";
 
 /**
  * MongoDB DML implementation for the communes collection.

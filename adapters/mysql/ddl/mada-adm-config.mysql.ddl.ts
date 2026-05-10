@@ -1,7 +1,8 @@
 import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
-import type { DbTransactionContext, TableDDL } from "@scope/types/db";
-import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
+import type { DbTransactionContext, TableDDL } from "@scope/types/db";
+
+import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 
 /**
  * Concrete implementation of the DDL abstract class for the Mada ADM configuration table

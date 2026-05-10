@@ -1,3 +1,4 @@
+import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_INDEX_BY_CODE,
@@ -32,8 +33,6 @@ import type {
   RegionSnakeCased,
 } from "@scope/types/models";
 import { StringUtils } from "@scope/utils";
-
-import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 
 /**
  * Base class for SQLite Data Manipulation Layer (DML) implementations

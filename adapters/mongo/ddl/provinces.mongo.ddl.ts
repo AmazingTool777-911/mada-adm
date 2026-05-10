@@ -1,10 +1,11 @@
-import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { MONGO_FR_COLLATION, MONGO_GEOJSON_VALIDATION } from "@scope/consts/db";
+import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { BaseAdmTableDDL } from "@scope/db/ddl/base";
-import type { MadaAdmConfigValues } from "@scope/types/models";
-import type { DbTransactionContext } from "@scope/types/db";
-import type { MongoDbConnection } from "../mongo-db.connection.ts";
 import { ensureIsMongoDbTransactionCtx } from "@scope/helpers/db";
+import type { DbTransactionContext } from "@scope/types/db";
+import type { MadaAdmConfigValues } from "@scope/types/models";
+
+import type { MongoDbConnection } from "../mongo-db.connection.ts";
 
 /**
  * Concrete implementation of the DDL abstract class for the provinces collection

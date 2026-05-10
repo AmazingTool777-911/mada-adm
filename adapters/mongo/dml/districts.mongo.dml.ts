@@ -1,8 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmCollectionMongoDML } from "./adm-collection.mongo.dml.ts";
 import type {
   DbTransactionContext,
-  DistrictAttributes,
   DistrictTableDML,
   DMLCreateManyResult,
   DMLUpdateResult,
@@ -10,10 +8,12 @@ import type {
 } from "@scope/types/db";
 import type {
   District,
+  DistrictAttributes,
   DistrictRecord,
   MadaAdmConfig,
 } from "@scope/types/models";
 import type { MongoDbConnection } from "../mongo-db.connection.ts";
+import { BaseAdmCollectionMongoDML } from "./adm-collection.mongo.dml.ts";
 
 /**
  * MongoDB DML implementation for the districts collection.

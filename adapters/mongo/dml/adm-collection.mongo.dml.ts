@@ -1,35 +1,11 @@
 import { type Collection, ObjectId } from "mongodb";
-import type {
-  AdmAttributes,
-  AdmEntity,
-  AdmEntityBSON,
-  AdmRecord,
-  MadaAdmConfig,
-} from "@scope/types/models";
-import type { MongoDbConnection } from "../mongo-db.connection.ts";
-import { StringUtils } from "@scope/utils";
+
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_INDEX_BY_CODE,
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import type {
-  DbTransactionContext,
-  DMLCreateManyResult,
-  DMLUpdateResult,
-  EntityId,
-  RegionRecord,
-} from "@scope/types/db";
-import type {
-  AdmEntityFks,
-  AdmRecordBSONWithTimestamps,
-  CommuneBSONRecordWithTimestamps,
-  DistrictBSONRecordWithTimestamps,
-  FokontanyBSONRecordWithTimestamps,
-  ProvinceBSONRecordWithTimestamps,
-  RegionBSONRecordWithTimestamps,
-} from "@scope/types/models";
 import { ensureIsMongoDbTransactionCtx } from "@scope/helpers/db";
 import {
   isCommuneValues,
@@ -39,7 +15,31 @@ import {
   isRegionValues,
   mapAdmEntityBsonToEntity,
 } from "@scope/helpers/models";
+import type {
+  DbTransactionContext,
+  DMLCreateManyResult,
+  DMLUpdateResult,
+  EntityId,
+  RegionRecord,
+} from "@scope/types/db";
+import type {
+  AdmAttributes,
+  AdmEntity,
+  AdmEntityBSON,
+  AdmEntityFks,
+  AdmRecord,
+  AdmRecordBSONWithTimestamps,
+  CommuneBSONRecordWithTimestamps,
+  DistrictBSONRecordWithTimestamps,
+  FokontanyBSONRecordWithTimestamps,
+  MadaAdmConfig,
+  ProvinceBSONRecordWithTimestamps,
+  RegionBSONRecordWithTimestamps,
+} from "@scope/types/models";
 import type { GeoJSONGeometry } from "@scope/types/utils";
+import { StringUtils } from "@scope/utils";
+
+import type { MongoDbConnection } from "../mongo-db.connection.ts";
 
 export class BaseAdmCollectionMongoDML {
   #dbConnection!: MongoDbConnection;

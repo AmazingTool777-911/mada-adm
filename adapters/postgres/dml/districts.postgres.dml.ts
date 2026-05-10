@@ -1,7 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import type {
   DbTransactionContext,
-  DistrictAttributes,
   DistrictTableDML,
   DMLCreateManyResult,
   DMLUpdateResult,
@@ -9,6 +8,7 @@ import type {
 } from "@scope/types/db";
 import type {
   District,
+  DistrictAttributes,
   DistrictRecord,
   MadaAdmConfigValues,
 } from "@scope/types/models";

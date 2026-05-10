@@ -1,7 +1,9 @@
-import { getParentRegionsOfDistricts } from "./get-parent-adm-by-area.query.ts";
-import type { AdmProperties, MadaAdmConfigValues } from "@scope/types/models";
 import { assertEquals } from "@std/assert";
+
+import type { AdmProperties, MadaAdmConfigValues } from "@scope/types/models";
 import type { GeoJSONFeature } from "@scope/types/utils";
+
+import { getParentRegionsOfDistricts } from "./get-parent-adm-by-area.query.ts";
 
 /**
  * Mocking the PostgreSQL client to inspect the query and arguments.

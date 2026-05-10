@@ -1,12 +1,13 @@
 import { MADA_ADM_CONFIGS_TABLE_NAME_SNAKE_CASED } from "@scope/consts/db";
+import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
 import type { MadaAdmConfigDML } from "@scope/types/db";
 import type {
   MadaAdmConfig,
   MadaAdmConfigSnakeCased,
   MadaAdmConfigValues,
 } from "@scope/types/models";
+
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
-import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
 
 /**
  * Concrete implementation of the MadaAdmConfigDML interface using MySQL.

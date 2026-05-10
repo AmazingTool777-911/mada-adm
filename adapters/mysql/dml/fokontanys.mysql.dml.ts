@@ -1,5 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmTableMySQLDML } from "./adm-table.mysql.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -14,6 +13,7 @@ import type {
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
+import { BaseAdmTableMySQLDML } from "./adm-table.mysql.dml.ts";
 
 /**
  * MySQL DML implementation for the fokontanys table.

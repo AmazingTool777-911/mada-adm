@@ -123,17 +123,13 @@ import {
   isProvinceValues,
   isRegionValues,
 } from "@scope/helpers/models";
-import {
-  injectInMemoryQueueWorkersMediator,
-} from "@scope/lib/in-memory-workers-mediators";
-import {
-  injectRedisQueueWorkersMediator,
-} from "@scope/lib/redis-workers-mediators";
-import {
-  type QueueWorkersMediator,
-  type WorkerPool,
+import { injectInMemoryQueueWorkersMediator } from "@scope/lib/in-memory-workers-mediators";
+import { injectRedisQueueWorkersMediator } from "@scope/lib/redis-workers-mediators";
+import type {
+  QueueWorkersMediator,
+  WorkerPool,
 } from "@scope/lib/workers-mediators";
-import { injectRedisConnection, RedisConnection } from "@scope/redis";
+import { injectRedisConnection, type RedisConnection } from "@scope/redis";
 import type {
   GlobalCliConfig,
   GlobalCliConfigResolved,

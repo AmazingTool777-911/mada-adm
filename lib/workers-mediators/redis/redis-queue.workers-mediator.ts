@@ -1,7 +1,14 @@
 import type { RedisClient } from "@iuioiua/redis";
 
-import { injectRedisConnection } from "@scope/redis";
-import type { RedisConnectionParams } from "@scope/redis";
+import {
+  injectRedisConnection,
+  type RedisConnectionParams,
+} from "@scope/redis";
+
+import {
+  DEFAULT_MAX_RETRIES,
+  WORKER_EVENTS,
+} from "../workers-mediators.const.ts";
 import type {
   QueueOptions,
   QueueWorkerExecutor,
@@ -10,10 +17,6 @@ import type {
   WorkerBatchContext,
   WorkerPool,
 } from "../workers-mediators.d.ts";
-import {
-  DEFAULT_MAX_RETRIES,
-  WORKER_EVENTS,
-} from "../workers-mediators.const.ts";
 
 /** Default key for storing processing queue context in Redis. */
 export const DEFAULT_PROCESSING_CONTEXT_KEY = "processing:context";

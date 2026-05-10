@@ -4,11 +4,11 @@ import type {
   DMLCreateManyResult,
   DMLUpdateResult,
   EntityId,
-  FokontanyAttributes,
   FokontanyTableDML,
 } from "@scope/types/db";
 import type {
   Fokontany,
+  FokontanyAttributes,
   FokontanyRecord,
   MadaAdmConfigValues,
 } from "@scope/types/models";

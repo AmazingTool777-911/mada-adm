@@ -1,4 +1,5 @@
 import * as path from "@std/path";
+
 import { RedisClient } from "@iuioiua/redis";
 
 import { REDIS_CA_CERTIFICATES_DIR } from "@scope/consts/db";

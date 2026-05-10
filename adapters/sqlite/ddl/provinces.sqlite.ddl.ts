@@ -1,10 +1,9 @@
+import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { BaseAdmTableDDL } from "@scope/db/ddl/base";
 import { ensureIsSqliteDbTransactionCtx } from "@scope/helpers/db";
 import type { DbTransactionContext } from "@scope/types/db";
 import type { MadaAdmConfigValues } from "@scope/types/models";
-
-import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 
 /**
  * Concrete implementation of the DDL abstract class for the provinces table

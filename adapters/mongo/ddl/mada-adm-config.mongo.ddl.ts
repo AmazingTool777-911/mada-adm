@@ -1,8 +1,8 @@
+import type { MongoDbConnection } from "@scope/adapters/mongo";
+import { MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED } from "@scope/consts/db";
+import { ensureIsMongoDbTransactionCtx } from "@scope/helpers/db";
 import type { DbTransactionContext, TableDDL } from "@scope/types/db";
 import type { MadaAdmConfig } from "@scope/types/models";
-import { MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED } from "@scope/consts/db";
-import type { MongoDbConnection } from "@scope/adapters/mongo";
-import { ensureIsMongoDbTransactionCtx } from "@scope/helpers/db";
 
 export class MadaAdmConfigMongoDDL implements TableDDL {
   readonly #dbConnection!: MongoDbConnection;

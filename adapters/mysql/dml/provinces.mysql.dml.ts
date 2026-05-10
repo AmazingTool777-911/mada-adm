@@ -1,5 +1,4 @@
 import { AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmTableMySQLDML } from "./adm-table.mysql.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -12,7 +11,9 @@ import type {
   Province,
   ProvinceRecord,
 } from "@scope/types/models";
+
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
+import { BaseAdmTableMySQLDML } from "./adm-table.mysql.dml.ts";
 
 /**
  * MySQL DML implementation for the provinces table.

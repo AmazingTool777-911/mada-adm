@@ -1,12 +1,13 @@
+import { MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED } from "@scope/consts/db";
+import { mapMadaAdmConfigBsonToEntity } from "@scope/helpers/models";
 import type {
   MadaAdmConfig,
   MadaAdmConfigBSON,
   MadaAdmConfigDML,
   MadaAdmConfigValues,
 } from "@scope/types/db";
+
 import type { MongoDbConnection } from "../mongo-db.connection.ts";
-import { MADA_ADM_CONFIGS_TABLE_NAME_CAMEL_CASED } from "@scope/consts/db";
-import { mapMadaAdmConfigBsonToEntity } from "@scope/helpers/models";
 
 /**
  * MongoDB implementation of the MadaAdmConfigDML interface.

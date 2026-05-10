@@ -1,5 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmCollectionMongoDML } from "./adm-collection.mongo.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -8,7 +7,9 @@ import type {
   RegionTableDML,
 } from "@scope/types/db";
 import type { MadaAdmConfig, Region, RegionRecord } from "@scope/types/models";
+
 import type { MongoDbConnection } from "../mongo-db.connection.ts";
+import { BaseAdmCollectionMongoDML } from "./adm-collection.mongo.dml.ts";
 
 /**
  * MongoDB DML implementation for the regions collection.

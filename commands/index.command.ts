@@ -639,7 +639,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
    */
   private async handleGlobalAction(args: GlobalCliConfigResolved) {
     console.log(
-      colors.blue.bold(`\n🚀 Initializing Administrative Data Pipeline`),
+      colors.blue.bold(`\n🚀 Initializing Madagascar Administrative Data Management (Mada ADM)`),
     );
     console.log(colors.gray(`   Database Type: ${args.dbType}`));
     switch (args.dbType) {

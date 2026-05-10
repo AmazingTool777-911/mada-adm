@@ -1,5 +1,4 @@
-[] `Initializing Administrative Data pipeline` log in global action [] import
-remote modules first before local modules in ts files [] Collation remarks in
+[] Collation remarks in
 README [] Replica set required for MongoDB in README [] Explanation of
 processing worker and insert worker in README [] Fix not clearing context at the
 end of a job [] Rename build task to compile task [] exclude ca certs

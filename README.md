@@ -1,4 +1,4 @@
-# Madagascar Administrative Boundaries (mada-adm)
+# Madagascar Administrative Boundaries (Mada ADM)
 
 A Deno-based utility project designed to enable existing databases to directly
 incorporate and manage Madagascar's administrative boundaries data.

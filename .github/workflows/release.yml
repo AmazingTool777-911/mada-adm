@@ -48,7 +48,7 @@ jobs:
             ./bin/macos-x86_64.zip \
             ./bin/macos-aarch64.zip \
             ./bin/windows-x86_64.zip \
-            --title "Release ${{ github.ref_name }}" \
+            --title "Mada ADM CLI ${{ github.ref_name }}" \
             --notes "Seeding and managing Madagascar's administrative boundary data."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

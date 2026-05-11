@@ -37,7 +37,7 @@ jobs:
       - name: Run tests
         run: deno task test
 
-  build:
+  compile:
     needs: test
     runs-on: ubuntu-latest
 

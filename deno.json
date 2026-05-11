@@ -37,7 +37,8 @@
     "./helpers",
     "./redis",
     "./lib",
-    "./utils"
+    "./utils",
+    "./map-viewer"
   ],
   "compilerOptions": {
     "lib": [
@@ -50,5 +51,6 @@
   },
   "test": {
     "exclude": ["**/*.integration.test.ts"]
-  }
+  },
+  "nodeModulesDir": "manual"
 }

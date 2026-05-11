@@ -12,7 +12,12 @@ permissions:
   contents: write
 
 jobs:
+  call-deno-compile:
+    if: ${{ github.event.inputs.release == 'true' }}
+    uses: ./.github/workflows/deno.yml
+
   publish:
+    needs: call-deno-compile
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.release == 'true' }}
 

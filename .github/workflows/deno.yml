@@ -50,8 +50,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Build binaries
-        run: deno task build
+      - name: Compile binaries
+        run: deno task compile:all
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

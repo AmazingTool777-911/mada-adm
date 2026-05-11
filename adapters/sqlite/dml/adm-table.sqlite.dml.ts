@@ -1,31 +1,10 @@
-import type {
-  AdmAttributes,
-  AdmRecord,
-  MadaAdmConfigValues,
-  ProvinceSnakeCased,
-} from "@scope/types/models";
 import type { SqliteDbConnection } from "@scope/adapters/sqlite";
-import { StringUtils } from "@scope/utils";
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_INDEX_BY_CODE,
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import type {
-  AdmEntity,
-  AdmEntitySnakeCased,
-  CommuneSnakeCased,
-  DistrictSnakeCased,
-  FokontanySnakeCased,
-  RegionSnakeCased,
-} from "@scope/types/models";
-import type {
-  DbTransactionContext,
-  DMLCreateManyResult,
-  DMLUpdateResult,
-  EntityId,
-} from "@scope/types/db";
 import { ensureIsSqliteDbTransactionCtx } from "@scope/helpers/db";
 import {
   isGeoJSONGeometry,
@@ -35,17 +14,47 @@ import {
   mapProvinceSnakeToCamel,
   mapRegionSnakeToCamel,
 } from "@scope/helpers/models";
-import { camelToSnakeCase } from "../../../utils/string.utils.ts";
+import type {
+  DbTransactionContext,
+  DMLCreateManyResult,
+  DMLUpdateResult,
+  EntityId,
+} from "@scope/types/db";
+import type {
+  AdmAttributes,
+  AdmEntity,
+  AdmEntitySnakeCased,
+  AdmRecord,
+  CommuneSnakeCased,
+  DistrictSnakeCased,
+  FokontanySnakeCased,
+  MadaAdmConfigValues,
+  ProvinceSnakeCased,
+  RegionSnakeCased,
+} from "@scope/types/models";
+import { StringUtils } from "@scope/utils";
 
 /**
  * Base class for SQLite Data Manipulation Layer (DML) implementations
  * for administrative tables.
  */
 export class BaseAdmTableSqliteDML {
+  #admLevel!: AdmLevelCode;
+
+  get admLevelTitle(): string {
+    return ADM_LEVEL_TITLE_BY_CODE.get(this.#admLevel)!;
+  }
+
+  get tableName(): string {
+    return this.getTableName(`${this.admLevelTitle}s`);
+  }
+
   constructor(
     protected config: MadaAdmConfigValues,
     protected db: SqliteDbConnection,
+    admLevel: AdmLevelCode,
   ) {
+    this.#admLevel = admLevel;
   }
 
   /**
@@ -71,7 +80,6 @@ export class BaseAdmTableSqliteDML {
    * @returns An array of mapped administrative entities.
    */
   protected _getManyByAttributes(
-    admLevel: AdmLevelCode,
     attributesValues: AdmAttributes[],
     transactionContext?: DbTransactionContext,
   ): AdmEntity[] {
@@ -79,8 +87,7 @@ export class BaseAdmTableSqliteDML {
       ensureIsSqliteDbTransactionCtx(transactionContext);
     }
     if (attributesValues.length === 0) return [];
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const attributes = Object.keys(attributesValues[0]);
     const values = attributesValues.map(
       (av) => attributes.map((attr) => av[attr]),
@@ -99,7 +106,7 @@ export class BaseAdmTableSqliteDML {
 			FROM ${tableName} t
 			JOIN v ON ${
       attributes.map((attr) => {
-        const isTargetColumn = attr === admLevelTitle;
+        const isTargetColumn = attr === this.admLevelTitle;
         if (isTargetColumn) {
           return `t.${attr} = v.${attr} COLLATE NOCASE`;
         }
@@ -110,7 +117,7 @@ export class BaseAdmTableSqliteDML {
     const stmt = this.db.client.prepare(sql);
     const res = stmt.all(...values.flat()) as AdmEntitySnakeCased[];
     return res.map((r) => {
-      switch (admLevel) {
+      switch (this.#admLevel) {
         case AdmLevelCode.PROVINCE:
           return mapProvinceSnakeToCamel(r as ProvinceSnakeCased);
         case AdmLevelCode.REGION:
@@ -123,7 +130,8 @@ export class BaseAdmTableSqliteDML {
           return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
         default:
           throw new Error(
-            `Unknown ADM level when getting ${admLevelTitle}: ${admLevel satisfies never} by attributes`,
+            `Unknown ADM level when getting ${this.admLevelTitle}: ${this
+              .#admLevel satisfies never} by attributes`,
           );
       }
     });
@@ -139,7 +147,6 @@ export class BaseAdmTableSqliteDML {
    * @returns An object containing the number of affected rows.
    */
   protected _updateGeojsonByIdentifiers(
-    admLevel: AdmLevelCode,
     identifiers: AdmAttributes,
     geojson: string,
     transactionContext?: DbTransactionContext,
@@ -147,8 +154,7 @@ export class BaseAdmTableSqliteDML {
     if (transactionContext) {
       ensureIsSqliteDbTransactionCtx(transactionContext);
     }
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const attributes = Object.keys(identifiers);
     const values = Object.values(identifiers);
     const sql = `
@@ -157,7 +163,7 @@ export class BaseAdmTableSqliteDML {
 				updated_at = (datetime('now'))
 			WHERE ${
       attributes.map((attr) => {
-        const isTargetColumn = attr === admLevelTitle;
+        const isTargetColumn = attr === this.admLevelTitle;
         if (isTargetColumn) {
           return `${attr} = ? COLLATE NOCASE`;
         }
@@ -178,27 +184,25 @@ export class BaseAdmTableSqliteDML {
    * @returns An object containing the number of inserted rows.
    */
   protected _createMany(
-    admLevel: AdmLevelCode,
     records: AdmRecord[],
   ): DMLCreateManyResult {
     if (records.length === 0) return { insertedCount: 0 };
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const columns = Object.keys(records[0]).filter((attr) => {
       if (attr === "geojson") return this.config.hasGeojson;
       if (attr === "adm_level") return this.config.hasAdmLevel;
       if (
         [AdmLevelCode.DISTRICT, AdmLevelCode.COMMUNE, AdmLevelCode.FOKONTANY]
-          .includes(admLevel)
+          .includes(this.#admLevel)
       ) {
         if (attr === "province") return this.config.isProvinceRepeated;
         if (attr === "provinceId") return this.config.isProvinceFkRepeated;
       }
-      if (admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
+      if (this.#admLevel === AdmLevelCode.COMMUNE && attr === "regionId") {
         return this.config.isFkRepeated;
       }
       if (
-        admLevel === AdmLevelCode.FOKONTANY &&
+        this.#admLevel === AdmLevelCode.FOKONTANY &&
         ["regionId", "districtId"].includes(attr)
       ) return this.config.isFkRepeated;
       return true;
@@ -213,7 +217,7 @@ export class BaseAdmTableSqliteDML {
 
     const sql = `
 			INSERT INTO ${tableName} (${
-      columns.map((c) => camelToSnakeCase(c)).join(",")
+      columns.map((c) => StringUtils.camelToSnakeCase(c)).join(",")
     })
 			VALUES ${
       values.map(() =>
@@ -233,15 +237,14 @@ export class BaseAdmTableSqliteDML {
    *
    * @param admLevel - The administrative level of the table.
    */
-  protected _deleteDuplicates(admLevel: AdmLevelCode): void {
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
-    const partitionKeys: string[] = [`${admLevelTitle} COLLATE NOCASE`];
+  protected _deleteDuplicates(): void {
+    const tableName = this.tableName;
+    const partitionKeys: string[] = [`${this.admLevelTitle} COLLATE NOCASE`];
     const regionAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
       AdmLevelCode.REGION,
     )!;
-    if (ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! > regionAdmLevelIndex) {
-      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(admLevel)!;
+    if (ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! > regionAdmLevelIndex) {
+      const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)!;
       for (let i = admLevelIndex - 1; i >= regionAdmLevelIndex; i--) {
         const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
           ADM_LEVEL_CODES_INDEXED[i],
@@ -250,7 +253,7 @@ export class BaseAdmTableSqliteDML {
       }
     }
     const sql = `
-      WITH CTE AS (
+      WITH ranked AS (
 				SELECT id, 
 					ROW_NUMBER() OVER (
 						PARTITION BY ${partitionKeys.join(", ")}
@@ -260,7 +263,7 @@ export class BaseAdmTableSqliteDML {
       )
       DELETE FROM ${tableName}
       WHERE id IN (
-        SELECT id FROM CTE WHERE row_num > 1
+        SELECT id FROM ranked WHERE row_num > 1
       );
     `;
     const stmt = this.db.client.prepare(sql);
@@ -275,17 +278,15 @@ export class BaseAdmTableSqliteDML {
    * @returns An array of administrative entities.
    */
   protected _getManyByParentsIds(
-    admLevel: AdmLevelCode,
     parentsIds: EntityId[],
   ): AdmEntity[] {
-    if (admLevel === AdmLevelCode.PROVINCE) {
+    if (this.#admLevel === AdmLevelCode.PROVINCE) {
       throw new Error(`There is no parent for province`);
     }
     if (parentsIds.length === 0) return [];
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const parentIdColumn = `${ADM_LEVEL_TITLE_BY_CODE.get(
-      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(admLevel)! - 1],
+      ADM_LEVEL_CODES_INDEXED[ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! - 1],
     )!}_id`;
     const columns = ["t.*"];
     if (this.config.hasGeojson) {
@@ -299,7 +300,7 @@ export class BaseAdmTableSqliteDML {
     const stmt = this.db.client.prepare(sql);
     const res = stmt.all(...parentsIds) as AdmEntitySnakeCased[];
     return res.map<AdmEntity>((r) => {
-      switch (admLevel) {
+      switch (this.#admLevel) {
         case AdmLevelCode.REGION:
           return mapRegionSnakeToCamel(r as RegionSnakeCased);
         case AdmLevelCode.DISTRICT:
@@ -310,7 +311,7 @@ export class BaseAdmTableSqliteDML {
           return mapFokontanySnakeToCamel(r as FokontanySnakeCased);
         default:
           throw new Error(
-            `Unknown ADM level when getting ${admLevelTitle}: ${admLevel satisfies never} by parents ids`,
+            `Unknown ADM level when getting ${this.admLevelTitle}: ${this.#admLevel} by parents ids`,
           );
       }
     });
@@ -326,7 +327,6 @@ export class BaseAdmTableSqliteDML {
    * @returns An object containing the number of affected rows.
    */
   protected _updateFieldByIds(
-    admLevel: AdmLevelCode,
     ids: EntityId[],
     column: string,
     value: string,
@@ -335,8 +335,7 @@ export class BaseAdmTableSqliteDML {
     if (transactionContext) {
       ensureIsSqliteDbTransactionCtx(transactionContext);
     }
-    const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
-    const tableName = this.getTableName(`${admLevelTitle}s`);
+    const tableName = this.tableName;
     const sql = `
 			UPDATE ${tableName}
 			SET ${column} = ?,

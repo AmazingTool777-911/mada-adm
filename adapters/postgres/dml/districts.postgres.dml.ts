@@ -1,9 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-
-import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
-  DistrictAttributes,
   DistrictTableDML,
   DMLCreateManyResult,
   DMLUpdateResult,
@@ -11,10 +8,13 @@ import type {
 } from "@scope/types/db";
 import type {
   District,
+  DistrictAttributes,
   DistrictRecord,
   MadaAdmConfigValues,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
+import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 
 /**
  * PostgreSQL DML implementation for the districts table.
@@ -26,7 +26,7 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     db: PostgresDbConnection,
     schema: string = "public",
   ) {
-    super(config, db, schema);
+    super(config, db, AdmLevelCode.DISTRICT, schema);
   }
 
   /**
@@ -41,7 +41,6 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
     return (await this._getManyByAttributes(
-      AdmLevelCode.DISTRICT,
       attributes,
       transactionContext,
     )) as District[];
@@ -59,7 +58,6 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
     return (await this._getManyByParentsIds(
-      AdmLevelCode.DISTRICT,
       regionIds,
       transactionContext,
     )) as District[];
@@ -84,13 +82,7 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.DISTRICT,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   /**
@@ -103,11 +95,7 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     values: DistrictRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
-    return await this._createMany(
-      AdmLevelCode.DISTRICT,
-      values,
-      transactionContext,
-    );
+    return await this._createMany(values, transactionContext);
   }
 
   /**
@@ -116,7 +104,7 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
   async deleteDuplicates(
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.DISTRICT, transactionContext);
+    await this._deleteDuplicates(transactionContext);
   }
 
   /**
@@ -133,8 +121,7 @@ export class DistrictsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.DISTRICT,
-      { district: attributes.district, region: attributes.region },
+      attributes,
       geojson,
       transactionContext,
     );

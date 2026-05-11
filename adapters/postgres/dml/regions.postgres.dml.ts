@@ -1,7 +1,6 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { mapRegionSnakeToCamel } from "@scope/helpers/models";
 import { DbHelper } from "@scope/helpers";
-import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
+import { mapRegionSnakeToCamel } from "@scope/helpers/models";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -15,7 +14,9 @@ import type {
   RegionRecord,
   RegionSnakeCased,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
+import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 
 /**
  * PostgreSQL DML implementation for the regions table.
@@ -25,9 +26,9 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
   constructor(
     config: MadaAdmConfigValues,
     db: PostgresDbConnection,
-    schema: string = "public",
+    schema?: string,
   ) {
-    super(config, db, schema);
+    super(config, db, AdmLevelCode.REGION, schema);
   }
 
   /**
@@ -70,7 +71,6 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<Region[]> {
     return (await this._getManyByParentsIds(
-      AdmLevelCode.REGION,
       provinceIds,
       transactionContext,
     )) as Region[];
@@ -92,13 +92,7 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.REGION,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   /**
@@ -111,11 +105,7 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     values: RegionRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
-    return await this._createMany(
-      AdmLevelCode.REGION,
-      values,
-      transactionContext,
-    );
+    return await this._createMany(values, transactionContext);
   }
 
   /**
@@ -124,7 +114,7 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
   async deleteDuplicates(
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.REGION, transactionContext);
+    await this._deleteDuplicates(transactionContext);
   }
 
   /**
@@ -141,7 +131,6 @@ export class RegionsPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.REGION,
       { region: name },
       geojson,
       transactionContext,

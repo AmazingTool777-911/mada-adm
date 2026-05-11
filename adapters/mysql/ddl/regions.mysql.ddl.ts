@@ -4,6 +4,7 @@ import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { DbTransactionContext } from "@scope/types/db";
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
+import { MYSQL_TEXT_COLUMN_COLLATION } from "@scope/consts/db";
 
 /**
  * Concrete implementation of the DDL abstract class for the regions table
@@ -46,7 +47,7 @@ export class RegionsMySQLDDL extends BaseAdmTableDDL {
         INDEX idx_${this.tableName}_region (region),
         INDEX idx_${this.tableName}_province_id (province_id),
         CONSTRAINT fk_${this.tableName}_province FOREIGN KEY (province_id) REFERENCES ${provincesTable}(id) ON DELETE CASCADE
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=${MYSQL_TEXT_COLUMN_COLLATION};
     `;
     const client = ensureIsMySQLDbTransactionCtx(transactionContext)
       ? transactionContext.connection

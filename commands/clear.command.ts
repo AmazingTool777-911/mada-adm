@@ -1,16 +1,12 @@
+import { colors } from "@cliffy/ansi/colors";
 import { Command } from "@cliffy/command";
 import { Confirm } from "@cliffy/prompt";
-import { colors } from "@cliffy/ansi/colors";
+
 import {
   CLEAR_COMMAND_DESCRIPTION,
   CLEAR_COMMAND_NAME,
 } from "@scope/consts/cli";
-import type { GlobalCliConfig } from "@scope/types/cli";
-import type { DbConnection } from "@scope/types/db";
-import {
-  displayMadaAdmConfig,
-  resolveCommonGlobalCliConfig,
-} from "@scope/helpers/cli";
+import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
 import {
   injectCommunesDDL,
   injectDbConnection,
@@ -21,6 +17,12 @@ import {
   injectRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import {
+  displayMadaAdmConfig,
+  resolveCommonGlobalCliConfig,
+} from "@scope/helpers/cli";
+import type { GlobalCliConfig } from "@scope/types/cli";
+import type { DbConnection } from "@scope/types/db";
 
 /**
  * CLI sub-command that drops all ADM tables and the configuration table from
@@ -77,7 +79,7 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
       if (!configTableExists) {
         console.log(
           colors.yellow(
-            `\nℹ️  No Mada ADM configuration found in the database. Nothing to clear.`,
+            `ℹ️  No Mada ADM configuration found in the database. Nothing to clear.\n`,
           ),
         );
         return;
@@ -87,7 +89,7 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
       if (!existingConfig) {
         console.log(
           colors.yellow(
-            `\nℹ️  No Mada ADM configuration found in the database. Nothing to clear.`,
+            `ℹ️  No Mada ADM configuration found in the database. Nothing to clear.\n`,
           ),
         );
         return;
@@ -99,7 +101,7 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
 
       console.log(
         colors.yellow(
-          `\n⚠️  This will permanently delete all ADM tables and the configuration table from the database.`,
+          `⚠️  This will permanently delete all ADM tables and the configuration table from the database.\n`,
         ),
       );
 
@@ -109,7 +111,7 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
       });
 
       if (!confirmed) {
-        console.log(colors.gray(`\nℹ️  Operation cancelled.`));
+        console.log(colors.gray(`ℹ️  Operation cancelled.\n`));
         return;
       }
 
@@ -158,29 +160,31 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
 
       if (admTablesExist) {
         console.log(
-          colors.yellow(`\n🗑️  Dropping ADM tables...`),
+          colors.red(`🗑️  Dropping ADM tables...`),
         );
-        await db.transaction(async (txCtx) => {
-          for (
-            const ddl of [
-              fokontanysDDL,
-              communesDDL,
-              districtsDDL,
-              regionsDDL,
-              provincesDDL,
-            ]
-          ) {
-            await ddl.drop(txCtx);
-          }
-        });
-        console.log(colors.green(`✅ ADM tables dropped successfully.`));
+        await db.transaction(
+          async (txCtx) => {
+            for (
+              const ddl of [
+                fokontanysDDL,
+                communesDDL,
+                districtsDDL,
+                regionsDDL,
+                provincesDDL,
+              ]
+            ) {
+              console.log(`   Dropping the ${ddl.tableName} table ...`);
+              await ddl.drop(txCtx);
+            }
+          },
+          DDL_TRANSACTION_OPTIONS,
+        );
+        console.log(colors.green(`✅ ADM tables dropped successfully.\n`));
       } else {
         console.log(
-          colors.gray(`\nℹ️  No ADM tables found. Skipping table deletion.`),
+          colors.gray(`ℹ️  No ADM tables found. Skipping table deletion.\n`),
         );
       }
-
-      console.log();
 
       // ── 4. Drop the config table ───────────────────────────────────────────
 
@@ -191,28 +195,26 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
 
       if (dropConfigTable) {
         console.log(
-          colors.yellow(`\n🗑️  Dropping Mada ADM configuration table...`),
+          colors.red(`🗑️  Dropping Mada ADM configuration table...`),
         );
         await madaAdmConfigDDL.drop();
         console.log(
           colors.bold.green(
-            `\n✅ Mada ADM configuration table dropped successfully.`,
+            `✅ Mada ADM configuration table dropped successfully.\n`,
           ),
         );
       } else {
         console.log(
-          colors.gray(`\nℹ️  Mada ADM configuration table kept.`),
+          colors.gray(`ℹ️  Mada ADM configuration table kept.\n`),
         );
       }
 
       console.log(
-        colors.bold.green(`\n✨ Clear operation completed.`),
+        colors.bold.green(`✨ Clear operation completed.\n`),
       );
     } finally {
       await db.close();
-      console.log(
-        `\n${colors.green("✅ Database connection closed successfully")}`,
-      );
+      console.log(colors.gray("🔌 Database connection closed successfully"));
     }
   }
 }

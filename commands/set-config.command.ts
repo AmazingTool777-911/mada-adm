@@ -1,17 +1,12 @@
-import { Command } from "@cliffy/command";
-import { Confirm, Input, prompt } from "@cliffy/prompt";
 import { colors } from "@cliffy/ansi/colors";
+import { Command } from "@cliffy/command";
+import { Confirm } from "@cliffy/prompt";
+
 import {
   SET_CONFIG_COMMAND_DESCRIPTION,
   SET_CONFIG_COMMAND_NAME,
 } from "@scope/consts/cli";
-import type { GlobalCliConfig } from "@scope/types/cli";
-import type { MadaAdmConfigValues } from "@scope/types/models";
-import type { DbConnection } from "@scope/types/db";
-import {
-  displayMadaAdmConfig,
-  resolveCommonGlobalCliConfig,
-} from "@scope/helpers/cli";
+import { DDL_TRANSACTION_OPTIONS } from "@scope/consts/db";
 import {
   injectCommunesDDL,
   injectDbConnection,
@@ -27,6 +22,14 @@ import {
   resetRegionsDDL,
 } from "@scope/db";
 import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import {
+  displayMadaAdmConfig,
+  promptMadaAdmConfig,
+  resolveCommonGlobalCliConfig,
+} from "@scope/helpers/cli";
+import type { GlobalCliConfig } from "@scope/types/cli";
+import type { DbConnection } from "@scope/types/db";
+import type { MadaAdmConfigValues } from "@scope/types/models";
 
 /**
  * CLI sub-command that interactively sets or updates the Mada ADM configuration
@@ -105,7 +108,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
       } else {
         console.log(
           colors.yellow(
-            `\nℹ️  No existing Mada ADM configuration found in the database.`,
+            `ℹ️  No existing Mada ADM configuration found in the database.`,
           ),
         );
       }
@@ -119,46 +122,9 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
         );
       console.log(configPromptTitle);
 
-      const result = await prompt([
-        {
-          name: "tablesPrefix",
-          message: "Tables Prefix (leave empty for none):",
-          type: Input,
-          default: prevAdmConfigValues?.tablesPrefix ?? "",
-        },
-        {
-          name: "isFkRepeated",
-          message: "Are parent tables's foreign keys repeated?",
-          type: Confirm,
-          default: prevAdmConfigValues?.isFkRepeated ?? true,
-        },
-        {
-          name: "isProvinceRepeated",
-          message: "Is a parent province's name repeated across sub-tables?",
-          type: Confirm,
-          default: prevAdmConfigValues?.isProvinceRepeated ?? false,
-        },
-        {
-          name: "isProvinceFkRepeated",
-          message:
-            "Is a parent province's foreign key repeated across sub-tables?",
-          type: Confirm,
-          default: prevAdmConfigValues?.isProvinceFkRepeated ?? false,
-        },
-        {
-          name: "hasGeojson",
-          message:
-            "Do tables include the spatial geometries of their respective ADM boundaries?",
-          type: Confirm,
-          default: prevAdmConfigValues?.hasGeojson ?? false,
-        },
-        {
-          name: "hasAdmLevel",
-          message: "Do the tables include an adm level index (0 to 4) column?",
-          type: Confirm,
-          default: prevAdmConfigValues?.hasAdmLevel ?? true,
-        },
-      ]);
+      const result = await promptMadaAdmConfig(
+        prevAdmConfigValues ?? undefined,
+      );
 
       const rawTablesPrefix = (result.tablesPrefix as string) ?? "";
       const tablesPrefix = rawTablesPrefix.trim() || null;
@@ -250,19 +216,23 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
                 `\n🗑️  Dropping ADM tables built with the previous configuration...`,
               ),
             );
-            await db.transaction(async (txCtx) => {
-              for (
-                const ddl of [
-                  fokontanysDDL,
-                  communesDDL,
-                  districtsDDL,
-                  regionsDDL,
-                  provincesDDL,
-                ]
-              ) {
-                await ddl.drop(txCtx);
-              }
-            });
+            await db.transaction(
+              async (txCtx) => {
+                for (
+                  const ddl of [
+                    fokontanysDDL,
+                    communesDDL,
+                    districtsDDL,
+                    regionsDDL,
+                    provincesDDL,
+                  ]
+                ) {
+                  console.log(`   Dropping the ${ddl.tableName} table ...`);
+                  await ddl.drop(txCtx);
+                }
+              },
+              DDL_TRANSACTION_OPTIONS,
+            );
             console.log(
               colors.green(`✅ Old ADM tables dropped successfully.`),
             );
@@ -351,9 +321,7 @@ export class CliSetConfigCommand extends Command<GlobalCliConfig, void> {
       console.error(error);
     } finally {
       await db.close();
-      console.log(
-        `\n${colors.green("✅ Database connection closed successfully")}`,
-      );
+      console.log(colors.gray("\n🔌 Database connection closed successfully"));
     }
   }
 }

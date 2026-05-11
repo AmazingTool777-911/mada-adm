@@ -1,8 +1,9 @@
-import { DbHelper } from "@scope/helpers";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { BaseAdmTableDDL } from "@scope/db/ddl/base";
-import type { MadaAdmConfigValues } from "@scope/types/models";
+import { DbHelper } from "@scope/helpers";
 import type { DbTransactionContext } from "@scope/types/db";
+import type { MadaAdmConfigValues } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
 
 /**

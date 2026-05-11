@@ -37,7 +37,7 @@ jobs:
       - name: Run tests
         run: deno task test
 
-  build:
+  compile:
     needs: test
     runs-on: ubuntu-latest
 
@@ -50,8 +50,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Build binaries
-        run: deno task build
+      - name: Compile binaries
+        run: deno task compile:all
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

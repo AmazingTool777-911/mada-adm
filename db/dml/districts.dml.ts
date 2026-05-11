@@ -17,6 +17,12 @@ import {
   type MySQLDbConnection,
 } from "@scope/adapters/mysql";
 
+import {
+  injectDistrictsMongoDML,
+  type MongoDbConnection,
+} from "@scope/adapters/mongo";
+import type { MadaAdmConfig } from "@scope/types/models";
+
 /**
  * Injects (or creates) an instance of the districts table DML adapter based on the database type.
  *
@@ -49,6 +55,11 @@ export function injectDistrictsDML(
       return injectDistrictsMySQLDML(
         config,
         db as MySQLDbConnection,
+      );
+    case DbType.MongoDB:
+      return injectDistrictsMongoDML(
+        config as MadaAdmConfig,
+        db as MongoDbConnection,
       );
     default:
       throw new Error(

@@ -1,9 +1,11 @@
+import { MYSQL_TEXT_COLUMN_COLLATION } from "@scope/consts/db";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { BaseAdmTableDDL } from "@scope/db/ddl/base";
-import type { MadaAdmConfigValues } from "@scope/types/models";
-import type { DbTransactionContext } from "@scope/types/db";
-import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 import { ensureIsMySQLDbTransactionCtx } from "@scope/helpers/db";
+import type { DbTransactionContext } from "@scope/types/db";
+import type { MadaAdmConfigValues } from "@scope/types/models";
+
+import type { MySQLDbConnection } from "../mysql-db.connection.ts";
 
 /**
  * Concrete implementation of the DDL abstract class for the provinces table
@@ -55,7 +57,7 @@ export class ProvincesMySQLDDL extends BaseAdmTableDDL {
         created_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
         updated_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
         INDEX idx_${this.tableName}_province (province)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=${MYSQL_TEXT_COLUMN_COLLATION};
     `;
     const client = ensureIsMySQLDbTransactionCtx(transactionContext)
       ? transactionContext.connection

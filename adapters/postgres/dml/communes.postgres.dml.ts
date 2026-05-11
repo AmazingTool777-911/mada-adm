@@ -1,6 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-
-import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   CommuneTableDML,
   DbTransactionContext,
@@ -14,7 +12,9 @@ import type {
   CommuneRecord,
   MadaAdmConfigValues,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
+import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 
 /**
  * PostgreSQL DML implementation for the communes table.
@@ -24,9 +24,9 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
   constructor(
     config: MadaAdmConfigValues,
     db: PostgresDbConnection,
-    schema: string = "public",
+    schema?: string,
   ) {
-    super(config, db, schema);
+    super(config, db, AdmLevelCode.COMMUNE, schema);
   }
 
   /**
@@ -41,7 +41,6 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<Commune[]> {
     return (await this._getManyByAttributes(
-      AdmLevelCode.COMMUNE,
       attributes,
       transactionContext,
     )) as Commune[];
@@ -59,7 +58,6 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<Commune[]> {
     return (await this._getManyByParentsIds(
-      AdmLevelCode.COMMUNE,
       districtIds,
       transactionContext,
     )) as Commune[];
@@ -85,13 +83,7 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.COMMUNE,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   /**
@@ -104,11 +96,7 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     values: CommuneRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
-    return await this._createMany(
-      AdmLevelCode.COMMUNE,
-      values,
-      transactionContext,
-    );
+    return await this._createMany(values, transactionContext);
   }
 
   /**
@@ -117,7 +105,7 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
   async deleteDuplicates(
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.COMMUNE, transactionContext);
+    await this._deleteDuplicates(transactionContext);
   }
 
   /**
@@ -134,12 +122,7 @@ export class CommunesPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.COMMUNE,
-      {
-        commune: attributes.commune,
-        district: attributes.district,
-        region: attributes.region,
-      },
+      attributes,
       geojson,
       transactionContext,
     );

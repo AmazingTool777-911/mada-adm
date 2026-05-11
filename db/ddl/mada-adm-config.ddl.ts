@@ -16,6 +16,11 @@ import {
   type MySQLDbConnection,
   resetMadaAdmConfigMySQLDDL,
 } from "@scope/adapters/mysql";
+import {
+  injectMadaAdmConfigMongoDDL,
+  type MongoDbConnection,
+  resetMadaAdmConfigMongoDDL,
+} from "@scope/adapters/mongo";
 
 /**
  * Injects (or creates) an instance of the mada adm config table DDL adapter based on the database type.
@@ -45,6 +50,10 @@ export function injectMadaAdmConfigDDL(
       return injectMadaAdmConfigMySQLDDL(
         db as MySQLDbConnection,
       );
+    case DbType.MongoDB:
+      return injectMadaAdmConfigMongoDDL(
+        db as MongoDbConnection,
+      );
     default:
       throw new Error(
         `Unsupported database type for mada adm config DDL: ${dbType}`,
@@ -68,6 +77,9 @@ export function resetMadaAdmConfigDDL(dbType: DbType): void {
       break;
     case DbType.MySQL:
       resetMadaAdmConfigMySQLDDL();
+      break;
+    case DbType.MongoDB:
+      resetMadaAdmConfigMongoDDL();
       break;
     default:
       throw new Error(

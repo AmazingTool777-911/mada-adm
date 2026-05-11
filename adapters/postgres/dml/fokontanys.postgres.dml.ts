@@ -1,20 +1,20 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-
-import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
   DMLUpdateResult,
   EntityId,
-  FokontanyAttributes,
   FokontanyTableDML,
 } from "@scope/types/db";
 import type {
   Fokontany,
+  FokontanyAttributes,
   FokontanyRecord,
   MadaAdmConfigValues,
 } from "@scope/types/models";
+
 import type { PostgresDbConnection } from "../postgres-db.connection.ts";
+import { BaseAdmPostgresTableDML } from "./adm-table.postgres.dml.ts";
 
 /**
  * PostgreSQL DML implementation for the fokontanys table.
@@ -26,7 +26,7 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     db: PostgresDbConnection,
     schema: string = "public",
   ) {
-    super(config, db, schema);
+    super(config, db, AdmLevelCode.FOKONTANY, schema);
   }
 
   /**
@@ -41,7 +41,6 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<Fokontany[]> {
     return (await this._getManyByAttributes(
-      AdmLevelCode.FOKONTANY,
       attributes,
       transactionContext,
     )) as Fokontany[];
@@ -59,7 +58,6 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<Fokontany[]> {
     return (await this._getManyByParentsIds(
-      AdmLevelCode.FOKONTANY,
       communeIds,
       transactionContext,
     )) as Fokontany[];
@@ -86,13 +84,7 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.FOKONTANY,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   /**
@@ -105,11 +97,7 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     values: FokontanyRecord[],
     transactionContext?: DbTransactionContext,
   ): Promise<DMLCreateManyResult> {
-    return await this._createMany(
-      AdmLevelCode.FOKONTANY,
-      values,
-      transactionContext,
-    );
+    return await this._createMany(values, transactionContext);
   }
 
   /**
@@ -118,7 +106,7 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
   async deleteDuplicates(
     transactionContext?: DbTransactionContext,
   ): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.FOKONTANY, transactionContext);
+    await this._deleteDuplicates(transactionContext);
   }
 
   /**
@@ -135,13 +123,7 @@ export class FokontanysPostgresDML extends BaseAdmPostgresTableDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.FOKONTANY,
-      {
-        fokontany: attributes.fokontany,
-        commune: attributes.commune,
-        district: attributes.district,
-        region: attributes.region,
-      },
+      attributes,
       geojson,
       transactionContext,
     );

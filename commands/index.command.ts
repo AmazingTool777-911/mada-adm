@@ -1,11 +1,12 @@
 import * as path from "node:path";
-import { DateUtils } from "@scope/utils";
-import { Confirm, Input, prompt } from "@cliffy/prompt";
-import { Command } from "@cliffy/command";
-import { colors } from "@cliffy/ansi/colors";
+
+import { TextLineStream } from "@std/streams";
+
 import { ansi } from "@cliffy/ansi";
-import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
-import { injectMadaAdmConfigDML, injectProvincesDML } from "@scope/db/dml";
+import { colors } from "@cliffy/ansi/colors";
+import { Command } from "@cliffy/command";
+import { Confirm } from "@cliffy/prompt";
+
 import {
   CLI_DESCRIPTION,
   CLI_NAME,
@@ -15,6 +16,17 @@ import {
   DISABLE_REDIS_DESCRIPTION,
   IN_MEMORY_INSERT_HWM_DESCRIPTION,
   IN_MEMORY_PROCESSING_HWM_DESCRIPTION,
+  MONGO_DATABASE_DESCRIPTION,
+  MONGO_POOL_SIZE_DESCRIPTION,
+  MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
+  MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
+  MONGO_TLS_CA_FILE_DESCRIPTION,
+  MONGO_TLS_CA_PATH_DESCRIPTION,
+  MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
+  MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
+  MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
+  MONGO_TLS_DESCRIPTION,
+  MONGO_URI_DESCRIPTION,
   MYSQL_CA_CERT_FILE_DESCRIPTION,
   MYSQL_CA_CERT_PATH_DESCRIPTION,
   MYSQL_CERT_FILE_DESCRIPTION,
@@ -64,20 +76,19 @@ import {
 } from "@scope/consts/cli";
 import {
   DbType,
+  DDL_TRANSACTION_OPTIONS,
   SQLITE_DB_DEFAULT_FILE,
   SQLITE_DB_DIR,
 } from "@scope/consts/db";
-import type {
-  GlobalCliConfig,
-  GlobalCliConfigResolved,
-  IndexActionCliConfigResolved,
-} from "@scope/types/cli";
-import type {
-  AdmRecord,
-  AdmValues,
-  MadaAdmConfigValues,
-} from "@scope/types/models";
-import { DbConnection, TableDDL } from "@scope/types/db";
+import {
+  ADM_LEVEL_CODES_INDEXED,
+  ADM_LEVEL_ENTRIES_COUNT_BY_CODE,
+  ADM_LEVEL_INDEX_BY_CODE,
+  ADM_LEVEL_TITLE_BY_CODE,
+  ADM_SEEDING_INPUT_FILENAMES_BY_CODE,
+  ADM_SEEDING_INPUTS_DIR,
+  AdmLevelCode,
+} from "@scope/consts/models";
 import {
   attemptDbConnection,
   injectCommunesDDL,
@@ -96,28 +107,14 @@ import {
   resetProvincesDDL,
   resetRegionsDDL,
 } from "@scope/db";
-import { injectRedisConnection, RedisConnection } from "@scope/redis";
+import { injectMadaAdmConfigDDL } from "@scope/db/ddl";
+import { injectMadaAdmConfigDML, injectProvincesDML } from "@scope/db/dml";
 import {
-  type QueueWorkersMediator,
-  WorkerPool,
-} from "@scope/lib/workers-mediators";
-import {
-  injectInMemoryQueueWorkersMediator,
-} from "@scope/lib/in-memory-workers-mediators";
-import {
-  injectRedisQueueWorkersMediator,
-} from "@scope/lib/redis-workers-mediators";
-import type { SeedAdmJobContext } from "@scope/types/command";
-import {
-  ADM_LEVEL_CODES_INDEXED,
-  ADM_LEVEL_ENTRIES_COUNT_BY_CODE,
-  ADM_LEVEL_INDEX_BY_CODE,
-  ADM_LEVEL_TITLE_BY_CODE,
-  ADM_SEEDING_INPUT_FILENAMES_BY_CODE,
-  ADM_SEEDING_INPUTS_DIR,
-  AdmLevelCode,
-} from "@scope/consts/models";
-import { TextLineStream } from "@std/streams";
+  displayMadaAdmConfig,
+  promptMadaAdmConfig,
+  resolveGlobalCliConfig,
+  resolveIndexCliConfig,
+} from "@scope/helpers/cli";
 import {
   compareAdmValues,
   isCommuneValues,
@@ -126,11 +123,26 @@ import {
   isProvinceValues,
   isRegionValues,
 } from "@scope/helpers/models";
-import {
-  displayMadaAdmConfig,
-  resolveGlobalCliConfig,
-  resolveIndexCliConfig,
-} from "@scope/helpers/cli";
+import { injectInMemoryQueueWorkersMediator } from "@scope/lib/in-memory-workers-mediators";
+import { injectRedisQueueWorkersMediator } from "@scope/lib/redis-workers-mediators";
+import type {
+  QueueWorkersMediator,
+  WorkerPool,
+} from "@scope/lib/workers-mediators";
+import { injectRedisConnection, type RedisConnection } from "@scope/redis";
+import type {
+  GlobalCliConfig,
+  GlobalCliConfigResolved,
+  IndexActionCliConfigResolved,
+} from "@scope/types/cli";
+import type { SeedAdmJobContext } from "@scope/types/command";
+import type { DbConnection, TableDDL } from "@scope/types/db";
+import type {
+  AdmRecord,
+  AdmValues,
+  MadaAdmConfigValues,
+} from "@scope/types/models";
+import { DateUtils } from "@scope/utils";
 
 const PROGRESS_BARS_LINES_COUNT = 5;
 
@@ -178,128 +190,82 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalOption("--pg.schema <schema:string>", PG_SCHEMA_DESCRIPTION)
       .globalOption("--pg.url <url:string>", PG_URL_DESCRIPTION)
       .globalOption("--pg.host <host:string>", PG_HOST_DESCRIPTION)
-      .globalOption("--pg.port <port:number>", PG_PORT_DESCRIPTION, {
-        depends: ["pg.host"],
-      })
-      .globalOption("--pg.user <username:string>", PG_USER_DESCRIPTION, {
-        depends: ["pg.host"],
-      })
+      .globalOption("--pg.port <port:number>", PG_PORT_DESCRIPTION)
+      .globalOption("--pg.user <username:string>", PG_USER_DESCRIPTION)
       .globalOption(
         "--pg.password <password:string>",
         PG_PASSWORD_DESCRIPTION,
-        {
-          depends: ["pg.user"],
-        },
       )
       .globalOption(
         "--pg.database <database:string>",
         PG_DATABASE_DESCRIPTION,
-        {
-          depends: ["pg.user"],
-        },
       )
-      .globalOption("--pg.ssl [ssl:boolean]", PG_SSL_DESCRIPTION, {
-        depends: ["pg.user"],
-      })
+      .globalOption("--pg.ssl [ssl:boolean]", PG_SSL_DESCRIPTION)
       .globalOption(
         "--pg.ca-cert-file <filename:string>",
         PG_CA_CERT_FILE_DESCRIPTION,
-        {
-          depends: ["pg.ssl"],
-        },
       )
       .globalOption(
         "--pg.ca-cert-path <path:string>",
         PG_CA_CERT_PATH_DESCRIPTION,
         {
           conflicts: ["--pg.ca-cert-file"],
-          depends: ["pg.ssl"],
         },
       )
       .globalOption(
         "--pg.connection-limit <limit:number>",
         PG_CONNECTION_LIMIT_DESCRIPTION,
-        {
-          depends: ["pg.host"],
-        },
       )
       .group("MySQL configuration")
       .globalOption("--mysql.url <url:string>", MYSQL_URL_DESCRIPTION)
       .globalOption("--mysql.host <host:string>", MYSQL_HOST_DESCRIPTION)
-      .globalOption("--mysql.port <port:number>", MYSQL_PORT_DESCRIPTION, {
-        depends: ["mysql.host"],
-      })
-      .globalOption("--mysql.user <username:string>", MYSQL_USER_DESCRIPTION, {
-        depends: ["mysql.host"],
-      })
+      .globalOption("--mysql.port <port:number>", MYSQL_PORT_DESCRIPTION)
+      .globalOption("--mysql.user <username:string>", MYSQL_USER_DESCRIPTION)
       .globalOption(
         "--mysql.password <password:string>",
         MYSQL_PASSWORD_DESCRIPTION,
-        {
-          depends: ["mysql.user"],
-        },
       )
       .globalOption(
         "--mysql.database <database:string>",
         MYSQL_DATABASE_DESCRIPTION,
-        {
-          depends: ["mysql.user"],
-        },
       )
-      .globalOption("--mysql.ssl [ssl:boolean]", MYSQL_SSL_DESCRIPTION, {
-        depends: ["mysql.user"],
-      })
+      .globalOption("--mysql.ssl [ssl:boolean]", MYSQL_SSL_DESCRIPTION)
       .globalOption(
         "--mysql.ca-cert-file <filename:string>",
         MYSQL_CA_CERT_FILE_DESCRIPTION,
-        {
-          depends: ["mysql.ssl"],
-        },
       )
       .globalOption(
         "--mysql.ca-cert-path <path:string>",
         MYSQL_CA_CERT_PATH_DESCRIPTION,
         {
           conflicts: ["--mysql.ca-cert-file"],
-          depends: ["mysql.ssl"],
         },
       )
       .globalOption(
         "--mysql.cert-file <filename:string>",
         MYSQL_CERT_FILE_DESCRIPTION,
-        {
-          depends: ["mysql.ssl"],
-        },
       )
       .globalOption(
         "--mysql.cert-path <path:string>",
         MYSQL_CERT_PATH_DESCRIPTION,
         {
           conflicts: ["--mysql.cert-file"],
-          depends: ["mysql.ssl"],
         },
       )
       .globalOption(
         "--mysql.key-file <filename:string>",
         MYSQL_KEY_FILE_DESCRIPTION,
-        {
-          depends: ["mysql.ssl"],
-        },
       )
       .globalOption(
         "--mysql.key-path <path:string>",
         MYSQL_KEY_PATH_DESCRIPTION,
         {
           conflicts: ["--mysql.key-file"],
-          depends: ["mysql.ssl"],
         },
       )
       .globalOption(
         "--mysql.connection-limit <limit:number>",
         MYSQL_CONNECTION_LIMIT_DESCRIPTION,
-        {
-          depends: ["mysql.host"],
-        },
       )
       .group("SQLite configuration")
       .globalOption(
@@ -312,6 +278,51 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         {
           conflicts: ["sqlite.db-file"],
         },
+      )
+      .group("MongoDB configuration")
+      .globalOption("--mongo.uri <uri:string>", MONGO_URI_DESCRIPTION)
+      .globalOption(
+        "--mongo.pool-size <limit:number>",
+        MONGO_POOL_SIZE_DESCRIPTION,
+      )
+      .globalOption(
+        "--mongo.database <database:string>",
+        MONGO_DATABASE_DESCRIPTION,
+      )
+      .globalOption("--mongo.tls [tls:boolean]", MONGO_TLS_DESCRIPTION)
+      .globalOption(
+        "--mongo.tls-ca-file <filename:string>",
+        MONGO_TLS_CA_FILE_DESCRIPTION,
+      )
+      .globalOption(
+        "--mongo.tls-ca-path <path:string>",
+        MONGO_TLS_CA_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mongo.tls-ca-file"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-certificate-key-file <filename:string>",
+        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
+      )
+      .globalOption(
+        "--mongo.tls-certificate-key-path <path:string>",
+        MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
+        {
+          conflicts: ["--mongo.tls-certificate-key-file"],
+        },
+      )
+      .globalOption(
+        "--mongo.tls-certificate-key-file-password <password:string>",
+        MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
+      )
+      .globalOption(
+        "--mongo.tls-allow-invalid-certificates [allow:boolean]",
+        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
+      )
+      .globalOption(
+        "--mongo.tls-allow-invalid-hostnames [allow:boolean]",
+        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
       )
       // ── Global env variables ────────────────────────────────────────────
       .globalEnv("DB_TYPE=<type:string>", DB_TYPE_DESCRIPTION)
@@ -373,6 +384,44 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       )
       .globalEnv("SQLITE_DB_FILE <filename:string>", SQLITE_DB_FILE_DESCRIPTION)
       .globalEnv("SQLITE_DB_PATH <path:string>", SQLITE_DB_PATH_DESCRIPTION)
+      .globalEnv("MONGO_URI=<uri:string>", MONGO_URI_DESCRIPTION)
+      .globalEnv(
+        "MONGO_POOL_SIZE=<limit:number>",
+        MONGO_POOL_SIZE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_DATABASE=<database:string>",
+        MONGO_DATABASE_DESCRIPTION,
+      )
+      .globalEnv("MONGO_TLS=<tls:boolean>", MONGO_TLS_DESCRIPTION)
+      .globalEnv(
+        "MONGO_TLS_CA_FILE=<file:string>",
+        MONGO_TLS_CA_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CA_PATH=<path:string>",
+        MONGO_TLS_CA_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CERT_KEY_FILE=<file:string>",
+        MONGO_TLS_CERT_KEY_FILE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CERT_KEY_PATH=<path:string>",
+        MONGO_TLS_CERT_KEY_PATH_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_CERT_PASSWORD=<password:string>",
+        MONGO_TLS_CERT_PASSWORD_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_ALLOW_INVALID_CERTIFICATES=<allow:boolean>",
+        MONGO_TLS_ALLOW_INVALID_CERTIFICATES_DESCRIPTION,
+      )
+      .globalEnv(
+        "MONGO_TLS_ALLOW_INVALID_HOSTNAMES=<allow:boolean>",
+        MONGO_TLS_ALLOW_INVALID_HOSTNAMES_DESCRIPTION,
+      )
       .globalAction(async (args) => {
         await this.handleGlobalAction(resolveGlobalCliConfig(args));
       })
@@ -527,7 +576,9 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
    */
   private async handleGlobalAction(args: GlobalCliConfigResolved) {
     console.log(
-      colors.blue.bold(`\n🚀 Initializing Administrative Data Pipeline`),
+      colors.blue.bold(
+        `\n🚀 Initializing Madagascar Administrative Boundaries (Mada ADM) CLI...`,
+      ),
     );
     console.log(colors.gray(`   Database Type: ${args.dbType}`));
     switch (args.dbType) {
@@ -579,6 +630,23 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         console.log(colors.gray(`   SQLite DB File: ${fullPath}`));
         break;
       }
+      case DbType.MongoDB: {
+        const maskedUri = args.mongo.uri?.replace(
+          /^(mongodb(?:\+srv)?:\/\/.*:)(.*)(@.*)$/,
+          "$1****$3",
+        );
+        console.log(colors.gray(`   MongoDB URI: ${maskedUri}`));
+        console.log(
+          colors.gray(`   MongoDB Max Pool Size: ${args.mongo.poolSize}`),
+        );
+        if (args.mongo.database) {
+          console.log(
+            colors.gray(`   MongoDB Database: ${args.mongo.database}`),
+          );
+        }
+        console.log(colors.gray(`   MongoDB TLS: ${args.mongo.tls}`));
+        break;
+      }
       default:
         break;
     }
@@ -592,6 +660,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       pg: args.pg,
       mysql: args.mysql,
       sqlite: args.sqlite,
+      mongo: args.mongo,
     });
     console.log(
       colors.green.bold(`✅ Database connection established successfully!\n`),
@@ -712,7 +781,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         );
       } else {
         console.log(
-          colors.yellow(`\nℹ️  Redis disabled. Using in-memory mediator.`),
+          colors.yellow(`ℹ️  Redis disabled. Using in-memory mediator.`),
         );
 
         mediator = injectInMemoryQueueWorkersMediator<
@@ -837,11 +906,22 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
                 regionsDDL,
                 provincesDDL,
               ];
+              console.log(
+                colors.red(
+                  `\n🗑️  Dropping all tables for the previous configuration...`,
+                ),
+              );
               await this.#db.transaction(async (transactionContext) => {
                 for (const admTableDDL of admTablesDDLs) {
+                  console.log(`Dropping table ${admTableDDL.tableName} ...`);
                   await admTableDDL.drop(transactionContext);
                 }
-              });
+              }, DDL_TRANSACTION_OPTIONS);
+              console.log(
+                colors.green.bold(
+                  `✅  All tables for the previous configuration dropped successfully.`,
+                ),
+              );
             }
           }
           resetProvincesDDL(args.dbType);
@@ -858,46 +938,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
             `\nℹ️  No existing ADM configuration found. Please provide the configuration values:`,
           );
         console.log(configPromptTitle);
-        const result = await prompt([
-          {
-            name: "tablesPrefix",
-            message: "Tables Prefix (leave empty for none):",
-            type: Input,
-          },
-          {
-            name: "isFkRepeated",
-            message: "Are parent tables's foreign keys repeated?",
-            type: Confirm,
-            default: true,
-          },
-          {
-            name: "isProvinceRepeated",
-            message: "Is a parent province's name repeated across sub-tables?",
-            type: Confirm,
-            default: false,
-          },
-          {
-            name: "isProvinceFkRepeated",
-            message:
-              "Is a parent province's foreign key repeated across sub-tables?",
-            type: Confirm,
-            default: false,
-          },
-          {
-            name: "hasGeojson",
-            message:
-              "Do tables include the spatial geometries of their respective ADM boundaries?",
-            type: Confirm,
-            default: false,
-          },
-          {
-            name: "hasAdmLevel",
-            message:
-              "Do the tables include an adm level index (0 to 4) column?",
-            type: Confirm,
-            default: true,
-          },
-        ]);
+        const result = await promptMadaAdmConfig();
         const rawTablesPrefix = (result.tablesPrefix as string) ?? "";
         const tablesPrefix = rawTablesPrefix.trim() || null;
         activeAdmConfigValues = {
@@ -1030,13 +1071,13 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           await this.#db.transaction(async (transactionContext) => {
             console.log(colors.red("\nDeleting all Mada ADM tables..."));
             for (const ddl of ddls.toReversed()) {
-              console.log(`Deleting table ${ddl.tableName}...`);
+              console.log(`Dropping the table ${ddl.tableName}...`);
               await ddl.drop(transactionContext);
             }
             console.log(
               colors.green("\nAll Mada ADM tables dropped successfully."),
             );
-          });
+          }, DDL_TRANSACTION_OPTIONS);
         }
         await this.#db.transaction(async (transactionContext) => {
           console.log(colors.blue("\nCreating all Mada ADM tables..."));
@@ -1047,7 +1088,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           console.log(
             colors.green("\nAll Mada ADM tables created successfully."),
           );
-        });
+        }, DDL_TRANSACTION_OPTIONS);
       }
       const jobContext: SeedAdmJobContext = !shouldClearJobContext
         ? prevJobContext!
@@ -1177,11 +1218,17 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
               },
             });
           } else {
-            const inputFilePath = path.join(
-              Deno.cwd(),
+            const inputFilePathItems: string[] = [];
+            if (import.meta.dirname) {
+              inputFilePathItems.push(import.meta.dirname, "../");
+            } else {
+              inputFilePathItems.push(Deno.cwd());
+            }
+            inputFilePathItems.push(
               ADM_SEEDING_INPUTS_DIR,
               ADM_SEEDING_INPUT_FILENAMES_BY_CODE.get(admLevelCode)!,
             );
+            const inputFilePath = path.join(...inputFilePathItems);
             const lastPersistedMessage = await mediator.persistedLastMessage;
             if (lastPersistedMessage) {
               console.log(
@@ -1282,7 +1329,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
             },
           });
 
-          console.log(`\n🧹 Deleting duplicates for ${levelTitle}...\n`);
+          console.log(`\n🧹 Deleting duplicates for ${levelTitle}...`);
           const dmlArgs = [activeAdmConfigValues, args.dbType, this.#db, {
             pgSchema: args.pgSchema,
           }] as const;
@@ -1298,7 +1345,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
 
           await tableDML.deleteDuplicates();
           console.log(
-            colors.green(`✅ Duplicates removed for ${levelTitle}.\n`),
+            colors.green(`✅ Duplicates removed for ${levelTitle}.`),
           );
 
           // Cleanup for this level
@@ -1313,7 +1360,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
 
         console.log(
           colors.green(
-            "🏁 Mada ADM data seeding process completed successfully.",
+            "\n🏁 Mada ADM data seeding process completed successfully.",
           ),
         );
       } catch (error) {
@@ -1327,14 +1374,16 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         );
       }
     } catch (error) {
-      console.error(`❌ Fatal Error: ${(error as Error).message}`);
+      console.error(`\n❌ Fatal Error: ${(error as Error).message}`);
     } finally {
       if (redis) {
-        console.log("\n🔌 Closing Redis connection...\n");
         redis.close();
+        console.log(
+          colors.gray("\n🔌 Redis connection closed successfully...\n"),
+        );
       }
       await this.#db.close();
-      console.log(`🔌 Closing database connection...`);
+      console.log(colors.gray("🔌 Database connection closed successfully..."));
     }
   }
 }

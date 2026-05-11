@@ -1,5 +1,4 @@
 /// <reference lib="deno.worker" />
-import { InMemory, Redis } from "@scope/lib/workers-mediators";
 import {
   CommunesPostgresDML,
   DistrictsPostgresDML,
@@ -12,22 +11,24 @@ import {
   RegionsPostgresDML,
 } from "@scope/adapters/postgres";
 import { DbType } from "@scope/consts/db";
-import type { ExtractAdmInputJobContext } from "../extract-adm-input.d.ts";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import {
-  type AdmRecord,
-  type AdmValuesDiscriminated,
-  type CommuneRecord,
-  type DistrictRecord,
-  type ProvinceRecord,
-  type RegionRecord,
-} from "@scope/types/models";
 import {
   isCommuneValues,
   isDistrictValues,
   isProvinceValues,
   isRegionValues,
 } from "@scope/helpers/models";
+import { InMemory, Redis } from "@scope/lib/workers-mediators";
+import type {
+  AdmRecord,
+  AdmValuesDiscriminated,
+  CommuneRecord,
+  DistrictRecord,
+  ProvinceRecord,
+  RegionRecord,
+} from "@scope/types/models";
+
+import type { ExtractAdmInputJobContext } from "../extract-adm-input.d.ts";
 
 const pg = injectPostgresDbConnection();
 

@@ -17,6 +17,11 @@ import {
   type MySQLDbConnection,
   resetProvincesMySQLDDL,
 } from "@scope/adapters/mysql";
+import {
+  injectProvincesMongoDDL,
+  type MongoDbConnection,
+  resetProvincesMongoDDL,
+} from "@scope/adapters/mongo";
 
 /**
  * Injects (or creates) an instance of the provinces table DDL adapter based on the database type.
@@ -45,6 +50,8 @@ export function injectProvincesDDL(
       return injectProvincesSqliteDDL(config, db as SqliteDbConnection);
     case DbType.MySQL:
       return injectProvincesMySQLDDL(config, db as MySQLDbConnection);
+    case DbType.MongoDB:
+      return injectProvincesMongoDDL(config, db as MongoDbConnection);
     default:
       throw new Error(`Unsupported database type for provinces DDL: ${dbType}`);
   }
@@ -66,6 +73,9 @@ export function resetProvincesDDL(dbType: DbType): void {
       break;
     case DbType.MySQL:
       resetProvincesMySQLDDL();
+      break;
+    case DbType.MongoDB:
+      resetProvincesMongoDDL();
       break;
     default:
       throw new Error(

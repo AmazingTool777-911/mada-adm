@@ -1,27 +1,7 @@
 import { parseArgs } from "@std/cli";
-import { injectRedisConnection } from "@scope/redis";
-import {
-  InMemory,
-  type QueueWorkersMediator,
-  Redis,
-} from "@scope/lib/workers-mediators";
-import { DbType } from "@scope/consts/db";
-import { CliArgsEnvResolvers } from "@scope/helpers";
-import type {
-  AdmRecord,
-  AdmValuesDiscriminated,
-  MadaAdmConfigValues,
-  ProvinceValues,
-} from "@scope/types/models";
-import type {
-  PostgresDbConnectionCliConfig,
-  RedisDbConnectionCliConfig,
-} from "@scope/types/cli";
-import type {
-  PostgresConnectionConfig,
-  PostgresConnectionParams,
-  TableDDL,
-} from "@scope/types/db";
+import * as path from "@std/path";
+import { TextLineStream } from "@std/streams";
+
 import {
   injectCommunesPostgresDDL,
   injectCommunesPostgresDML,
@@ -34,7 +14,7 @@ import {
   injectRegionsPostgresDDL,
   injectRegionsPostgresDML,
 } from "@scope/adapters/postgres";
-import type { ExtractAdmInputJobContext } from "./extract-adm-input.d.ts";
+import { DbType } from "@scope/consts/db";
 import {
   ADM_GEOJSON_FILES_PATHS,
   ADM_LEVEL_CODES_INDEXED,
@@ -45,9 +25,7 @@ import {
   ADM_SEEDING_INPUTS_GENERATED_DIR,
   AdmLevelCode,
 } from "@scope/consts/models";
-import * as path from "@std/path";
-import { TextLineStream } from "@std/streams";
-import type { GeoJSONFeature } from "@scope/types/utils";
+import { CliArgsEnvResolvers } from "@scope/helpers";
 import {
   isCommuneValues,
   isDistrictValues,
@@ -55,6 +33,30 @@ import {
   isRegionValues,
   mapAdmRecordToValues,
 } from "@scope/helpers/models";
+import {
+  InMemory,
+  type QueueWorkersMediator,
+  Redis,
+} from "@scope/lib/workers-mediators";
+import { injectRedisConnection } from "@scope/redis";
+import type {
+  PostgresDbConnectionCliConfig,
+  RedisDbConnectionCliConfig,
+} from "@scope/types/cli";
+import type {
+  PostgresConnectionConfig,
+  PostgresConnectionParams,
+  TableDDL,
+} from "@scope/types/db";
+import type {
+  AdmRecord,
+  AdmValuesDiscriminated,
+  MadaAdmConfigValues,
+  ProvinceValues,
+} from "@scope/types/models";
+import type { GeoJSONFeature } from "@scope/types/utils";
+
+import type { ExtractAdmInputJobContext } from "./extract-adm-input.d.ts";
 
 type Feature = GeoJSONFeature<{
   shapeName: string;
@@ -280,7 +282,12 @@ try {
 
   // Ensure PostGIS extension is enabled for spatial data support
   console.log("🛰️  Enabling PostGIS extension...");
-  await pg.client.queryObject("CREATE EXTENSION IF NOT EXISTS postgis;");
+  const client = await pg.pool.connect();
+  try {
+    await client.queryObject("CREATE EXTENSION IF NOT EXISTS postgis;");
+  } finally {
+    client.release();
+  }
 
   let mediator: QueueWorkersMediator<
     ExtractAdmInputJobContext,

@@ -1,5 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmTableMySQLDML } from "./adm-table.mysql.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -13,6 +12,7 @@ import type {
   RegionRecord,
 } from "@scope/types/models";
 import type { MySQLDbConnection } from "../mysql-db.connection.ts";
+import { BaseAdmTableMySQLDML } from "./adm-table.mysql.dml.ts";
 
 /**
  * MySQL DML implementation for the regions table.
@@ -23,7 +23,7 @@ export class RegionsMySQLDML extends BaseAdmTableMySQLDML
     config: MadaAdmConfigValues,
     db: MySQLDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.REGION);
   }
 
   async getManyByNames(
@@ -31,7 +31,6 @@ export class RegionsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<Region[]> {
     return (await this._getManyByAttributes(
-      AdmLevelCode.REGION,
       names.map((n) => ({ region: n })),
       transactionContext,
     )) as Region[];
@@ -42,7 +41,6 @@ export class RegionsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<Region[]> {
     return (await this._getManyByParentsIds(
-      AdmLevelCode.REGION,
       provinceIds,
       transactionContext,
     )) as Region[];
@@ -55,21 +53,15 @@ export class RegionsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return await this._updateFieldByIds(
-      AdmLevelCode.REGION,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return await this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   async createMany(values: RegionRecord[]): Promise<DMLCreateManyResult> {
-    return await this._createMany(AdmLevelCode.REGION, values);
+    return await this._createMany(values);
   }
 
   async deleteDuplicates(): Promise<void> {
-    await this._deleteDuplicates(AdmLevelCode.REGION);
+    await this._deleteDuplicates();
   }
 
   async updateGeojsonByName(
@@ -78,7 +70,6 @@ export class RegionsMySQLDML extends BaseAdmTableMySQLDML
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      AdmLevelCode.REGION,
       { region: name },
       geojson,
       transactionContext,

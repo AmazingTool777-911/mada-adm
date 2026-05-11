@@ -17,6 +17,11 @@ import {
   type MySQLDbConnection,
   resetDistrictsMySQLDDL,
 } from "@scope/adapters/mysql";
+import {
+  injectDistrictsMongoDDL,
+  type MongoDbConnection,
+  resetDistrictsMongoDDL,
+} from "@scope/adapters/mongo";
 
 /**
  * Injects (or creates) an instance of the districts table DDL adapter based on the database type.
@@ -45,6 +50,8 @@ export function injectDistrictsDDL(
       return injectDistrictsSqliteDDL(config, db as SqliteDbConnection);
     case DbType.MySQL:
       return injectDistrictsMySQLDDL(config, db as MySQLDbConnection);
+    case DbType.MongoDB:
+      return injectDistrictsMongoDDL(config, db as MongoDbConnection);
     default:
       throw new Error(`Unsupported database type for districts DDL: ${dbType}`);
   }
@@ -66,6 +73,9 @@ export function resetDistrictsDDL(dbType: DbType): void {
       break;
     case DbType.MySQL:
       resetDistrictsMySQLDDL();
+      break;
+    case DbType.MongoDB:
+      resetDistrictsMongoDDL();
       break;
     default:
       throw new Error(

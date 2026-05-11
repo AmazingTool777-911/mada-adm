@@ -1,5 +1,7 @@
 import { colors } from "@cliffy/ansi/colors";
+import { Confirm, Input, prompt } from "@cliffy/prompt";
 import { Table } from "@cliffy/table";
+
 import {
   type DbType,
   DEFAULT_DB_TYPE,
@@ -92,6 +94,23 @@ export function resolveGlobalCliConfig(
       dbFile: args.sqlite?.dbFile ?? args.sqliteDbFile,
       dbPath: args.sqlite?.dbPath ?? args.sqliteDbPath,
     },
+    mongo: {
+      uri: args.mongo?.uri ?? args.mongoUri ?? "mongodb://localhost:27017",
+      poolSize: args.mongo?.poolSize ?? args.mongoPoolSize ?? 10,
+      database: args.mongo?.database ?? args.mongoDatabase,
+      tls: args.mongo?.tls ?? args.mongoTls ?? false,
+      tlsCaFile: args.mongo?.tlsCaFile ?? args.mongoTlsCaFile,
+      tlsCaPath: args.mongo?.tlsCaPath ?? args.mongoTlsCaPath,
+      tlsCertKeyFile: args.mongo?.tlsCertKeyFile ?? args.mongoTlsCertKeyFile,
+      tlsCertKeyPath: args.mongo?.tlsCertKeyPath ?? args.mongoTlsCertKeyPath,
+      tlsCertPassword: args.mongo?.tlsCertPassword ?? args.mongoTlsCertPassword,
+      tlsAllowInvalidCertificates: args.mongo?.tlsAllowInvalidCertificates ??
+        args.mongoTlsAllowInvalidCertificates ??
+        false,
+      tlsAllowInvalidHostnames: args.mongo?.tlsAllowInvalidHostnames ??
+        args.mongoTlsAllowInvalidHostnames ??
+        false,
+    },
   };
 }
 
@@ -115,8 +134,6 @@ export function resolveIndexCliConfig(
     dbType: global.dbType,
     cliDebug: global.cliDebug,
     pgSchema: global.pgSchema,
-    mysql: global.mysql,
-    sqlite: global.sqlite,
     disableRedis: !!(args.disableRedis ?? false),
     redis: {
       url: args.redis?.url ?? args.redisUrl,
@@ -187,4 +204,56 @@ export function displayMadaAdmConfig(
   );
   console.log(colors.blue(`\n⚙️  ${title}:`));
   console.log(table.toString());
+}
+
+/**
+ * Prompts the user to define or update the Mada ADM configuration interactively.
+ *
+ * @param prevValues - Optional previous configuration values to use as defaults.
+ * @returns A promise that resolves to the new Mada ADM configuration values.
+ */
+export async function promptMadaAdmConfig(
+  prevValues?: Partial<MadaAdmConfigValues>,
+): Promise<MadaAdmConfigValues> {
+  const result = await prompt([
+    {
+      name: "tablesPrefix",
+      message: "Tables Prefix (leave empty for none):",
+      type: Input,
+      default: prevValues?.tablesPrefix ?? "",
+    },
+    {
+      name: "isFkRepeated",
+      message: "Are parent tables's foreign keys repeated?",
+      type: Confirm,
+      default: prevValues?.isFkRepeated ?? true,
+    },
+    {
+      name: "isProvinceRepeated",
+      message: "Is a parent province's name repeated across sub-tables?",
+      type: Confirm,
+      default: prevValues?.isProvinceRepeated ?? false,
+    },
+    {
+      name: "isProvinceFkRepeated",
+      message: "Is a parent province's foreign key repeated across sub-tables?",
+      type: Confirm,
+      default: prevValues?.isProvinceFkRepeated ?? false,
+    },
+    {
+      name: "hasGeojson",
+      message:
+        "Do tables include the spatial geometries of their respective ADM boundaries?",
+      type: Confirm,
+      default: prevValues?.hasGeojson ?? false,
+    },
+    {
+      name: "hasAdmLevel",
+      message: "Do the tables include an adm level index (0 to 4) column?",
+      type: Confirm,
+      default: prevValues?.hasAdmLevel ?? true,
+    },
+  ]);
+
+  return result as MadaAdmConfigValues;
 }

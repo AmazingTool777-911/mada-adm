@@ -1,12 +1,14 @@
-import { Pool } from "@db/postgres";
 import * as path from "@std/path";
+
+import { Pool } from "@db/postgres";
+
+import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 import type {
   DbConnection,
   DbConnectionParams,
   DbTransactionContext,
 } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
-import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
 
 /** Default number of connections in the PostgreSQL pool. */
 const DEFAULT_PG_POOL_SIZE = 10;
@@ -81,8 +83,11 @@ export class PostgresDbConnection implements DbConnection {
 
       let caCertificates: string[] | undefined;
       if (config.ssl) {
+        const dbCaCertificatesDir = import.meta.dirname
+          ? path.join(import.meta.dirname, "../../", DB_CA_CERTIFICATES_DIR)
+          : path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR);
         const certPath = config.caCertFile
-          ? path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR, config.caCertFile)
+          ? path.join(dbCaCertificatesDir, config.caCertFile)
           : config.caCertPath;
         if (certPath) {
           const certContent = await Deno.readTextFile(certPath);

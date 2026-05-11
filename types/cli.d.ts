@@ -136,6 +136,41 @@ export interface RedisDbConnectionCliConfig {
   caCertPath?: string;
 }
 
+/**
+ * Raw MongoDB configuration options as parsed from CLI flags or environment
+ * variables. Every field is optional because no defaults are applied at parse time.
+ */
+export interface MongoDbConnectionCliConfig {
+  /** Full MongoDB connection URI. When set, individual config fields are ignored. */
+  uri?: string;
+  /** Maximum number of connections in the pool. */
+  poolSize?: number;
+  /** Name of the target database. */
+  database?: string;
+  /** Whether to use TLS for the connection. */
+  tls?: boolean;
+  /**
+   * Filename of the CA certificate located under the shared `db/.ca-certificates/`
+   * directory.
+   */
+  tlsCaFile?: string;
+  /** Full path to the CA certificate file. */
+  tlsCaPath?: string;
+  /**
+   * Filename of the client certificate and key PEM file located under the shared
+   * `db/.ca-certificates/` directory.
+   */
+  tlsCertKeyFile?: string;
+  /** Full path to the client certificate and key PEM file. */
+  tlsCertKeyPath?: string;
+  /** Password for the client certificate key file if it is encrypted. */
+  tlsCertPassword?: string;
+  /** Whether to allow invalid certificates for the connection. */
+  tlsAllowInvalidCertificates?: boolean;
+  /** Whether to allow invalid hostnames for the connection. */
+  tlsAllowInvalidHostnames?: boolean;
+}
+
 // ── Raw CLI config types (mirrors Cliffy parsed output — everything optional) ──
 
 /**
@@ -155,6 +190,8 @@ export type GlobalCliConfig = {
   mysql?: MySQLDbConnectionCliConfig;
   /** Structured SQLite options from `--sqlite.*` flags. */
   sqlite?: SQLiteDbConnectionCliConfig;
+  /** Structured MongoDB options from `--mongo.*` flags. */
+  mongo?: MongoDbConnectionCliConfig;
 
   // ── Env-var shadow keys injected by Cliffy ──────────────────────────────
   /** Environment variable mapped for PG_URL. */
@@ -211,6 +248,28 @@ export type GlobalCliConfig = {
   sqliteDbFile?: string;
   /** Environment variable mapped for SQLITE_DB_PATH. */
   sqliteDbPath?: string;
+  /** Environment variable mapped for MONGO_URI. */
+  mongoUri?: string;
+  /** Environment variable mapped for MONGO_POOL_SIZE. */
+  mongoPoolSize?: number;
+  /** Environment variable mapped for MONGO_DATABASE. */
+  mongoDatabase?: string;
+  /** Environment variable mapped for MONGO_TLS. */
+  mongoTls?: boolean;
+  /** Environment variable mapped for MONGO_TLS_CA_FILE. */
+  mongoTlsCaFile?: string;
+  /** Environment variable mapped for MONGO_TLS_CA_PATH. */
+  mongoTlsCaPath?: string;
+  /** Environment variable mapped for MONGO_TLS_CERT_KEY_FILE. */
+  mongoTlsCertKeyFile?: string;
+  /** Environment variable mapped for MONGO_TLS_CERT_KEY_PATH. */
+  mongoTlsCertKeyPath?: string;
+  /** Environment variable mapped for MONGO_TLS_CERT_PASSWORD. */
+  mongoTlsCertPassword?: string;
+  /** Environment variable mapped for MONGO_TLS_ALLOW_INVALID_CERTIFICATES. */
+  mongoTlsAllowInvalidCertificates?: boolean;
+  /** Environment variable mapped for MONGO_TLS_ALLOW_INVALID_HOSTNAMES. */
+  mongoTlsAllowInvalidHostnames?: boolean;
 };
 
 /**
@@ -340,6 +399,31 @@ export type GlobalCliConfigResolved = {
   };
   /** Resolved SQLite connection configuration. */
   sqlite: SQLiteDbConnectionCliConfig;
+  /** Resolved MongoDB connection configuration. */
+  mongo: {
+    /** Full MongoDB connection URI. */
+    uri: string;
+    /** Maximum number of connections in the pool. */
+    poolSize: number;
+    /** Name of the target database. Optional if present in the URI. */
+    database?: string;
+    /** Whether to use TLS for the connection. */
+    tls: boolean;
+    /** Filename of the CA certificate under `db/.ca-certificates/`. */
+    tlsCaFile?: string;
+    /** Full path to the CA certificate file. */
+    tlsCaPath?: string;
+    /** Filename of the client certificate and key PEM file under `db/.ca-certificates/`. */
+    tlsCertKeyFile?: string;
+    /** Full path to the client certificate and key PEM file. */
+    tlsCertKeyPath?: string;
+    /** Password for the client certificate key file if it is encrypted. */
+    tlsCertPassword?: string;
+    /** Whether to allow invalid certificates for the connection. */
+    tlsAllowInvalidCertificates: boolean;
+    /** Whether to allow invalid hostnames for the connection. */
+    tlsAllowInvalidHostnames: boolean;
+  };
 };
 
 /**
@@ -355,39 +439,6 @@ export type IndexActionCliConfigResolved = {
   cliDebug: boolean;
   /** The PostgreSQL schema name. */
   pgSchema: string;
-  /** Resolved MySQL connection configuration. */
-  mysql: {
-    /** Full MySQL connection URL. When set, individual config fields are ignored. */
-    url?: string;
-    /** Hostname or IP address of the MySQL server. */
-    host: string;
-    /** TCP port the MySQL server listens on. */
-    port: number;
-    /** Username to authenticate with. */
-    user: string;
-    /** Password for the database user. */
-    password: string;
-    /** Name of the target database. */
-    database?: string;
-    /** Whether to enable SSL for the connection. */
-    ssl: boolean;
-    /** Filename of the CA certificate under `db/.ca-certificates/`. */
-    caCertFile?: string;
-    /** Full path to the CA certificate file. */
-    caCertPath?: string;
-    /** Filename of the client certificate under `db/.ca-certificates/`. */
-    certFile?: string;
-    /** Full path to the client certificate file. */
-    certPath?: string;
-    /** Filename of the client key under `db/.ca-certificates/`. */
-    keyFile?: string;
-    /** Full path to the client key file. */
-    keyPath?: string;
-    /** Maximum number of connections in the pool. */
-    connectionLimit: number;
-  };
-  /** Resolved SQLite connection configuration. */
-  sqlite: SQLiteDbConnectionCliConfig;
   /** Resolved Redis connection configuration. */
   redis: {
     /** Full Redis connection URL. */
@@ -444,7 +495,7 @@ export type IndexActionCliConfigResolved = {
  */
 export type DbConnectionCliConfig = Pick<
   GlobalCliConfigResolved,
-  "dbType" | "pg" | "mysql" | "sqlite"
+  "dbType" | "pg" | "mysql" | "sqlite" | "mongo"
 >;
 
 /**

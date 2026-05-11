@@ -1,9 +1,11 @@
 import type { Transaction } from "@db/postgres";
+import type { ClientSession } from "mongodb";
 import type { PoolConnection } from "mysql2/promise";
 import type { DbType } from "@scope/consts/db";
 import type { AdmLevelCode } from "@scope/consts/models";
 import type { MaybePromise } from "./utils.d.ts";
 import type {
+  AdmEntityBSON,
   Commune,
   CommuneAttributes,
   CommuneRecord,
@@ -15,6 +17,7 @@ import type {
   FokontanyAttributes,
   FokontanyRecord,
   MadaAdmConfig,
+  MadaAdmConfigBSON,
   MadaAdmConfigValues,
   Province,
   ProvinceRecord,
@@ -23,6 +26,7 @@ import type {
 } from "./models.d.ts";
 
 export type {
+  AdmEntityBSON,
   Commune,
   CommuneAttributes,
   CommuneRecord,
@@ -34,6 +38,7 @@ export type {
   FokontanyAttributes,
   FokontanyRecord,
   MadaAdmConfig,
+  MadaAdmConfigBSON,
   MadaAdmConfigValues,
   Province,
   ProvinceRecord,
@@ -58,13 +63,28 @@ export type MySQLTransactionContext = {
   connection: PoolConnection;
 };
 
+export type MongoDbTransactionContext = {
+  dbType: DbType.MongoDB;
+  session: ClientSession;
+};
+
 /**
  * Represents the transaction context for a specific database type.
  */
 export type DbTransactionContext =
   | PostgresTransactionContext
   | SQLiteTransactionContext
-  | MySQLTransactionContext;
+  | MySQLTransactionContext
+  | MongoDbTransactionContext;
+
+/**
+ * Represents the options for a database transaction.
+ */
+export type TransactionOptions = {
+  mongo?: {
+    readConcern?: "local" | "majority" | "snapshot";
+  };
+};
 
 /**
  * Represents a database connection.
@@ -91,12 +111,14 @@ export interface DbConnection {
    * The callback can be synchronous or asynchronous.
    *
    * @param callback - The function to execute within the transaction.
+   * @param options - The options for the transaction.
    * @returns The result of the callback.
    */
   transaction<TReturn>(
     callback: (
       transactionContext: DbTransactionContext,
     ) => MaybePromise<TReturn>,
+    options?: TransactionOptions,
   ): MaybePromise<TReturn>;
 }
 
@@ -201,13 +223,50 @@ export interface MySQLConnectionParams {
 }
 
 /**
+ * Detailed configuration for a MongoDB database connection.
+ */
+export interface MongoDbConnectionConfig {
+  /** Full MongoDB connection URI. */
+  uri: string;
+  /** Maximum number of connections in the pool. */
+  poolSize: number;
+  /** Name of the target database. */
+  database?: string;
+  /** Whether to use TLS for the connection. */
+  tls: boolean;
+  /** Filename of the CA certificate under `db/.ca-certificates/`. */
+  tlsCaFile?: string;
+  /** Full path to the CA certificate file. */
+  tlsCaPath?: string;
+  /** Filename of the client certificate and key PEM file under `db/.ca-certificates/`. */
+  tlsCertKeyFile?: string;
+  /** Full path to the client certificate and key PEM file. */
+  tlsCertKeyPath?: string;
+  /** Password for the client certificate key file if it is encrypted. */
+  tlsCertPassword?: string;
+  /** Whether to allow invalid certificates for the connection. */
+  tlsAllowInvalidCertificates?: boolean;
+  /** Whether to allow invalid hostnames for the connection. */
+  tlsAllowInvalidHostnames?: boolean;
+}
+
+/**
+ * Connection parameters specifically for a MongoDB database.
+ */
+export interface MongoDbConnectionParams extends MongoDbConnectionConfig {
+  /** The type of database, fixed to MongoDB. */
+  dbType: DbType.MongoDB;
+}
+
+/**
  * Union type of all supported database connection parameters.
  * Initially supports only PostgreSQL.
  */
 export type DbConnectionParams =
   | PostgresConnectionParams
   | SQLiteConnectionParams
-  | MySQLConnectionParams;
+  | MySQLConnectionParams
+  | MongoDbConnectionParams;
 
 export interface TableDDL {
   /** The physical database table name. */
@@ -280,6 +339,11 @@ export interface ProvinceTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple province records.
+   *
+   * @param values - The province records to create.
+   */
   createMany(values: ProvinceRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
@@ -334,6 +398,11 @@ export interface RegionTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple region records.
+   *
+   * @param values - The region records to create.
+   */
   createMany(values: RegionRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
@@ -449,6 +518,11 @@ export interface CommuneTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple commune records.
+   *
+   * @param values - The commune records to create.
+   */
   createMany(values: CommuneRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
@@ -508,6 +582,11 @@ export interface FokontanyTableDML extends BaseAdmTableDML {
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;
 
+  /**
+   * Creates multiple fokontany records.
+   *
+   * @param values - The fokontany records to create.
+   */
   createMany(values: FokontanyRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**

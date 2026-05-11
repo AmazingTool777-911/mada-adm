@@ -17,6 +17,11 @@ import {
   type MySQLDbConnection,
   resetRegionsMySQLDDL,
 } from "@scope/adapters/mysql";
+import {
+  injectRegionsMongoDDL,
+  type MongoDbConnection,
+  resetRegionsMongoDDL,
+} from "@scope/adapters/mongo";
 
 /**
  * Injects (or creates) an instance of the regions table DDL adapter based on the database type.
@@ -45,6 +50,8 @@ export function injectRegionsDDL(
       return injectRegionsSqliteDDL(config, db as SqliteDbConnection);
     case DbType.MySQL:
       return injectRegionsMySQLDDL(config, db as MySQLDbConnection);
+    case DbType.MongoDB:
+      return injectRegionsMongoDDL(config, db as MongoDbConnection);
     default:
       throw new Error(`Unsupported database type for regions DDL: ${dbType}`);
   }
@@ -66,6 +73,9 @@ export function resetRegionsDDL(dbType: DbType): void {
       break;
     case DbType.MySQL:
       resetRegionsMySQLDDL();
+      break;
+    case DbType.MongoDB:
+      resetRegionsMongoDDL();
       break;
     default:
       throw new Error(

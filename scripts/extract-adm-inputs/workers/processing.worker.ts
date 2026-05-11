@@ -1,32 +1,33 @@
-import { InMemory, Redis } from "@scope/lib/workers-mediators";
-import { injectPostgresDbConnection } from "@scope/adapters/postgres";
+import {
+  injectPostgresDbConnection,
+  injectProvincesPostgresDML,
+  ProvincesPostgresDML,
+} from "@scope/adapters/postgres";
 import { DbType } from "@scope/consts/db";
-import type { ExtractAdmInputJobContext } from "../extract-adm-input.d.ts";
-import type { GeoJSONFeature } from "@scope/types/utils";
 import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
   PROVINCE_BY_REGION_MAP,
 } from "@scope/consts/models";
+import { InMemory, Redis } from "@scope/lib/workers-mediators";
+import type {
+  AdmProperties,
+  AdmRecord,
+  CommuneRecord,
+  DistrictRecord,
+  FokontanyRecord,
+  ProvinceRecord,
+  RegionRecord,
+} from "@scope/types/models";
+import type { GeoJSONFeature } from "@scope/types/utils";
+
+import type { ExtractAdmInputJobContext } from "../extract-adm-input.d.ts";
 import {
   getParentCommunesOfFokontanys,
   getParentDistrictsOfCommunes,
   getParentRegionsOfDistricts,
   type InputRecord,
 } from "../get-parent-adm-by-area.query.ts";
-import {
-  type AdmProperties,
-  type AdmRecord,
-  type CommuneRecord,
-  type DistrictRecord,
-  type FokontanyRecord,
-  type ProvinceRecord,
-  type RegionRecord,
-} from "@scope/types/models";
-import {
-  injectProvincesPostgresDML,
-  ProvincesPostgresDML,
-} from "@scope/adapters/postgres";
 
 const pg = injectPostgresDbConnection();
 
@@ -128,7 +129,7 @@ executor.run({
         const parentRegionsByDistrictResult = await getParentRegionsOfDistricts(
           inputs,
           _context.config,
-          pg.client,
+          pg.pool,
         );
         return parentRegionsByDistrictResult.map<DistrictRecord>(
           ([districtEncoded, region]) => {
@@ -151,7 +152,7 @@ executor.run({
           await getParentDistrictsOfCommunes(
             inputs,
             _context.config,
-            pg.client,
+            pg.pool,
           );
         return parentDistrictsByCommuneResult.map<CommuneRecord>(
           ([communeEncoded, district]) => {
@@ -176,7 +177,7 @@ executor.run({
           await getParentCommunesOfFokontanys(
             inputs,
             _context.config,
-            pg.client,
+            pg.pool,
           );
         return parentCommunesByFokontanyResult.map<FokontanyRecord>(
           ([fokontanyEncoded, commune]) => {

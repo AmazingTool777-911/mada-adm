@@ -32,3 +32,7 @@ export type GeoJSONFeatureCollection<T extends Record<string, unknown>> = {
   type: "FeatureCollection";
   features: GeoJSONFeature<T>[];
 };
+
+export type ReplaceKeys<T, TNewType> = {
+  [K in keyof T]: TNewType;
+};

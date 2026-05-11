@@ -5,6 +5,7 @@
     ".": "./index.ts",
     "./postgres": "./postgres/index.ts",
     "./sqlite": "./sqlite/index.ts",
-    "./mysql": "./mysql/index.ts"
+    "./mysql": "./mysql/index.ts",
+    "./mongo": "./mongo/index.ts"
   }
 }

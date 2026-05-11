@@ -1,10 +1,12 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { injectRedisConnection } from "../../../redis/redis.connection.ts";
-import { injectRedisQueueWorkersMediator } from "./redis-queue.workers-mediator.ts";
+
 import {
   resolveNumber,
   resolveString,
-} from "../../../helpers/cli-args-env-resolvers.helper.ts";
+} from "@scope/helpers/cli-args-env-resolvers";
+import { injectRedisConnection } from "@scope/redis";
+
+import { injectRedisQueueWorkersMediator } from "./redis-queue.workers-mediator.ts";
 
 interface TestPayload {
   id: string;

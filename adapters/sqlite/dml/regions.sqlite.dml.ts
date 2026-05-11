@@ -1,5 +1,4 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { BaseAdmTableSqliteDML } from "./adm-table.sqlite.dml.ts";
 import type {
   DbTransactionContext,
   DMLCreateManyResult,
@@ -12,7 +11,9 @@ import type {
   Region,
   RegionRecord,
 } from "@scope/types/models";
+
 import type { SqliteDbConnection } from "../sqlite-db.connection.ts";
+import { BaseAdmTableSqliteDML } from "./adm-table.sqlite.dml.ts";
 
 /**
  * SQLite DML implementation for the regions table.
@@ -23,7 +24,7 @@ export class RegionsSqliteDML extends BaseAdmTableSqliteDML
     config: MadaAdmConfigValues,
     db: SqliteDbConnection,
   ) {
-    super(config, db);
+    super(config, db, AdmLevelCode.REGION);
   }
 
   getManyByNames(
@@ -31,7 +32,6 @@ export class RegionsSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): Region[] {
     return this._getManyByAttributes(
-      AdmLevelCode.REGION,
       names.map((n) => ({ region: n })),
       transactionContext,
     ) as Region[];
@@ -42,7 +42,6 @@ export class RegionsSqliteDML extends BaseAdmTableSqliteDML
     _transactionContext?: DbTransactionContext,
   ): Region[] {
     return this._getManyByParentsIds(
-      AdmLevelCode.REGION,
       provinceIds,
     ) as Region[];
   }
@@ -54,21 +53,15 @@ export class RegionsSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     const column = ADM_LEVEL_TITLE_BY_CODE.get(fieldCode)!;
-    return this._updateFieldByIds(
-      AdmLevelCode.REGION,
-      ids,
-      column,
-      value,
-      transactionContext,
-    );
+    return this._updateFieldByIds(ids, column, value, transactionContext);
   }
 
   createMany(values: RegionRecord[]): DMLCreateManyResult {
-    return this._createMany(AdmLevelCode.REGION, values);
+    return this._createMany(values);
   }
 
   deleteDuplicates(): void {
-    this._deleteDuplicates(AdmLevelCode.REGION);
+    this._deleteDuplicates();
   }
 
   updateGeojsonByName(
@@ -77,7 +70,6 @@ export class RegionsSqliteDML extends BaseAdmTableSqliteDML
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     return this._updateGeojsonByIdentifiers(
-      AdmLevelCode.REGION,
       { region: name },
       geojson,
       transactionContext,

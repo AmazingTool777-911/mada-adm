@@ -181,6 +181,22 @@ The project uses a configuration system (stored in the `mada_adm_configs` table 
 | `hasGeojson` | Enables/disables the storage of the spatial geometries (GeoJSON) for the ADM boundaries. |
 | `hasAdmLevel` | Includes an explicit `admLevel` column in every table (0 for province, 1 for region, 2 for district, 3 for commune, 4 for fokontany). |
 
+### Indexing & Collation
+
+To support flexible and efficient data retrieval, the project implements the following database-level conventions:
+
+- **Case-Insensitive Unicode Collation**: Text columns (like names of provinces, regions, etc.) use case-insensitive Unicode collations. This enables flexible exact matches and reliable `<prefix>%` wildcard queries regardless of casing or accents.
+- **B-Tree Indexes**: All primary identification fields and foreign key columns are indexed using B-tree structures. This ensures that the hierarchical relationship lookups remain fast even as the dataset grows, while also providing a foundation for basic text-search queries. Advanced full-text indexing strategies are left as an implementation choice for the end-user.
+
+#### Text Indexing Summary
+
+| Database | Strategy | Collation / Operator |
+| :--- | :--- | :--- |
+| **PostgreSQL** | `CITEXT` data type | `citext_ops` |
+| **MySQL** | `utf8mb4` character set | `utf8mb4_0900_as_ci` |
+| **SQLite** | `COLLATE NOCASE` | `NOCASE` |
+| **MongoDB** | Collation document | `locale: "fr", strength: 2, normalization: true, backwards: true` |
+
 ### Fault Tolerance: Redis vs In-Memory
 
 -   **Redis (Default)**: Provides a resumable, fault-tolerant state. If a job is interrupted, it can pick up exactly where it left off.
@@ -251,6 +267,9 @@ commands. All options are optional.
 | `--mongo.tls` | `MONGO_TLS` | Whether to use TLS for the connection. | `false` |
 | `--mongo.tls-ca-path` | `MONGO_TLS_CA_PATH` | Full path to the CA certificate file. | - |
 | `--mongo.tls-cert-key-path` | `MONGO_TLS_CERT_KEY_PATH` | Full path to the client certificate and key PEM file. | - |
+
+> [!IMPORTANT]
+> **MongoDB Replica Set:** Since the seeding pipeline utilizes multi-document transactions to ensure data consistency, the target MongoDB instance **must** be configured as a **Replica Set**. Single-node instances without replica set configuration do not support transactions.
 
 > **Note on File Paths:** Options ending in `-file` (e.g., `--sqlite.db-file`,
 > `--pg.ca-cert-file`) resolve paths relative to the internal project structure.

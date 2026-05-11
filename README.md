@@ -172,6 +172,11 @@ To reduce database round-trips, ADM data is processed and inserted in batches. Y
 
 The project uses a configuration system (stored in the `mada_adm_configs` table or `madaAdmConfigs` collection) to allow users to adapt the schema to their needs.
 
+> [!TIP]
+> To better understand how these configurations impact the resulting database schema and the relationships between administrative levels, you can open the [diagrams/database.drawio](file:///home/tolotra/it/projects/mada-adm/diagrams/database.drawio) file with [Draw.io](https://app.diagrams.net/).
+>
+> The document contains multiple pages, each representing a different state of these configuration values.
+
 | Field | Description |
 | :--- | :--- |
 | `tablesPrefix` | Prefix for all ADM tables/collections (e.g., `app_`). |

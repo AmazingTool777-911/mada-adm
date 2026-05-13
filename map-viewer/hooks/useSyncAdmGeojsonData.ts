@@ -31,24 +31,6 @@ export default function useSyncAdmGeojsonData() {
   }, [admGeojsonData.value]);
 
   useEffect(() => {
-    admGeojsonClientCache.getAll().then((data) => {
-      console.log("admGeojsonData", data);
-      admGeojsonData.value = data;
-
-      const item = data.find((item) =>
-        item.admLevelCode === AdmLevelCode.REGION
-      );
-      if (item) {
-        admGeojsonClientCache.upsert({
-          ...item,
-          lastModified: new Date(),
-          version: 0,
-        });
-      }
-    });
-  }, []);
-
-  useEffect(() => {
     console.log(
       "admGeojsonDataActiveDownloads",
       admGeojsonDataActiveDownloads.value,

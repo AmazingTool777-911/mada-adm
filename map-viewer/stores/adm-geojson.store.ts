@@ -52,6 +52,7 @@ export function removeAdmGeojsonDataActiveDownloadItem(
 export const admGeojsonDataVersionByCode = signal<Map<AdmLevelCode, number>>();
 
 export const admGeojsonData = signal<AdmGeojsonClientCacheItem[]>([]);
+export const admGeojsonDataIsLoadedFromCache = signal(false);
 
 export function upsertAdmGeojsonData(item: AdmGeojsonClientCacheItem) {
   const index = admGeojsonData.value.findIndex((i) =>

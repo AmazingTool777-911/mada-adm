@@ -16,6 +16,7 @@ import {
 import {
   admGeojsonData,
   admGeojsonDataActiveDownloads,
+  admGeojsonDataIsLoadedFromCache,
   admGeojsonDataVersionByCode,
 } from "@/stores/adm-geojson.store.ts";
 import {
@@ -25,6 +26,8 @@ import {
   AdmLevelCode,
 } from "@scope/consts/models";
 import useSyncAdmGeojsonData from "@/hooks/useSyncAdmGeojsonData.ts";
+import { injectClientCacheIndexdDbConnection } from "@/client-cache/client-cache.indexeddb.ts";
+import { injectAdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.ts";
 
 declare global {
   var geojsonvt: typeof libGeoJSONVT;
@@ -52,6 +55,11 @@ export default function BaseMap(props: BaseMapProps) {
   >();
 
   admGeojsonDataVersionByCode.value = props.admGeojsonDataVersionByCode;
+
+  const clientCacheConnection = injectClientCacheIndexdDbConnection();
+  const admGeojsonClientCache = injectAdmGeojsonClientCache(
+    clientCacheConnection,
+  );
 
   useEffect(() => {
     if (!mapEl.current) return;
@@ -108,7 +116,7 @@ export default function BaseMap(props: BaseMapProps) {
             style: {
               fillColor: "#3388ff",
               color: "#3388ff",
-              fillOpacity: 0.35,
+              fillOpacity: 0.2,
               opacity: 0.8,
               weight: 2,
             },
@@ -150,7 +158,7 @@ export default function BaseMap(props: BaseMapProps) {
           style: {
             fillColor: "#3388ff",
             color: "#3388ff",
-            fillOpacity: 0.35,
+            fillOpacity: 0.2,
             opacity: 0.8,
             weight: 2,
           },
@@ -208,6 +216,10 @@ export default function BaseMap(props: BaseMapProps) {
       [OSM_TILE_LAYER_DATA.LABEL]: osmLayer,
       [satelliteTileLayerLabel]: esriLayer,
     };
+
+    admGeojsonData.value = await admGeojsonClientCache.getAll();
+    admGeojsonDataIsLoadedFromCache.value = true;
+
     admGeojsonLayersByCodeRef.current = new Map<
       AdmLevelCode,
       L.GeoJSON<unknown>
@@ -220,7 +232,7 @@ export default function BaseMap(props: BaseMapProps) {
           style: {
             fillColor: "#3388ff",
             color: "#3388ff",
-            fillOpacity: 0.35,
+            fillOpacity: 0.2,
             opacity: 0.8,
             weight: 2,
           },
@@ -284,7 +296,7 @@ export default function BaseMap(props: BaseMapProps) {
       }
     });
 
-    mapRef.current.on("overlayadd", (e) => {
+    mapRef.current.on("overlayadd", async (e) => {
       let code!: AdmLevelCode;
       for (const levelCode of ADM_LEVEL_CODES_INDEXED) {
         const label = getAdmGeojsonLayerLabel(levelCode);
@@ -294,11 +306,11 @@ export default function BaseMap(props: BaseMapProps) {
         }
       }
       const existingLayer = admGeojsonLayersByCodeRef.current?.get(code);
-      if (!existingLayer) {
+      if (!existingLayer && admGeojsonDataIsLoadedFromCache.value) {
+        await syncAdmGeojsonDataForCode(code);
         mapRef.current!.removeLayer(e.layer);
         mapLayerControlsRef.current?.removeLayer(e.layer);
         emptyGeojsonLayersByCodeRef.current?.delete(code);
-        syncAdmGeojsonDataForCode(code);
       }
     });
   }

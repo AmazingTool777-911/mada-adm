@@ -74,6 +74,7 @@
     "npm:geojson-vt@^4.0.2": "4.0.2",
     "npm:leaflet-geojson-vt@^1.1.0": "1.1.0",
     "npm:leaflet@^1.9.4": "1.9.4",
+    "npm:lucide-preact@^1.14.0": "1.14.0_preact@10.29.1",
     "npm:mongodb@^6.10.0": "6.21.0",
     "npm:mysql2@^3.22.3": "3.22.3_@types+node@25.6.0",
     "npm:preact-render-to-string@^6.6.3": "6.6.7_preact@10.29.1",
@@ -1561,6 +1562,12 @@
     "lru.min@1.1.4": {
       "integrity": "sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA=="
     },
+    "lucide-preact@1.14.0_preact@10.29.1": {
+      "integrity": "sha512-d3N5MpFSukscLyPPtZEeYvSIWohLEj/2OJvjrYovWOTKa40bsHaALX9sIDS6skSu+J6bwYRqfwX6GAxlErfSmQ==",
+      "dependencies": [
+        "preact"
+      ]
+    },
     "magic-string@0.30.21": {
       "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
       "dependencies": [
@@ -1787,6 +1794,7 @@
           "npm:geojson-vt@^4.0.2",
           "npm:leaflet-geojson-vt@^1.1.0",
           "npm:leaflet@^1.9.4",
+          "npm:lucide-preact@^1.14.0",
           "npm:preact@^10.29.1",
           "npm:tailwindcss@^4.1.10",
           "npm:vite@^7.1.3"

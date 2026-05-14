@@ -28,6 +28,7 @@
     "geojson-vt": "npm:geojson-vt@^4.0.2",
     "leaflet": "npm:leaflet@^1.9.4",
     "leaflet-geojson-vt": "npm:leaflet-geojson-vt@^1.1.0",
+    "lucide-preact": "npm:lucide-preact@^1.14.0",
     "preact": "npm:preact@^10.29.1",
     "@preact/signals": "npm:@preact/signals@^2.9.0",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.1.2",

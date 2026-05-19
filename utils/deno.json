@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "exports": {
     ".": "./index.ts",
-    "./geojson": "./geojson.utils.ts"
+    "./string": "./string.utils.ts",
+    "./dates": "./dates.utils.ts"
   }
 }

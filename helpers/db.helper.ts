@@ -1,4 +1,10 @@
 import { DbType } from "@scope/consts/db";
+import {
+  ADM_LEVEL_CODES_INDEXED,
+  ADM_LEVEL_INDEX_BY_CODE,
+  ADM_LEVEL_TITLE_BY_CODE,
+  AdmLevelCode,
+} from "@scope/consts/models";
 import type {
   DbTransactionContext,
   MongoDbTransactionContext,
@@ -6,6 +12,7 @@ import type {
   PostgresTransactionContext,
   SQLiteTransactionContext,
 } from "@scope/types/db";
+import type { MadaAdmConfigValues } from "@scope/types/models";
 
 /**
  * Ensures the given transaction context is a PostgresTransactionContext.
@@ -93,4 +100,159 @@ export function ensureIsMongoDbTransactionCtx(
     return true;
   }
   return false;
+}
+
+/**
+ * Options controlling which columns are included in the result of {@link getAdmTableColumns}.
+ */
+export type GetAdmTableColumnsOptions = {
+  /**
+   * When `true`, the geojson field is excluded from the returned column list
+   * even when the config declares `hasGeojson: true`.
+   */
+  excludeGeojson?: boolean;
+};
+
+/**
+ * Returns the ordered list of columns (or field names) for an ADM level table
+ * based on the given configuration and target database type.
+ *
+ * For SQL databases (Postgres, MySQL, SQLite), column names are snake_case and
+ * the geojson column is expressed using the database-specific spatial function
+ * that serialises the geometry back to a GeoJSON string.
+ * For MongoDB, field names match the camelCase document properties — no
+ * wrapping function is applied to the geojson field.
+ *
+ * The set of columns included respects all config flags:
+ * - `hasGeojson` / `options.excludeGeojson` — controls the geojson column.
+ * - `hasAdmLevel` — controls the adm_level / admLevel column.
+ * - `isProvinceRepeated` — controls the province name column on District/Commune/Fokontany.
+ * - `isProvinceFkRepeated` — controls the province_id / provinceId FK column on District/Commune/Fokontany.
+ * - `isFkRepeated` — controls extra ancestor FK columns (region_id on Commune, region_id/district_id on Fokontany).
+ *
+ * @param admLevelCode - The administrative level whose columns are needed.
+ * @param config - The ADM configuration values that drive column inclusion.
+ * @param dbType - The target database type, used to select the correct geojson expression.
+ * @param options - Optional flags that further filter the returned columns.
+ * @returns An array of column strings ready to use in a SELECT clause (SQL) or
+ *          as field-name references (MongoDB).
+ */
+export function getAdmTableColumns(
+  admLevelCode: AdmLevelCode,
+  config: MadaAdmConfigValues,
+  dbType: DbType,
+  options?: GetAdmTableColumnsOptions,
+): string[] {
+  const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevelCode)!;
+  const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(admLevelCode)!;
+  const isMongo = dbType === DbType.MongoDB;
+
+  // Naming helpers: column names differ by DB family (snake_case for SQL, camelCase for Mongo).
+  const fkSuffix = isMongo ? "Id" : "_id";
+  const admLevelCol = isMongo ? "admLevel" : "adm_level";
+  const createdAtCol = isMongo ? "createdAt" : "created_at";
+  const updatedAtCol = isMongo ? "updatedAt" : "updated_at";
+
+  // ── scalar columns ───────────────────────────────────────────────────────
+
+  // id (SQL only — Mongo uses _id implicitly)
+  const columns: string[] = isMongo ? [] : ["id"];
+
+  // The name column for this ADM level (e.g. "province", "region", …)
+  // — identical in both SQL and MongoDB (single lowercase word)
+  columns.push(admLevelTitle);
+
+  // Ancestor name columns (each level includes its parents' names)
+  const regionIndex = ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.REGION)!;
+  const provinceIndex = ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.PROVINCE)!;
+
+  // Province name — always present on REGION; conditional on lower levels
+  if (admLevelIndex > provinceIndex) {
+    const isLowerThanRegion = admLevelIndex > regionIndex;
+    if (!isLowerThanRegion) {
+      // REGION always carries province
+      columns.push("province");
+    } else {
+      // DISTRICT / COMMUNE / FOKONTANY: only if isProvinceRepeated
+      if (config.isProvinceRepeated) {
+        columns.push("province");
+      }
+    }
+  }
+
+  // Intermediate ancestor name columns for deeper levels
+  if (admLevelIndex > regionIndex) {
+    for (let i = regionIndex; i < admLevelIndex - 1; i++) {
+      const ancestorTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+        ADM_LEVEL_CODES_INDEXED[i],
+      )!;
+      columns.push(ancestorTitle);
+    }
+    // Direct parent name is always included
+    const parentTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+      ADM_LEVEL_CODES_INDEXED[admLevelIndex - 1],
+    )!;
+    columns.push(parentTitle);
+  }
+
+  // ── FK columns ───────────────────────────────────────────────────────────
+
+  // Direct parent FK (always present except for PROVINCE which has no parent)
+  if (admLevelIndex > provinceIndex) {
+    const directParentTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+      ADM_LEVEL_CODES_INDEXED[admLevelIndex - 1],
+    )!;
+    columns.push(`${directParentTitle}${fkSuffix}`);
+  }
+
+  // Province FK — only on sub-region levels when isProvinceFkRepeated
+  if (admLevelIndex > regionIndex && config.isProvinceFkRepeated) {
+    columns.push(`province${fkSuffix}`);
+  }
+
+  // Extra ancestor FKs governed by isFkRepeated
+  if (config.isFkRepeated) {
+    // COMMUNE: also carries region FK
+    if (admLevelCode === AdmLevelCode.COMMUNE) {
+      columns.push(`region${fkSuffix}`);
+    }
+    // FOKONTANY: also carries district and region FKs
+    if (admLevelCode === AdmLevelCode.FOKONTANY) {
+      columns.push(`district${fkSuffix}`);
+      columns.push(`region${fkSuffix}`);
+    }
+  }
+
+  // ── optional system columns ───────────────────────────────────────────────
+
+  if (config.hasAdmLevel) {
+    columns.push(admLevelCol);
+  }
+
+  // ── geojson ───────────────────────────────────────────────────────────────
+
+  const includeGeojson = config.hasGeojson && !options?.excludeGeojson;
+  if (includeGeojson) {
+    switch (dbType) {
+      case DbType.MySQL:
+        columns.push("ST_AsGeoJSON(geojson) as geojson");
+        break;
+      case DbType.SQLite:
+        columns.push("AsGeoJSON(geojson) as geojson");
+        break;
+      case DbType.Postgres:
+        columns.push("ST_AsGeoJSON(geojson) as geojson");
+        break;
+      case DbType.MongoDB:
+        columns.push("geojson");
+        break;
+    }
+  }
+
+  // ── timestamp columns ────────────────────────────────────────────────────
+  // All databases store timestamps; SQL uses snake_case, MongoDB uses camelCase.
+  columns.push(createdAtCol);
+  columns.push(updatedAtCol);
+
+  return columns;
 }

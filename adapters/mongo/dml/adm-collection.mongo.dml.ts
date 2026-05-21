@@ -175,7 +175,7 @@ export class BaseAdmCollectionMongoDML {
           commune: r.commune,
           district: r.district,
           region: r.region,
-          communeId: new ObjectId(r.communeId),
+          communeId: new ObjectId(r.communeId as string),
           createdAt: now,
           updatedAt: now,
         };
@@ -183,13 +183,13 @@ export class BaseAdmCollectionMongoDML {
           bsonRecord.province = r.province;
         }
         if (this.#config.isFkRepeated && r.districtId) {
-          bsonRecord.districtId = new ObjectId(r.districtId);
+          bsonRecord.districtId = new ObjectId(r.districtId as string);
         }
         if (this.#config.isFkRepeated && r.regionId) {
-          bsonRecord.regionId = new ObjectId(r.regionId);
+          bsonRecord.regionId = new ObjectId(r.regionId as string);
         }
         if (this.#config.isProvinceFkRepeated && r.provinceId) {
-          bsonRecord.provinceId = new ObjectId(r.provinceId);
+          bsonRecord.provinceId = new ObjectId(r.provinceId as string);
         }
         if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
           bsonRecord.admLevel = r.admLevel;
@@ -203,7 +203,7 @@ export class BaseAdmCollectionMongoDML {
           commune: r.commune,
           district: r.district,
           region: r.region,
-          districtId: new ObjectId(r.districtId),
+          districtId: new ObjectId(r.districtId as string),
           createdAt: now,
           updatedAt: now,
         };
@@ -211,10 +211,10 @@ export class BaseAdmCollectionMongoDML {
           bsonRecord.province = r.province;
         }
         if (this.#config.isFkRepeated && r.regionId) {
-          bsonRecord.regionId = new ObjectId(r.regionId);
+          bsonRecord.regionId = new ObjectId(r.regionId as string);
         }
         if (this.#config.isProvinceFkRepeated && r.provinceId) {
-          bsonRecord.provinceId = new ObjectId(r.provinceId);
+          bsonRecord.provinceId = new ObjectId(r.provinceId as string);
         }
         if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
           bsonRecord.admLevel = r.admLevel;
@@ -227,7 +227,7 @@ export class BaseAdmCollectionMongoDML {
         const bsonRecord: DistrictBSONRecordWithTimestamps = {
           district: r.district,
           region: r.region,
-          regionId: new ObjectId(r.regionId),
+          regionId: new ObjectId(r.regionId as string),
           createdAt: now,
           updatedAt: now,
         };
@@ -235,7 +235,7 @@ export class BaseAdmCollectionMongoDML {
           bsonRecord.province = r.province;
         }
         if (this.#config.isProvinceFkRepeated && r.provinceId) {
-          bsonRecord.provinceId = new ObjectId(r.provinceId);
+          bsonRecord.provinceId = new ObjectId(r.provinceId as string);
         }
         if (this.#config.hasAdmLevel && r.admLevel !== undefined) {
           bsonRecord.admLevel = r.admLevel;
@@ -248,7 +248,7 @@ export class BaseAdmCollectionMongoDML {
         const bsonRecord: RegionBSONRecordWithTimestamps = {
           region: r.region,
           province: r.province,
-          provinceId: new ObjectId((r as RegionRecord).provinceId),
+          provinceId: new ObjectId((r as RegionRecord).provinceId as string),
           createdAt: now,
           updatedAt: now,
         };
@@ -365,7 +365,7 @@ export class BaseAdmCollectionMongoDML {
       )
       .toArray();
     const idsToDelete = idsToDeleteAggregated.flatMap((aggr) =>
-      aggr.idsToDelete.map((id) => new ObjectId(id))
+      aggr.idsToDelete.map((id) => new ObjectId(id as string))
     );
 
     await this.collection.deleteMany({
@@ -394,7 +394,7 @@ export class BaseAdmCollectionMongoDML {
 
     const rows = await this.collection
       .find(
-        { [parentIdColumn]: { $in: parentsIds.map((id) => new ObjectId(id)) } },
+        { [parentIdColumn]: { $in: parentsIds.map((id) => new ObjectId(id as string)) } },
         { session },
       )
       .toArray();
@@ -423,7 +423,7 @@ export class BaseAdmCollectionMongoDML {
 
     const result = await this.collection
       .updateMany(
-        { _id: { $in: ids.map((id) => new ObjectId(id)) } },
+        { _id: { $in: ids.map((id) => new ObjectId(id as string)) } },
         { $set: { [column]: value } },
         { session },
       );

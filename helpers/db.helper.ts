@@ -111,6 +111,11 @@ export type GetAdmTableColumnsOptions = {
    * even when the config declares `hasGeojson: true`.
    */
   excludeGeojson?: boolean;
+  /**
+   * When provided, prefix the columns with the given table name,
+   * returning `<tableName>.<column>`.
+   */
+  withTableName?: string;
 };
 
 /**
@@ -233,15 +238,16 @@ export function getAdmTableColumns(
 
   const includeGeojson = config.hasGeojson && !options?.excludeGeojson;
   if (includeGeojson) {
+    const tPrefix = options?.withTableName ? `${options.withTableName}.` : "";
     switch (dbType) {
       case DbType.MySQL:
-        columns.push("ST_AsGeoJSON(geojson) as geojson");
+        columns.push(`ST_AsGeoJSON(${tPrefix}geojson) as geojson`);
         break;
       case DbType.SQLite:
-        columns.push("AsGeoJSON(geojson) as geojson");
+        columns.push(`AsGeoJSON(${tPrefix}geojson) as geojson`);
         break;
       case DbType.Postgres:
-        columns.push("ST_AsGeoJSON(geojson) as geojson");
+        columns.push(`ST_AsGeoJSON(${tPrefix}geojson) as geojson`);
         break;
       case DbType.MongoDB:
         columns.push("geojson");
@@ -253,6 +259,16 @@ export function getAdmTableColumns(
   // All databases store timestamps; SQL uses snake_case, MongoDB uses camelCase.
   columns.push(createdAtCol);
   columns.push(updatedAtCol);
+
+  if (options?.withTableName) {
+    const prefix = `${options.withTableName}.`;
+    return columns.map((col) => {
+      if (col.toLowerCase().includes(" as ")) {
+        return col;
+      }
+      return `${prefix}${col}`;
+    });
+  }
 
   return columns;
 }

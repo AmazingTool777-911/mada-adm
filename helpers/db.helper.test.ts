@@ -500,3 +500,58 @@ Deno.test("getAdmTableColumns — FOKONTANY", async (t) => {
     ]);
   });
 });
+
+Deno.test("getAdmTableColumns — withTableName", async (t) => {
+  await t.step(
+    "SQL: prefixes standard columns and wraps geojson correctly (SQLite)",
+    () => {
+      const cols = getAdmTableColumns(
+        AdmLevelCode.PROVINCE,
+        baseConfig({ hasGeojson: true, hasAdmLevel: true }),
+        DbType.SQLite,
+        { withTableName: "p" },
+      );
+      assertEquals(cols, [
+        "p.id",
+        "p.province",
+        "p.adm_level",
+        "AsGeoJSON(p.geojson) as geojson",
+        "p.created_at",
+        "p.updated_at",
+      ]);
+    },
+  );
+
+  await t.step("SQL: wraps geojson correctly for Postgres", () => {
+    const cols = getAdmTableColumns(
+      AdmLevelCode.PROVINCE,
+      baseConfig({ hasGeojson: true }),
+      DbType.Postgres,
+      { withTableName: "prv" },
+    );
+    assertEquals(cols, [
+      "prv.id",
+      "prv.province",
+      "ST_AsGeoJSON(prv.geojson) as geojson",
+      "prv.created_at",
+      "prv.updated_at",
+    ]);
+  });
+
+  await t.step("MongoDB: prefixes standard columns including geojson", () => {
+    const cols = getAdmTableColumns(
+      AdmLevelCode.REGION,
+      baseConfig({ hasGeojson: true }),
+      DbType.MongoDB,
+      { withTableName: "r" },
+    );
+    assertEquals(cols, [
+      "r.region",
+      "r.province",
+      "r.provinceId",
+      "r.geojson",
+      "r.createdAt",
+      "r.updatedAt",
+    ]);
+  });
+});

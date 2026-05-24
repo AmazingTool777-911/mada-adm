@@ -9,6 +9,11 @@ import type {
   RegionQueries,
 } from "@scope/queries/types";
 
+export type ApiErrorResponse = {
+  error: string;
+  [key: string]: unknown;
+};
+
 export type RestApiEnv = {
   Variables: {
     db: DbConnection;

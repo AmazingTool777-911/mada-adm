@@ -3,14 +3,34 @@ import { StatusCodes } from "http-status-codes";
 
 import { connectDbMiddleware } from "./middlewares/connect-db.middleware.ts";
 import { loadConfigMiddleware } from "./middlewares/load-config.middleware.ts";
-import type { RestApiEnv } from "./rest-api.d.ts";
+import type { ApiErrorResponse, RestApiEnv } from "./rest-api.d.ts";
 import { getDbConnection } from "./connect-db.ts";
 import { injectQueriesMiddleware } from "./middlewares/inject-queries.middleware.ts";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
+import { MadaAdmConfigConflictError } from "@scope/queries/helpers";
 
 await getDbConnection();
 
 const app = new Hono<RestApiEnv>();
+
+app.onError((err, c) => {
+  if (err instanceof MadaAdmConfigConflictError) {
+    return c.json<ApiErrorResponse>(
+      {
+        error: err.message,
+        data: err.data,
+      },
+      StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  return c.json<ApiErrorResponse>(
+    {
+      error: err.message || "An unexpected error occurred",
+    },
+    StatusCodes.INTERNAL_SERVER_ERROR,
+  );
+});
 
 app.use(connectDbMiddleware);
 app.use(loadConfigMiddleware);

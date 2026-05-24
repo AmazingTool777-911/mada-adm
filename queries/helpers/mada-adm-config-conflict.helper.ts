@@ -14,7 +14,10 @@ export type MadaAdmConfigConflictErrorData = {
 };
 
 export abstract class MadaAdmConfigConflictError extends Error {
-  constructor(protected data: MadaAdmConfigConflictErrorData, message: string) {
+  constructor(
+    public readonly data: MadaAdmConfigConflictErrorData,
+    message: string,
+  ) {
     super(message);
   }
 }

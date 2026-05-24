@@ -1,42 +1,51 @@
 import { AdmLevelCode } from "@scope/consts/models";
 import type { DbType } from "@scope/consts/db";
-import type { District } from "@scope/types/models";
+import type { Commune } from "@scope/types/models";
 import type { MadaAdmConfigValues } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
 import type {
+  CommuneQueries,
   CursorPaginatedResult,
   CursorPaginationParams,
-  DistrictQueries,
-  GetManyDistrictsPaginationCursor,
-  GetManyDistrictsQueryParams,
+  GetManyCommunesPaginationCursor,
+  GetManyCommunesQueryParams,
 } from "@scope/queries/types";
 import { AdmTableBaseQueries } from "./adm-table.base.queries.ts";
 import type { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
-import { ProvinceForeignKeyNotRepeatedError } from "../helpers/mada-adm-config-conflict.helper.ts";
+import {
+  ForeignKeysNotRepeatedError,
+  ProvinceForeignKeyNotRepeatedError,
+} from "../helpers/mada-adm-config-conflict.helper.ts";
 
-export abstract class DistrictBaseQueries extends AdmTableBaseQueries
-  implements DistrictQueries {
+export abstract class CommuneBaseQueries extends AdmTableBaseQueries
+  implements CommuneQueries {
   constructor(
     config: MadaAdmConfigValues,
     dbType: DbType,
   ) {
-    super(config, dbType, AdmLevelCode.DISTRICT);
+    super(config, dbType, AdmLevelCode.COMMUNE);
   }
 
   abstract get getManyCursorPaginator(): QueryCursorPaginator<
-    GetManyDistrictsPaginationCursor,
-    District,
-    GetManyDistrictsQueryParams
+    GetManyCommunesPaginationCursor,
+    Commune,
+    GetManyCommunesQueryParams
   >;
 
   getManyCursorPaginated(
-    paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,
-    queryParams: GetManyDistrictsQueryParams,
+    paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,
+    queryParams: GetManyCommunesQueryParams,
   ): MaybePromise<
-    CursorPaginatedResult<GetManyDistrictsPaginationCursor, District>
+    CursorPaginatedResult<GetManyCommunesPaginationCursor, Commune>
   > {
     if (queryParams?.provinceId && !this.config.isProvinceFkRepeated) {
       throw new ProvinceForeignKeyNotRepeatedError(this.admLevel);
+    }
+    if (queryParams?.regionId && !this.config.isFkRepeated) {
+      throw new ForeignKeysNotRepeatedError(
+        this.admLevel,
+        AdmLevelCode.REGION,
+      );
     }
     return this.getManyCursorPaginator.query(paginationParams, queryParams);
   }

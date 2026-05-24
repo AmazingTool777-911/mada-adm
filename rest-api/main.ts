@@ -25,11 +25,15 @@ app.get(
     "provinceQueries",
     "regionQueries",
     "districtQueries",
+    "communeQueries",
+    "fokontanyQueries",
   ),
   async (c) => {
     const provinceQueries = c.get("provinceQueries");
     const regionQueries = c.get("regionQueries");
     const districtQueries = c.get("districtQueries");
+    const communeQueries = c.get("communeQueries");
+    const fokontanyQueries = c.get("fokontanyQueries");
     const limit = c.req.query("limit") ? Number(c.req.query("limit")) : 10;
     const data = await Promise.all([
       (async () => {
@@ -55,6 +59,7 @@ app.get(
       (async () => {
         const paginatedDistricts = await districtQueries.getManyCursorPaginated(
           { limit, cursor: null },
+          {},
         );
         return {
           admLevel: {
@@ -62,6 +67,33 @@ app.get(
             title: ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.DISTRICT)!,
           },
           paginatedDistricts,
+        };
+      })(),
+      (async () => {
+        const paginatedCommunes = await communeQueries.getManyCursorPaginated(
+          { limit, cursor: null },
+          {},
+        );
+        return {
+          admLevel: {
+            code: AdmLevelCode.COMMUNE,
+            title: ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.COMMUNE)!,
+          },
+          paginatedCommunes,
+        };
+      })(),
+      (async () => {
+        const paginatedFokontanys = await fokontanyQueries
+          .getManyCursorPaginated(
+            { limit, cursor: null },
+            {},
+          );
+        return {
+          admLevel: {
+            code: AdmLevelCode.FOKONTANY,
+            title: ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.FOKONTANY)!,
+          },
+          paginatedFokontanys,
         };
       })(),
     ]);

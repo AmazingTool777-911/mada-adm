@@ -348,8 +348,8 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
     try {
       const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
-      db = injectDbConnection(dbType);
-      const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {
+      db = await injectDbConnection(dbType);
+      const madaAdmConfigDML = await injectMadaAdmConfigDML(dbType, db, {
         pgSchema,
       });
 
@@ -715,8 +715,8 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
 
       const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
-      db = injectDbConnection(dbType);
-      const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {
+      db = await injectDbConnection(dbType);
+      const madaAdmConfigDML = await injectMadaAdmConfigDML(dbType, db, {
         pgSchema,
       });
 

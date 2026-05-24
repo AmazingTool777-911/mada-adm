@@ -65,7 +65,7 @@ const executor: QueueWorkerExecutor<SeedAdmJobContext, AdmRecord, AdmRecord> =
 
 executor.run({
   async init(context, { workerMetadata }) {
-    db = injectDbConnection(context.dbType);
+    db = await injectDbConnection(context.dbType);
     await db.connect(context.dbConnectionParams);
 
     console.log(

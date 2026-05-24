@@ -1,20 +1,3 @@
-import {
-  injectMongoDbConnection,
-  MongoDbConnection,
-} from "@scope/adapters/mongo";
-import {
-  injectMySQLDbConnection,
-  MySQLDbConnection,
-} from "@scope/adapters/mysql";
-import {
-  injectPostgresDbConnection,
-  PostgresDbConnection,
-} from "@scope/adapters/postgres";
-import {
-  injectSqliteDbConnection,
-  SqliteDbConnection,
-} from "@scope/adapters/sqlite";
-
 import { DbType } from "@scope/consts/db";
 
 import type { DbConnectionCliConfig } from "@scope/types/cli";
@@ -27,16 +10,34 @@ import type { DbConnection, DbConnectionParams } from "@scope/types/db";
  * @returns The singleton instance of the appropriate DbConnection.
  * @throws {Error} If the requested database type is not supported.
  */
-export function injectDbConnection(dbType: DbType): DbConnection {
+export async function injectDbConnection(
+  dbType: DbType,
+): Promise<DbConnection> {
   switch (dbType) {
-    case DbType.Postgres:
+    case DbType.Postgres: {
+      const { injectPostgresDbConnection } = await import(
+        "@scope/adapters/postgres/db"
+      );
       return injectPostgresDbConnection();
-    case DbType.MySQL:
+    }
+    case DbType.MySQL: {
+      const { injectMySQLDbConnection } = await import(
+        "@scope/adapters/mysql/db"
+      );
       return injectMySQLDbConnection();
-    case DbType.SQLite:
+    }
+    case DbType.SQLite: {
+      const { injectSqliteDbConnection } = await import(
+        "@scope/adapters/sqlite/db"
+      );
       return injectSqliteDbConnection();
-    case DbType.MongoDB:
+    }
+    case DbType.MongoDB: {
+      const { injectMongoDbConnection } = await import(
+        "@scope/adapters/mongo/db"
+      );
       return injectMongoDbConnection();
+    }
     default:
       throw new Error(`Unsupported database type: ${dbType}`);
   }
@@ -60,6 +61,9 @@ export async function attemptDbConnection(
 
   switch (config.dbType) {
     case DbType.Postgres: {
+      const { PostgresDbConnection } = await import(
+        "@scope/adapters/postgres/db"
+      );
       if (!(connection instanceof PostgresDbConnection)) {
         throw new Error(
           "Invalid connection instance: Expected PostgresDbConnection for PostgreSQL database type.",
@@ -83,6 +87,9 @@ export async function attemptDbConnection(
       break;
     }
     case DbType.SQLite: {
+      const { SqliteDbConnection } = await import(
+        "@scope/adapters/sqlite/db"
+      );
       if (!(connection instanceof SqliteDbConnection)) {
         throw new Error(
           "Invalid connection instance: Expected SqliteDbConnection for SQLite database type.",
@@ -96,6 +103,9 @@ export async function attemptDbConnection(
       break;
     }
     case DbType.MySQL: {
+      const { MySQLDbConnection } = await import(
+        "@scope/adapters/mysql/db"
+      );
       if (!(connection instanceof MySQLDbConnection)) {
         throw new Error(
           "Invalid connection instance: Expected MySQLDbConnection for MySQL database type.",
@@ -122,6 +132,9 @@ export async function attemptDbConnection(
       break;
     }
     case DbType.MongoDB: {
+      const { MongoDbConnection } = await import(
+        "@scope/adapters/mongo/db"
+      );
       if (!(connection instanceof MongoDbConnection)) {
         throw new Error(
           "Invalid connection instance: Expected MongoDbConnection for MongoDB database type.",

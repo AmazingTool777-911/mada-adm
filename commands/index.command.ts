@@ -651,7 +651,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         break;
     }
 
-    const db = injectDbConnection(args.dbType);
+    const db = await injectDbConnection(args.dbType);
     this.#db = db;
 
     console.log(colors.blue(`\n🔌 Establishing database connection...`));
@@ -678,13 +678,13 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
     let redis: RedisConnection | null = null;
 
     try {
-      const db = injectDbConnection(args.dbType);
+      const db = await injectDbConnection(args.dbType);
       let prevAdmConfigValues: MadaAdmConfigValues | null = null;
 
       const configDdl = injectMadaAdmConfigDDL(args.dbType, db, {
         pgSchema: args.pgSchema,
       });
-      const configDml = injectMadaAdmConfigDML(args.dbType, db, {
+      const configDml = await injectMadaAdmConfigDML(args.dbType, db, {
         pgSchema: args.pgSchema,
       });
 
@@ -811,9 +811,13 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       let communesDDL!: TableDDL;
       let fokontanysDDL!: TableDDL;
 
-      const madaAdmConfigDML = injectMadaAdmConfigDML(args.dbType, this.#db, {
-        pgSchema: args.pgSchema,
-      });
+      const madaAdmConfigDML = await injectMadaAdmConfigDML(
+        args.dbType,
+        this.#db,
+        {
+          pgSchema: args.pgSchema,
+        },
+      );
 
       const madaAdmConfigTableExists = await madaAdmConfigDDL.exists();
       if (madaAdmConfigTableExists) {

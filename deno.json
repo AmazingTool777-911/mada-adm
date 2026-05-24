@@ -13,6 +13,7 @@
     "compile:all": "deno task compile:windows:x86_64 && deno task compile:macos:x86_64 && deno task compile:macos:arm64 && deno task compile:linux:x86_64 && deno task compile:linux:arm64",
     "compile": "deno compile --self-extracting --output ./bin/current-platform/mada-adm --include commands/workers --include data/inputs --exclude commands/.args --exclude db/.ca-certificates --exclude db/.sqlite --exclude redis/.ca-certificates -E -N -R -W --allow-ffi -S commands/index.ts",
     "map-viewer:dev": "cd ./map-viewer && deno task dev",
+    "rest-api:start": "cd ./rest-api && deno task start",
     "extract-adm-inputs": "deno run --allow-env --allow-net --allow-read --allow-write --env scripts/extract-adm-inputs/extract-adm-inputs.script.ts",
     "test": "deno test -R -E --env"
   },

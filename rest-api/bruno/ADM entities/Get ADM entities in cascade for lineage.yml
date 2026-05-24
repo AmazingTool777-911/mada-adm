@@ -1,0 +1,15 @@
+info:
+  name: Get ADM entities in cascade for lineage
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/adm_entities/in_cascade"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

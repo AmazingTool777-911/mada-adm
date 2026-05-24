@@ -4,7 +4,7 @@
  * @param obj - The JavaScript object or value to encode.
  * @returns The Base64 string representation of the JSON stringified object.
  */
-export function encode(obj: unknown): string {
+export function encodeToBase64(obj: unknown): string {
   return btoa(JSON.stringify(obj));
 }
 
@@ -14,6 +14,6 @@ export function encode(obj: unknown): string {
  * @param base64 - The Base64 encoded JSON string to decode.
  * @returns The parsed JavaScript object, cast to the specified type `T`.
  */
-export function decode<T = unknown>(base64: string): T {
+export function decodeToJsonObject<T = unknown>(base64: string): T {
   return JSON.parse(atob(base64)) as T;
 }

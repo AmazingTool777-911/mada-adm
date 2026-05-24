@@ -74,7 +74,7 @@ export class DistrictPostgresQueries extends DistrictBaseQueries
         }
 
         args.push(limit);
-        sql += ` ORDER BY district ASC, id ASC LIMIT $${args.length}`;
+        sql += ` ORDER BY district ASC LIMIT $${args.length}`;
 
         const rows = await client.queryObject<DistrictSnakeCased>(sql, args);
         return rows.rows.map(mapDistrictSnakeToCamel);

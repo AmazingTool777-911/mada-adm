@@ -68,7 +68,7 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
 
       const docs = await this.collection
         .find(filter)
-        .sort({ district: 1, _id: 1 })
+        .sort({ district: 1 })
         .limit(limit)
         .project<DistrictBSON>({ geojson: 0 })
         .toArray();

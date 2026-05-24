@@ -65,7 +65,7 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
       }
 
       args.push(limit);
-      sql += ` ORDER BY district ASC, id ASC LIMIT ?`;
+      sql += ` ORDER BY district ASC LIMIT ?`;
 
       const rows = this.#db.client.prepare(sql).all(
         ...args,

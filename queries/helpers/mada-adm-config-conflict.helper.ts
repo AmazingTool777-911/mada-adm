@@ -1,0 +1,61 @@
+import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
+import type { MadaAdmConfigValues } from "@scope/types/models";
+
+export abstract class MadaAdmConfigConflictError extends Error {
+  constructor(protected data: unknown, message: string) {
+    super(message);
+  }
+}
+
+export class ForeignKeysNotRepeatedError extends MadaAdmConfigConflictError {
+  constructor(
+    currentAdmLevel: AdmLevelCode,
+    parentAdmLevel: AdmLevelCode,
+    config: Partial<MadaAdmConfigValues>,
+  ) {
+    const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
+    const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(parentAdmLevel)!;
+    const message =
+      `Cannot directly fetch ${currentAdmLevelTitle}s of a ${parentAdmLevelTitle} because the foreign keys are not repeated in the database configuration.`;
+    super(
+      {
+        current: {
+          admLevel: currentAdmLevel,
+          title: currentAdmLevelTitle,
+        },
+        parentAdmLevel: {
+          admLevel: parentAdmLevel,
+          title: parentAdmLevelTitle,
+        },
+        config,
+      },
+      message,
+    );
+  }
+}
+
+export class ProvinceForeignKeyNotRepeatedError
+  extends MadaAdmConfigConflictError {
+  constructor(
+    currentAdmLevel: AdmLevelCode,
+    config: Partial<MadaAdmConfigValues>,
+  ) {
+    const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
+    const message =
+      `Cannot directly fetch ${currentAdmLevelTitle}s of a province because the province foreign key is not repeated in the database configuration.`;
+    super(
+      {
+        current: {
+          admLevel: currentAdmLevel,
+          title: currentAdmLevelTitle,
+        },
+        parent: {
+          admLevel: AdmLevelCode.PROVINCE,
+          title: ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)!,
+        },
+        config,
+      },
+      message,
+    );
+  }
+}

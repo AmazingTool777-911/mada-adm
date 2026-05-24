@@ -1,0 +1,96 @@
+import type { MaybePromise } from "@scope/types/utils";
+import type {
+  Commune,
+  District,
+  EntityId,
+  Fokontany,
+  Province,
+  Region,
+} from "@scope/types/models";
+
+export type QueriesExtraOptions = {
+  pgSchema?: string;
+};
+
+export type CursorPaginationParams<TCursor> = {
+  limit: number;
+  cursor: TCursor | null;
+};
+
+export type CursorPaginatedResult<TCursor, TRecord> = {
+  records: TRecord[];
+  next: TCursor | null;
+  current: TCursor | null;
+  limit: number;
+};
+
+export interface ProvinceQueries {
+  getAll(): MaybePromise<Province[]>;
+}
+
+export interface RegionQueries {
+  getAll(): MaybePromise<Region[]>;
+}
+
+export type GetManyDistrictsPaginationCursor = {
+  district: string;
+  id: EntityId;
+};
+
+export type GetManyDistrictsQueryParams = {
+  regionId?: EntityId;
+  provinceId?: EntityId;
+  search?: string;
+};
+
+export interface DistrictQueries {
+  getManyCursorPaginated(
+    paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,
+    queryParams?: GetManyDistrictsQueryParams,
+  ): MaybePromise<
+    CursorPaginatedResult<GetManyDistrictsPaginationCursor, District>
+  >;
+}
+
+export type GetManyCommunesPaginationCursor = {
+  commune: string;
+  id: EntityId;
+};
+
+export type GetManyCommunesQueryParams = {
+  districtId?: EntityId;
+  regionId?: EntityId;
+  provinceId?: EntityId;
+  search?: string;
+};
+
+export interface CommuneQueries {
+  getManyCursorPaginated(
+    paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,
+    queryParams: GetManyCommunesQueryParams,
+  ): MaybePromise<
+    CursorPaginatedResult<GetManyCommunesPaginationCursor, Commune>
+  >;
+}
+
+export type GetManyFokontanysPaginationCursor = {
+  fokontany: string;
+  id: EntityId;
+};
+
+export type GetManyFokontanysQueryParams = {
+  communeId?: EntityId;
+  districtId?: EntityId;
+  regionId?: EntityId;
+  provinceId?: EntityId;
+  search?: string;
+};
+
+export interface FokontanyQueries {
+  getManyCursorPaginated(
+    paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,
+    queryParams: GetManyFokontanysQueryParams,
+  ): MaybePromise<
+    CursorPaginatedResult<GetManyFokontanysPaginationCursor, Fokontany>
+  >;
+}

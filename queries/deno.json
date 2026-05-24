@@ -1,5 +1,12 @@
 {
   "name": "@scope/queries",
   "version": "0.0.1",
-  "exports": "./index.ts"
+  "exports": {
+    ".": "./index.ts",
+    "./province": "./province/province.queries.ts",
+    "./region": "./region/region.queries.ts",
+    "./district": "./district/district.queries.ts",
+    "./types": "./queries.d.ts",
+    "./helpers": "./helpers.ts"
+  }
 }

@@ -1,8 +1,20 @@
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import type { MadaAdmConfigValues } from "@scope/types/models";
 
+export type MadaAdmConfigConflictErrorData = {
+  current: {
+    admLevel: AdmLevelCode;
+    title: string;
+  };
+  parent: {
+    admLevel: AdmLevelCode;
+    title: string;
+  };
+  config: Partial<MadaAdmConfigValues>;
+};
+
 export abstract class MadaAdmConfigConflictError extends Error {
-  constructor(protected data: unknown, message: string) {
+  constructor(protected data: MadaAdmConfigConflictErrorData, message: string) {
     super(message);
   }
 }
@@ -11,7 +23,6 @@ export class ForeignKeysNotRepeatedError extends MadaAdmConfigConflictError {
   constructor(
     currentAdmLevel: AdmLevelCode,
     parentAdmLevel: AdmLevelCode,
-    config: Partial<MadaAdmConfigValues>,
   ) {
     const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
     const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(parentAdmLevel)!;
@@ -23,11 +34,11 @@ export class ForeignKeysNotRepeatedError extends MadaAdmConfigConflictError {
           admLevel: currentAdmLevel,
           title: currentAdmLevelTitle,
         },
-        parentAdmLevel: {
+        parent: {
           admLevel: parentAdmLevel,
           title: parentAdmLevelTitle,
         },
-        config,
+        config: { isFkRepeated: false },
       },
       message,
     );
@@ -38,7 +49,6 @@ export class ProvinceForeignKeyNotRepeatedError
   extends MadaAdmConfigConflictError {
   constructor(
     currentAdmLevel: AdmLevelCode,
-    config: Partial<MadaAdmConfigValues>,
   ) {
     const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
     const message =
@@ -53,7 +63,7 @@ export class ProvinceForeignKeyNotRepeatedError
           admLevel: AdmLevelCode.PROVINCE,
           title: ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)!,
         },
-        config,
+        config: { isProvinceFkRepeated: false },
       },
       message,
     );

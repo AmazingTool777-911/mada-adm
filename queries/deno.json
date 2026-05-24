@@ -6,7 +6,9 @@
     "./province": "./province/province.queries.ts",
     "./region": "./region/region.queries.ts",
     "./district": "./district/district.queries.ts",
+    "./commune": "./commune/commune.queries.ts",
+    "./fokontany": "./fokontany/fokontany.queries.ts",
     "./types": "./queries.d.ts",
-    "./helpers": "./helpers.ts"
+    "./helpers": "./helpers/index.ts"
   }
 }

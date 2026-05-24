@@ -58,8 +58,8 @@ export class DistrictPostgresQueries extends DistrictBaseQueries
         }
 
         if (queryParams.search) {
-          args.push(`${queryParams.search}%`);
-          conditions.push(`district LIKE $${args.length}`);
+          args.push(`${queryParams.search.toLocaleLowerCase("fr")}%`);
+          conditions.push(`lower(district) LIKE $${args.length}`);
         }
 
         if (cursor) {

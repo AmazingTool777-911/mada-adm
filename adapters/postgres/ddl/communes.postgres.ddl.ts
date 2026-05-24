@@ -71,6 +71,8 @@ export class CommunesPostgresDDL extends BaseAdmTableDDL {
     let indexesQuery = `
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_ci 
       ON ${this.schema}.${this.tableName} (commune citext_ops);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_lower 
+      ON ${this.schema}.${this.tableName} (lower(commune) text_pattern_ops);
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_district_id 
       ON ${this.schema}.${this.tableName} (district_id);
     `;

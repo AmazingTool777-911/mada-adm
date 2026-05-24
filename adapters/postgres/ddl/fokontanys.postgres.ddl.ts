@@ -76,8 +76,10 @@ export class FokontanysPostgresDDL extends BaseAdmTableDDL {
       );
     `;
     let indexesQuery = `
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany_ci 
-      ON ${this.schema}.${this.tableName} (fokontany citext_ops);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany_ci__id
+      ON ${this.schema}.${this.tableName} (fokontany citext_ops, id);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany_lower
+      ON ${this.schema}.${this.tableName} (lower(fokontany) text_pattern_ops);
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_id 
       ON ${this.schema}.${this.tableName} (commune_id);
     `;

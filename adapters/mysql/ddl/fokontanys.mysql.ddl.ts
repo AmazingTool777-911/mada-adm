@@ -76,7 +76,7 @@ export class FokontanysMySQLDDL extends BaseAdmTableDDL {
         commune_id INT NOT NULL,${optionalCols}${admLevelColumn}${geometryColumn}
         created_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
         updated_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-        INDEX idx_${this.tableName}_fokontany (fokontany),
+        INDEX idx_${this.tableName}_fokontany__id (fokontany, id),
         INDEX idx_${this.tableName}_commune_id_main (commune_id),
         CONSTRAINT fk_${this.tableName}_commune_main FOREIGN KEY (commune_id) REFERENCES ${communesTable}(id) ON DELETE CASCADE
         ${optionalFk ? optionalFk : ""}

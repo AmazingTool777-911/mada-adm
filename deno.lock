@@ -23,6 +23,7 @@
     "jsr:@hono/hono@^4.8.3": "4.12.21",
     "jsr:@hono/zod-validator@0.8": "0.8.0",
     "jsr:@iuioiua/redis@^1.1.10": "1.1.10",
+    "jsr:@std/assert@*": "1.0.19",
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/assert@^1.0.17": "1.0.19",
     "jsr:@std/assert@^1.0.19": "1.0.19",

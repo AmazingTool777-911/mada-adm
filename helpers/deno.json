@@ -6,6 +6,7 @@
     "./cli": "./cli.helper.ts",
     "./cli-args-env-resolvers": "./cli-args-env-resolvers.helper.ts",
     "./models": "./models.helper.ts",
-    "./db": "./db.helper.ts"
+    "./db": "./db.helper.ts",
+    "./json-base64": "./json-base64.helper.ts"
   }
 }

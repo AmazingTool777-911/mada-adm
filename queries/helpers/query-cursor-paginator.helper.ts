@@ -74,7 +74,11 @@ export class QueryCursorPaginator<
       next,
     };
     if (encodeCursor) {
-      result.currentEncoded = jsonBase64Helper.encodeToBase64(result.current!);
+      if (result.current) {
+        result.currentEncoded = jsonBase64Helper.encodeToBase64(
+          result.current!,
+        );
+      }
       if (next) {
         result.nextEncoded = jsonBase64Helper.encodeToBase64(next);
       }

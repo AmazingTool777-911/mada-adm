@@ -23,7 +23,7 @@ app.get("/", (c) => {
 });
 
 app.get(
-  "/api/adm_entities/in_cascade",
+  "/api/adm_entities/in_batch",
   injectQueriesMiddleware(
     "provinceQueries",
     "regionQueries",
@@ -61,8 +61,7 @@ app.get(
       })(),
       (async () => {
         const paginatedDistricts = await districtQueries.getManyCursorPaginated(
-          { limit, cursor: null },
-          {},
+          { limit, cursor: null, encodeCursor: true },
         );
         return {
           admLevel: {
@@ -74,8 +73,7 @@ app.get(
       })(),
       (async () => {
         const paginatedCommunes = await communeQueries.getManyCursorPaginated(
-          { limit, cursor: null },
-          {},
+          { limit, cursor: null, encodeCursor: true },
         );
         return {
           admLevel: {
@@ -88,8 +86,7 @@ app.get(
       (async () => {
         const paginatedFokontanys = await fokontanyQueries
           .getManyCursorPaginated(
-            { limit, cursor: null },
-            {},
+            { limit, cursor: null, encodeCursor: true },
           );
         return {
           admLevel: {

@@ -8,9 +8,11 @@ import type {
   ProvinceQueries,
   RegionQueries,
 } from "@scope/queries/types";
+import type { ResponseErrorCode } from "./consts/response-error-code.const.ts";
 
 export type ApiErrorResponse = {
   error: string;
+  code: ResponseErrorCode;
   [key: string]: unknown;
 };
 

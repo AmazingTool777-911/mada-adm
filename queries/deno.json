@@ -10,5 +10,8 @@
     "./fokontany": "./fokontany/fokontany.queries.ts",
     "./types": "./queries.d.ts",
     "./helpers": "./helpers/index.ts"
+  },
+  "imports": {
+    "@zod/zod": "jsr:@zod/zod@^4.4.3"
   }
 }

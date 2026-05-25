@@ -7,6 +7,7 @@ import type {
   Province,
   Region,
 } from "@scope/types/models";
+import type { AdmLevelCode } from "@scope/consts/models";
 
 export type QueriesExtraOptions = {
   pgSchema?: string;
@@ -14,13 +15,17 @@ export type QueriesExtraOptions = {
 
 export type CursorPaginationParams<TCursor> = {
   limit: number;
-  cursor: TCursor | null;
+  cursor?: TCursor | null;
+  cursorEncoded?: string | null;
+  encodeCursor?: boolean;
 };
 
 export type CursorPaginatedResult<TCursor, TRecord> = {
   records: TRecord[];
   next: TCursor | null;
+  nextEncoded?: string;
   current: TCursor | null;
+  currentEncoded?: string;
   limit: number;
 };
 
@@ -67,7 +72,7 @@ export type GetManyCommunesQueryParams = {
 export interface CommuneQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,
-    queryParams: GetManyCommunesQueryParams,
+    queryParams?: GetManyCommunesQueryParams,
   ): MaybePromise<
     CursorPaginatedResult<GetManyCommunesPaginationCursor, Commune>
   >;
@@ -89,8 +94,58 @@ export type GetManyFokontanysQueryParams = {
 export interface FokontanyQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,
-    queryParams: GetManyFokontanysQueryParams,
+    queryParams?: GetManyFokontanysQueryParams,
   ): MaybePromise<
     CursorPaginatedResult<GetManyFokontanysPaginationCursor, Fokontany>
+  >;
+}
+
+export type GetAdmEntitiesUnionPaginationCursor =
+  & {
+    value: string;
+  }
+  & ({
+    admLevel:
+      | AdmLevelCode.PROVINCE
+      | AdmLevelCode.REGION
+      | AdmLevelCode.DISTRICT;
+  } | {
+    admLevel: AdmLevelCode.COMMUNE | AdmLevelCode.FOKONTANY;
+    id: EntityId;
+  });
+
+export type GetAdmEntitiesUnionUnitSet = {
+  admLevel: AdmLevelCode.PROVINCE;
+  provinces: Province[];
+} | {
+  admLevel: AdmLevelCode.REGION;
+  regions: Region[];
+} | {
+  admLevel: AdmLevelCode.DISTRICT;
+  districts: District[];
+} | {
+  admLevel: AdmLevelCode.COMMUNE;
+  communes: Commune[];
+} | {
+  admLevel: AdmLevelCode.FOKONTANY;
+  fokontanys: Fokontany[];
+};
+
+export type GetAdmEntitiesUnionQueryParams = {
+  from?: AdmLevelCode;
+  search?: string;
+};
+
+export interface AdmEntityQueries {
+  getUnionCursorPaginated(
+    paginationParams: CursorPaginationParams<
+      GetAdmEntitiesUnionPaginationCursor
+    >,
+    queryParams?: GetAdmEntitiesUnionQueryParams,
+  ): MaybePromise<
+    CursorPaginatedResult<
+      GetAdmEntitiesUnionPaginationCursor,
+      GetAdmEntitiesUnionUnitSet
+    >
   >;
 }

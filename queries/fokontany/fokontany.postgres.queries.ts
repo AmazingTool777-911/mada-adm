@@ -13,6 +13,7 @@ import type {
 } from "../queries.d.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
+import { getManyFokontanysPaginationCursorSchema } from "../schemas/fokontany.schemas.ts";
 
 export class FokontanyPostgresQueries extends FokontanyBaseQueries
   implements FokontanyQueries {
@@ -35,6 +36,7 @@ export class FokontanyPostgresQueries extends FokontanyBaseQueries
     GetManyFokontanysQueryParams
   >({
     toCursor: ({ fokontany, id }) => ({ fokontany, id }),
+    cursorEncodedSchema: getManyFokontanysPaginationCursorSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
       const client = await this.#db.pool.connect();
       try {

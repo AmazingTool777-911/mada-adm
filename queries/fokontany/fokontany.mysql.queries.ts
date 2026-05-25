@@ -12,6 +12,7 @@ import type {
 } from "../queries.d.ts";
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { getManyFokontanysPaginationCursorSchema } from "../schemas/fokontany.schemas.ts";
 
 export class FokontanyMySQLQueries extends FokontanyBaseQueries {
   #db!: MySQLDbConnection;
@@ -30,6 +31,7 @@ export class FokontanyMySQLQueries extends FokontanyBaseQueries {
     GetManyFokontanysQueryParams
   >({
     toCursor: ({ fokontany, id }) => ({ fokontany, id }),
+    cursorEncodedSchema: getManyFokontanysPaginationCursorSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
       const columns = this.getColunmsWithoutGeojson({
         excludeGeojson: true,

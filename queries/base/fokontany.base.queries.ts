@@ -34,7 +34,7 @@ export abstract class FokontanyBaseQueries extends AdmTableBaseQueries
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,
-    queryParams: GetManyFokontanysQueryParams,
+    queryParams?: GetManyFokontanysQueryParams,
   ): MaybePromise<
     CursorPaginatedResult<GetManyFokontanysPaginationCursor, Fokontany>
   > {

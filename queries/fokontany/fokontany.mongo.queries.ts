@@ -14,6 +14,7 @@ import type {
 } from "../queries.d.ts";
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { getManyFokontanysPaginationCursorSchema } from "../schemas/fokontany.schemas.ts";
 
 export class FokontanyMongoQueries extends FokontanyBaseQueries {
   #db!: MongoDbConnection;
@@ -35,6 +36,7 @@ export class FokontanyMongoQueries extends FokontanyBaseQueries {
     GetManyFokontanysQueryParams
   >({
     toCursor: ({ fokontany, id }) => ({ fokontany, id }),
+    cursorEncodedSchema: getManyFokontanysPaginationCursorSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
       // Use a loose filter type to accommodate EntityId being assigned to ObjectId-typed FK fields
       const filter: Filter<Document> = {};

@@ -13,6 +13,7 @@ import type {
   SQLiteTransactionContext,
 } from "@scope/types/db";
 import type { MadaAdmConfigValues } from "@scope/types/models";
+import { prefixWithCamelCase, prefixWithSnakeCase } from "@scope/utils/string";
 
 /**
  * Ensures the given transaction context is a PostgresTransactionContext.
@@ -271,4 +272,22 @@ export function getAdmTableColumns(
   }
 
   return columns;
+}
+
+/**
+ * Gets the final table name of an ADM table considering its ADM level, its mada ADM config, and its DB type.
+ * @param admLevel - The ADM level
+ * @param config - The mada ADM config
+ * @param dbType - The DB type
+ * @returns The computed table name
+ */
+export function getAdmTableName(
+  admLevel: AdmLevelCode,
+  config: MadaAdmConfigValues,
+  dbType: DbType,
+) {
+  const baseName = `${ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!}s`;
+  return dbType === DbType.MongoDB
+    ? prefixWithSnakeCase(config.tablesPrefix, baseName)
+    : prefixWithCamelCase(config.tablesPrefix, baseName);
 }

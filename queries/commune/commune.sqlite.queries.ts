@@ -13,6 +13,7 @@ import type {
 } from "../queries.d.ts";
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { getManyCommunesCursorPaginatedSchema } from "../schemas/commune.schemas.ts";
 
 export class CommuneSqliteQueries extends CommuneBaseQueries {
   #db!: SqliteDbConnection;
@@ -31,6 +32,7 @@ export class CommuneSqliteQueries extends CommuneBaseQueries {
     GetManyCommunesQueryParams
   >({
     toCursor: ({ commune, id }) => ({ commune, id }),
+    cursorEncodedSchema: getManyCommunesCursorPaginatedSchema,
     queryFn: ({ limit, cursor }, queryParams = {}) => {
       const columns = this.getColunmsWithoutGeojson({
         excludeGeojson: true,

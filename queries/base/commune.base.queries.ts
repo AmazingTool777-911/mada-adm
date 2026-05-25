@@ -34,7 +34,7 @@ export abstract class CommuneBaseQueries extends AdmTableBaseQueries
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,
-    queryParams: GetManyCommunesQueryParams,
+    queryParams?: GetManyCommunesQueryParams,
   ): MaybePromise<
     CursorPaginatedResult<GetManyCommunesPaginationCursor, Commune>
   > {

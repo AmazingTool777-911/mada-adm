@@ -13,6 +13,7 @@ import type {
 } from "../queries.d.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
+import { getManyCommunesCursorPaginatedSchema } from "../schemas/commune.schemas.ts";
 
 export class CommunePostgresQueries extends CommuneBaseQueries
   implements CommuneQueries {
@@ -35,6 +36,7 @@ export class CommunePostgresQueries extends CommuneBaseQueries
     GetManyCommunesQueryParams
   >({
     toCursor: ({ commune, id }) => ({ commune, id }),
+    cursorEncodedSchema: getManyCommunesCursorPaginatedSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
       const client = await this.#db.pool.connect();
       try {

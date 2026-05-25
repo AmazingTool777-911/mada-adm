@@ -14,6 +14,7 @@ import type {
 } from "../queries.d.ts";
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { getManyCommunesCursorPaginatedSchema } from "../schemas/commune.schemas.ts";
 
 export class CommuneMongoQueries extends CommuneBaseQueries {
   #db!: MongoDbConnection;
@@ -35,6 +36,7 @@ export class CommuneMongoQueries extends CommuneBaseQueries {
     GetManyCommunesQueryParams
   >({
     toCursor: ({ commune, id }) => ({ commune, id }),
+    cursorEncodedSchema: getManyCommunesCursorPaginatedSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
       // Use a loose filter type to accommodate EntityId being assigned to ObjectId-typed FK fields
       const filter: Filter<Document> = {};

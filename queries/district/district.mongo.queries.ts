@@ -14,6 +14,7 @@ import type {
 } from "../queries.d.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { getManyDistrictPaginationCursorSchema } from "../schemas/district.schemas.ts";
 
 export class DistrictMongoQueries extends DistrictBaseQueries {
   #db!: MongoDbConnection;
@@ -75,6 +76,7 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
 
       return docs.map((doc) => mapDistrictBsonToEntity(doc));
     },
+    cursorEncodedSchema: getManyDistrictPaginationCursorSchema,
   });
 
   override get getManyCursorPaginator(): QueryCursorPaginator<

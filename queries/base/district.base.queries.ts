@@ -31,7 +31,7 @@ export abstract class DistrictBaseQueries extends AdmTableBaseQueries
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,
-    queryParams: GetManyDistrictsQueryParams,
+    queryParams?: GetManyDistrictsQueryParams,
   ): MaybePromise<
     CursorPaginatedResult<GetManyDistrictsPaginationCursor, District>
   > {

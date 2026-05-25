@@ -13,6 +13,7 @@ import type {
 } from "../queries.d.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
+import { getManyDistrictPaginationCursorSchema } from "../schemas/district.schemas.ts";
 
 export class DistrictPostgresQueries extends DistrictBaseQueries
   implements DistrictQueries {
@@ -82,6 +83,7 @@ export class DistrictPostgresQueries extends DistrictBaseQueries
         client.release();
       }
     },
+    cursorEncodedSchema: getManyDistrictPaginationCursorSchema,
   });
 
   override get getManyCursorPaginator() {

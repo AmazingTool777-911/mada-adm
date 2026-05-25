@@ -13,6 +13,7 @@ import type {
 } from "../queries.d.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { getManyDistrictPaginationCursorSchema } from "../schemas/district.schemas.ts";
 
 export class DistrictSqliteQueries extends DistrictBaseQueries {
   #db!: SqliteDbConnection;
@@ -72,6 +73,7 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
       ) as DistrictSnakeCased[];
       return Promise.resolve(rows.map(mapDistrictSnakeToCamel));
     },
+    cursorEncodedSchema: getManyDistrictPaginationCursorSchema,
   });
 
   override get getManyCursorPaginator(): QueryCursorPaginator<

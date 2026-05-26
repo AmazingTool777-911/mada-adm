@@ -173,6 +173,7 @@ app.get(
     if (!province) {
       throw new HTTPException(StatusCodes.NOT_FOUND, {
         message: "Province not found",
+        cause: { id },
       });
     }
     return c.json(province, StatusCodes.OK);
@@ -186,6 +187,35 @@ app.get(
     const regionQueries = c.get("regionQueries");
     const regions = await regionQueries.getAll();
     return c.json(regions, StatusCodes.OK);
+  },
+);
+
+app.get(
+  "/api/regions/:id",
+  zValidator("param", z.object({ id: requestIdParamSchema })),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("regionQueries"),
+  async (c) => {
+    const id = c.req.param("id");
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const regionQueries = c.get("regionQueries");
+    const region = await regionQueries.getById(id, {
+      excludeGeoJSON,
+    });
+    if (!region) {
+      throw new HTTPException(StatusCodes.NOT_FOUND, {
+        message: "Region not found",
+        cause: { id },
+      });
+    }
+    return c.json(region, StatusCodes.OK);
   },
 );
 
@@ -209,6 +239,16 @@ app.onError((err, c) => {
         data: err.data,
       },
       StatusCodes.BAD_REQUEST,
+    );
+  }
+
+  if (err instanceof HTTPException) {
+    return c.json<ApiErrorResponse>(
+      {
+        error: err.message,
+        code: ResponseErrorCode.NotFoundError,
+        cause: err.cause,
+      },
     );
   }
 

@@ -1,4 +1,7 @@
-import { DbType } from "@scope/consts/db";
+import {
+  ADM_ENTITIES_UNION_TARGET_COLUMN_NAME,
+  DbType,
+} from "@scope/consts/db";
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_INDEX_BY_CODE,
@@ -290,4 +293,84 @@ export function getAdmTableName(
   return dbType === DbType.MongoDB
     ? prefixWithSnakeCase(config.tablesPrefix, baseName)
     : prefixWithCamelCase(config.tablesPrefix, baseName);
+}
+
+export type GetAdmEntityUnionSetColumnsColumnData = {
+  alias?: string | number | null;
+  cast?: "id" | "text";
+  name: string;
+};
+
+export function getAdmEntityUnionSetColumns(
+  admLevel: AdmLevelCode,
+  config: MadaAdmConfigValues,
+  dbType: DbType,
+): GetAdmEntityUnionSetColumnsColumnData[] {
+  const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(admLevel)!;
+  const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!;
+  const useCamelCase = dbType === DbType.MongoDB;
+  const cols: GetAdmEntityUnionSetColumnsColumnData[] = [
+    { name: dbType === DbType.MongoDB ? "_id" : "id" },
+    { name: useCamelCase ? "createdAt" : "created_at" },
+    { name: useCamelCase ? "updatedAt" : "updated_at" },
+  ];
+  const admLevelColName = useCamelCase ? "admLevel" : "adm_level";
+  const admLevelCol = config.hasAdmLevel ? { name: admLevelColName } : {
+    name: admLevelColName,
+    alias: admLevelIndex,
+  };
+  cols.push(admLevelCol);
+  cols.push({
+    name: ADM_ENTITIES_UNION_TARGET_COLUMN_NAME,
+    alias: admLevelTitle,
+    cast: "text",
+  });
+  for (let i = 0; i < ADM_LEVEL_CODES_INDEXED.length; i++) {
+    const currentAdmLevel = ADM_LEVEL_CODES_INDEXED[i];
+    const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
+    const currentAdmLevelAsFkName = currentAdmLevelTitle +
+      (useCamelCase ? "Id" : "_id");
+    if (i === admLevelIndex) {
+      cols.push({ name: currentAdmLevelTitle });
+      cols.push({ name: currentAdmLevelAsFkName, alias: null, cast: "id" });
+    } else if (i < admLevelIndex) {
+      if (i === (admLevelIndex - 1)) {
+        cols.push({ name: currentAdmLevelTitle });
+        cols.push({
+          name: currentAdmLevelAsFkName,
+        });
+      } else if (i === 0) {
+        const provinceTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+          AdmLevelCode.PROVINCE,
+        )!;
+        cols.push(
+          config.isProvinceRepeated
+            ? { name: provinceTitle }
+            : { alias: null, name: provinceTitle, cast: "text" },
+        );
+        const provinceColFkName = provinceTitle +
+          (useCamelCase ? "Id" : "_id");
+        cols.push(
+          config.isProvinceFkRepeated
+            ? {
+              name: provinceColFkName,
+            }
+            : { name: provinceColFkName, alias: null, cast: "id" },
+        );
+      } else {
+        cols.push({ name: currentAdmLevelTitle });
+        const colFkName = currentAdmLevelAsFkName;
+        cols.push(
+          config.isFkRepeated
+            ? { name: colFkName }
+            : { name: colFkName, alias: null, cast: "id" },
+        );
+      }
+    } else {
+      cols.push({ name: currentAdmLevelTitle, alias: null, cast: "text" });
+      const colFkName = currentAdmLevelAsFkName;
+      cols.push({ name: colFkName, alias: null, cast: "id" });
+    }
+  }
+  return cols;
 }

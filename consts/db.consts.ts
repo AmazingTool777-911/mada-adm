@@ -92,3 +92,5 @@ export const DDL_TRANSACTION_OPTIONS: TransactionOptions = {
     readConcern: "local",
   },
 };
+
+export const ADM_ENTITIES_UNION_TARGET_COLUMN_NAME = "target";

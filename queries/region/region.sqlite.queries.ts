@@ -1,4 +1,5 @@
 import type {
+  EntityId,
   MadaAdmConfigValues,
   Region,
   RegionSnakeCased,
@@ -7,7 +8,7 @@ import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { mapRegionSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import { AdmLevelCode } from "@scope/consts/models";
-import type { RegionQueries } from "../queries.d.ts";
+import type { GetRegionByIdOptions, RegionQueries } from "../queries.d.ts";
 import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
 
 export class RegionSqliteQueries extends AdmTableBaseQueries
@@ -32,6 +33,22 @@ export class RegionSqliteQueries extends AdmTableBaseQueries
     `;
     const rows = this.#db.client.prepare(sql).all() as RegionSnakeCased[];
     return rows.map(mapRegionSnakeToCamel);
+  }
+
+  getById(id: EntityId, options?: GetRegionByIdOptions): Region | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const rows = this.#db.client.prepare(sql).all(
+      Number(id),
+    ) as RegionSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapRegionSnakeToCamel(rows[0]);
   }
 }
 

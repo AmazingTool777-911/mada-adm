@@ -43,8 +43,17 @@ export interface ProvinceQueries {
   ): MaybePromise<Province | null>;
 }
 
+export type GetRegionByIdOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface RegionQueries {
   getAll(): MaybePromise<Region[]>;
+
+  getById(
+    id: EntityId,
+    options?: GetRegionByIdOptions,
+  ): MaybePromise<Region | null>;
 }
 
 export type GetManyDistrictsPaginationCursor = {

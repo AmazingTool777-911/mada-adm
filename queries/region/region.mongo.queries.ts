@@ -1,5 +1,6 @@
-import type { Collection } from "mongodb";
+import { type Collection, ObjectId } from "mongodb";
 import type {
+  EntityId,
   MadaAdmConfigValues,
   Region,
   RegionBSON,
@@ -9,7 +10,7 @@ import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapRegionBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import { AdmLevelCode } from "@scope/consts/models";
-import type { RegionQueries } from "../queries.d.ts";
+import type { GetRegionByIdOptions, RegionQueries } from "../queries.d.ts";
 import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
 
 export class RegionMongoQueries extends AdmTableBaseQueries
@@ -33,6 +34,17 @@ export class RegionMongoQueries extends AdmTableBaseQueries
       .project<RegionBSON>({ geojson: 0, _id: 1 })
       .toArray();
     return docs.map<Region>((doc) => mapRegionBsonToEntity(doc));
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetRegionByIdOptions,
+  ): Promise<Region | null> {
+    const region = await this.collection
+      .findOne({ _id: new ObjectId(id) });
+    if (!region) return null;
+    options?.excludeGeoJSON && region.geojson && delete region.geojson;
+    return mapRegionBsonToEntity(region);
   }
 }
 

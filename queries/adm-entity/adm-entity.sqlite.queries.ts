@@ -23,7 +23,7 @@ import {
   mapAdmEntityUnionSnakeCasedRecordToEntity,
 } from "@scope/helpers/models";
 import { getAdmEntitiesUnionPaginationCursorSchema } from "../schemas/adm-entity.schemas.ts";
-import type { PostgresDbConnection } from "@scope/adapters/postgres/db";
+import type { SqliteDbConnection } from "@scope/adapters/sqlite/db";
 import { getAdmTableName } from "@scope/helpers/db";
 import {
   ADM_ENTITIES_UNION_TARGET_COLUMN_NAME,
@@ -35,7 +35,7 @@ export type GetSelectAdmEntitiesSetQueryTemplateResult = {
   params: (string | number)[];
 };
 
-export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
+export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
   #getUnionCursorPaginator!: QueryCursorPaginator<
     GetAdmEntitiesUnionPaginationCursor,
     AdmEntity,
@@ -52,8 +52,7 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
 
   constructor(
     private config: MadaAdmConfigValues,
-    private dbConnection: PostgresDbConnection,
-    private schema: string = "public",
+    private dbConnection: SqliteDbConnection,
   ) {
     super();
 
@@ -69,10 +68,10 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
         getAdmEntitiesUnionPaginationCursorSchema as z.Schema<
           GetAdmEntitiesUnionPaginationCursor
         >,
-      queryFn: async (
+      queryFn: (
         { limit, cursor },
         queryParams,
-      ): Promise<AdmEntity[]> => {
+      ): AdmEntity[] => {
         const queryParamsAdmLevelIndexFrom = ADM_LEVEL_INDEX_BY_CODE.get(
           queryParams?.from ?? AdmLevelCode.PROVINCE,
         )!;
@@ -109,7 +108,7 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
           startingAdmLevelIndex < (ADM_LEVEL_CODES_INDEXED.length - 1)
         ) {
           unionSetsParams.push(limit);
-          const limitClause = `LIMIT $${unionSetsParams.length}`;
+          const limitClause = `LIMIT ?`;
 
           sql += `
             ORDER BY adm_level, ${ADM_ENTITIES_UNION_TARGET_COLUMN_NAME}, id
@@ -117,13 +116,12 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
           `;
         }
 
-        const client = await this.dbConnection.pool.connect();
-        const result = await client.queryObject<AdmEntitySnakeCasedUnionRecord>(
-          sql,
-          unionSetsParams,
-        );
+        const stmt = this.dbConnection.client.prepare(sql);
+        const rows = stmt.all(
+          ...unionSetsParams,
+        ) as AdmEntitySnakeCasedUnionRecord[];
 
-        return result.rows.map<AdmEntity>((row) =>
+        return rows.map<AdmEntity>((row) =>
           mapAdmEntityUnionSnakeCasedRecordToEntity(row)
         );
       },
@@ -143,20 +141,7 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
         if (typeof colData.alias === "undefined") {
           return colData.name;
         } else {
-          let aliasValue = colData.alias ?? "NULL";
-          if (colData.cast) {
-            switch (colData.cast) {
-              case "id":
-                aliasValue += "::integer";
-                break;
-              case "text":
-                aliasValue += "::text";
-                break;
-              default:
-                break;
-            }
-          }
-          return `${aliasValue} AS ${colData.name}`;
+          return `${colData.alias ?? "NULL"} AS ${colData.name}`;
         }
       })
       .join(", ");
@@ -178,9 +163,9 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
     if (hasConditions) {
       const conditionsTemplates: string[] = [];
       if (search) {
-        templateParams.push(`${search.toLocaleLowerCase("fr")}%`);
+        templateParams.push(`${search}%`);
         conditionsTemplates.push(`
-          lower(${admLevelTitle}) LIKE $${templateParams.length}
+          ${admLevelTitle} LIKE ?
         `);
       }
       if (cursor) {
@@ -189,14 +174,13 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
           cursor.admLevel === AdmLevelCode.FOKONTANY
         ) {
           templateParams.push(cursor.value, Number(cursor.id));
-          const paramsLength = templateParams.length;
           conditionsTemplates.push(`
-            (${admLevelTitle}, id) >= ($${paramsLength - 1}, $${paramsLength})
+            (${admLevelTitle}, id) >= (?, ?)
           `);
         } else {
           templateParams.push(cursor.value);
           conditionsTemplates.push(`
-            ${admLevelTitle} >= $${templateParams.length}
+            ${admLevelTitle} >= ?
           `);
         }
       }
@@ -207,20 +191,19 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
         ? `ORDER BY ${admLevelTitle}, id`
         : `ORDER BY ${admLevelTitle}`;
     templateParams.push(limit);
-    const limitClause = `LIMIT $${templateParams.length}`;
+    const limitClause = `LIMIT ?`;
     const tableName = getAdmTableName(
       admLevel,
       this.config,
-      DbType.Postgres,
+      DbType.SQLite,
     );
-    const fullTableName = `${this.schema}.${tableName}`;
     const columnsClause = this.getSelectAdmEntitiesSetQueryColumnsTemplate(
       admLevel,
     );
     const sql = `
       SELECT * FROM (
         SELECT ${columnsClause}
-        FROM ${fullTableName}${whereClause}
+        FROM ${tableName}${whereClause}
         ${orderByClause}
         ${limitClause}
       ) ${tableName}
@@ -232,16 +215,15 @@ export class AdmEntityPostgresQueries extends AdmEntityBaseQueries {
   }
 }
 
-let _instance: AdmEntityPostgresQueries | null = null;
+let _instance: AdmEntitySqliteQueries | null = null;
 
-export function injectAdmEntityPostgresQueries(
+export function injectAdmEntitySqliteQueries(
   config: MadaAdmConfigValues,
-  dbConnection: PostgresDbConnection,
-  pgSchema: string = "public",
-): AdmEntityPostgresQueries {
+  dbConnection: SqliteDbConnection,
+): AdmEntitySqliteQueries {
   if (_instance) {
     return _instance;
   }
-  _instance = new AdmEntityPostgresQueries(config, dbConnection, pgSchema);
+  _instance = new AdmEntitySqliteQueries(config, dbConnection);
   return _instance;
 }

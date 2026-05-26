@@ -5,20 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{BASE_URL}}/api/adm_entities/in_union?limit=8&from=ADM3&cursor=eyJhZG1MZXZlbCI6IkFETTMiLCJ2YWx1ZSI6IkFtYm9oaW1hbmRyb3NvIiwiaWQiOjg2M30=&search=ambohiman"
-  params:
-    - name: limit
-      value: "8"
-      type: query
-    - name: from
-      value: ADM3
-      type: query
-    - name: cursor
-      value: eyJhZG1MZXZlbCI6IkFETTMiLCJ2YWx1ZSI6IkFtYm9oaW1hbmRyb3NvIiwiaWQiOjg2M30=
-      type: query
-    - name: search
-      value: ambohiman
-      type: query
+  url: "{{BASE_URL}}/api/adm_entities/in_union"
   auth: inherit
 
 settings:

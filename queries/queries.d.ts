@@ -1,5 +1,6 @@
 import type { MaybePromise } from "@scope/types/utils";
 import type {
+  AdmEntity,
   Commune,
   District,
   EntityId,
@@ -114,23 +115,6 @@ export type GetAdmEntitiesUnionPaginationCursor =
     id: EntityId;
   });
 
-export type GetAdmEntitiesUnionUnitSet = {
-  admLevel: AdmLevelCode.PROVINCE;
-  provinces: Province[];
-} | {
-  admLevel: AdmLevelCode.REGION;
-  regions: Region[];
-} | {
-  admLevel: AdmLevelCode.DISTRICT;
-  districts: District[];
-} | {
-  admLevel: AdmLevelCode.COMMUNE;
-  communes: Commune[];
-} | {
-  admLevel: AdmLevelCode.FOKONTANY;
-  fokontanys: Fokontany[];
-};
-
 export type GetAdmEntitiesUnionQueryParams = {
   from?: AdmLevelCode;
   search?: string;
@@ -145,7 +129,7 @@ export interface AdmEntityQueries {
   ): MaybePromise<
     CursorPaginatedResult<
       GetAdmEntitiesUnionPaginationCursor,
-      GetAdmEntitiesUnionUnitSet
+      AdmEntity
     >
   >;
 }

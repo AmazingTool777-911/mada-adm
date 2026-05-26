@@ -8,6 +8,7 @@
     "./district": "./district/district.queries.ts",
     "./commune": "./commune/commune.queries.ts",
     "./fokontany": "./fokontany/fokontany.queries.ts",
+    "./adm-entity": "./adm-entity/adm-entity.queries.ts",
     "./types": "./queries.d.ts",
     "./helpers": "./helpers/index.ts"
   },

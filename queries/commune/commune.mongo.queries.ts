@@ -15,6 +15,7 @@ import type {
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { getManyCommunesCursorPaginatedSchema } from "../schemas/commune.schemas.ts";
+import { incrementLastCharacterCodePoint } from "@scope/utils/string";
 
 export class CommuneMongoQueries extends CommuneBaseQueries {
   #db!: MongoDbConnection;
@@ -54,12 +55,10 @@ export class CommuneMongoQueries extends CommuneBaseQueries {
       }
 
       if (queryParams.search) {
-        const searchStr = queryParams.search;
-        const lastChar = searchStr.charAt(searchStr.length - 1);
-        const nextChar = String.fromCharCode(lastChar.charCodeAt(0) + 1);
-        const upperBound = searchStr.slice(0, -1) + nextChar;
-
-        filter["commune"] = { $gte: searchStr, $lt: upperBound };
+        filter["commune"] = {
+          $gte: queryParams.search,
+          $lt: incrementLastCharacterCodePoint(queryParams.search),
+        };
       }
 
       if (cursor) {

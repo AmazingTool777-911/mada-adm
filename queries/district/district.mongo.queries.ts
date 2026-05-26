@@ -15,6 +15,7 @@ import type {
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { getManyDistrictPaginationCursorSchema } from "../schemas/district.schemas.ts";
+import { incrementLastCharacterCodePoint } from "@scope/utils/string";
 
 export class DistrictMongoQueries extends DistrictBaseQueries {
   #db!: MongoDbConnection;
@@ -49,12 +50,10 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
       }
 
       if (queryParams.search) {
-        const searchStr = queryParams.search;
-        const lastChar = searchStr.charAt(searchStr.length - 1);
-        const nextChar = String.fromCharCode(lastChar.charCodeAt(0) + 1);
-        const upperBound = searchStr.slice(0, -1) + nextChar;
-
-        filter["district"] = { $gte: searchStr, $lt: upperBound };
+        filter["district"] = {
+          $gte: queryParams.search,
+          $lt: incrementLastCharacterCodePoint(queryParams.search),
+        };
       }
 
       if (cursor) {

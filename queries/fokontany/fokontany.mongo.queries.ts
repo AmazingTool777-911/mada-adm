@@ -15,6 +15,7 @@ import type {
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { getManyFokontanysPaginationCursorSchema } from "../schemas/fokontany.schemas.ts";
+import { incrementLastCharacterCodePoint } from "@scope/utils/string";
 
 export class FokontanyMongoQueries extends FokontanyBaseQueries {
   #db!: MongoDbConnection;
@@ -58,12 +59,10 @@ export class FokontanyMongoQueries extends FokontanyBaseQueries {
       }
 
       if (queryParams.search) {
-        const searchStr = queryParams.search;
-        const lastChar = searchStr.charAt(searchStr.length - 1);
-        const nextChar = String.fromCharCode(lastChar.charCodeAt(0) + 1);
-        const upperBound = searchStr.slice(0, -1) + nextChar;
-
-        filter["fokontany"] = { $gte: searchStr, $lt: upperBound };
+        filter["fokontany"] = {
+          $gte: queryParams.search,
+          $lt: incrementLastCharacterCodePoint(queryParams.search),
+        };
       }
 
       if (cursor) {

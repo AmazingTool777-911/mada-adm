@@ -1,5 +1,6 @@
-import type { Collection } from "mongodb";
+import { type Collection, ObjectId } from "mongodb";
 import type {
+  EntityId,
   MadaAdmConfigValues,
   Province,
   ProvinceBSON,
@@ -9,7 +10,7 @@ import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapProvinceBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import { AdmLevelCode } from "@scope/consts/models";
-import type { ProvinceQueries } from "../queries.d.ts";
+import type { GetProvinceByIdOptions, ProvinceQueries } from "../queries.d.ts";
 import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
 
 export class ProvinceMongoQueries extends AdmTableBaseQueries
@@ -33,6 +34,17 @@ export class ProvinceMongoQueries extends AdmTableBaseQueries
       .project<ProvinceBSON>({ geojson: 0, _id: 1 })
       .toArray();
     return docs.map<Province>((doc) => mapProvinceBsonToEntity(doc));
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetProvinceByIdOptions,
+  ): Promise<Province | null> {
+    const province = await this.collection
+      .findOne({ _id: new ObjectId(id) });
+    if (!province) return null;
+    options?.excludeGeoJSON && province.geojson && delete province.geojson;
+    return mapProvinceBsonToEntity(province);
   }
 }
 

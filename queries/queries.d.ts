@@ -30,8 +30,17 @@ export type CursorPaginatedResult<TCursor, TRecord> = {
   limit: number;
 };
 
+export type GetProvinceByIdOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface ProvinceQueries {
   getAll(): MaybePromise<Province[]>;
+
+  getById(
+    id: EntityId,
+    options?: GetProvinceByIdOptions,
+  ): MaybePromise<Province | null>;
 }
 
 export interface RegionQueries {

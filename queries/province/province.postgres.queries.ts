@@ -1,4 +1,5 @@
 import type {
+  EntityId,
   MadaAdmConfigValues,
   Province,
   ProvinceSnakeCased,
@@ -7,7 +8,7 @@ import type { PostgresDbConnection } from "@scope/adapters/postgres";
 import { mapProvinceSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import { AdmLevelCode } from "@scope/consts/models";
-import type { ProvinceQueries } from "../queries.d.ts";
+import type { GetProvinceByIdOptions, ProvinceQueries } from "../queries.d.ts";
 import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
 
 export class ProvincePostgresQueries extends AdmTableBaseQueries
@@ -38,6 +39,27 @@ export class ProvincePostgresQueries extends AdmTableBaseQueries
     `;
     const rows = await client.queryObject<ProvinceSnakeCased>(sql);
     return rows.rows.map(mapProvinceSnakeToCamel);
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetProvinceByIdOptions,
+  ): Promise<Province | null> {
+    const client = await this.#db.pool.connect();
+    const tableName = `${this.#pgSchema}.${this.tableName}`;
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${tableName}
+      WHERE id = $1
+    `;
+    const result = await client.queryObject<ProvinceSnakeCased>(sql, [
+      Number(id),
+    ]);
+    if (result.rows.length === 0) return null;
+    return mapProvinceSnakeToCamel(result.rows[0]);
   }
 }
 

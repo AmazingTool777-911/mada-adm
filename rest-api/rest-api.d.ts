@@ -2,6 +2,7 @@ import type { GlobalCliConfigResolved } from "@scope/types/cli";
 import type { DbConnection } from "@scope/types/db";
 import type { MadaAdmConfig } from "@scope/types/models";
 import type {
+  AdmEntityQueries,
   CommuneQueries,
   DistrictQueries,
   FokontanyQueries,
@@ -26,5 +27,6 @@ export type RestApiEnv = {
     districtQueries: DistrictQueries;
     communeQueries: CommuneQueries;
     fokontanyQueries: FokontanyQueries;
+    admEntityQueries: AdmEntityQueries;
   };
 };

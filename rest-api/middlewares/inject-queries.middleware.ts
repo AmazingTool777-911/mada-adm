@@ -5,6 +5,7 @@ import { injectRegionQueries } from "@scope/queries/region";
 import { injectDistrictQueries } from "@scope/queries/district";
 import { injectCommuneQueries } from "@scope/queries/commune";
 import { injectFokontanyQueries } from "@scope/queries/fokontany";
+import { injectAdmEntityQueries } from "@scope/queries/adm-entity";
 
 export type ContextQueriesKeys = Extract<
   keyof RestApiEnv["Variables"],
@@ -13,6 +14,7 @@ export type ContextQueriesKeys = Extract<
   | "districtQueries"
   | "communeQueries"
   | "fokontanyQueries"
+  | "admEntityQueries"
 >;
 
 export const injectQueriesMiddleware = (
@@ -61,6 +63,14 @@ export const injectQueriesMiddleware = (
           c.set(
             "fokontanyQueries",
             await injectFokontanyQueries(madaAdmConfig, config.dbType, db, {
+              pgSchema: config.pgSchema,
+            }),
+          );
+          break;
+        case "admEntityQueries":
+          c.set(
+            "admEntityQueries",
+            await injectAdmEntityQueries(madaAdmConfig, config.dbType, db, {
               pgSchema: config.pgSchema,
             }),
           );

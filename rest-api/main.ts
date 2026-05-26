@@ -1,13 +1,18 @@
 import { Hono } from "hono";
 import { StatusCodes } from "http-status-codes";
 import * as z from "@zod/zod";
+import { zValidator } from "@hono/zod-validator";
 
 import { connectDbMiddleware } from "./middlewares/connect-db.middleware.ts";
 import { loadConfigMiddleware } from "./middlewares/load-config.middleware.ts";
 import type { ApiErrorResponse, RestApiEnv } from "./rest-api.d.ts";
 import { getDbConnection } from "./connect-db.ts";
 import { injectQueriesMiddleware } from "./middlewares/inject-queries.middleware.ts";
-import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
+import {
+  ADM_LEVEL_CODES_INDEXED,
+  ADM_LEVEL_TITLE_BY_CODE,
+  AdmLevelCode,
+} from "@scope/consts/models";
 import { MadaAdmConfigConflictError } from "@scope/queries/helpers";
 import { ResponseErrorCode } from "./consts/response-error-code.const.ts";
 
@@ -98,6 +103,39 @@ app.get(
       })(),
     ]);
     return c.json(data, StatusCodes.OK);
+  },
+);
+
+app.get(
+  "/api/adm_entities/in_union",
+  zValidator(
+    "query",
+    z.object({
+      limit: z.string().regex(/^\d+$/, "The limit must be a number").optional(),
+      cursor: z.string().optional(),
+      search: z.string().optional(),
+      from: z.enum(ADM_LEVEL_CODES_INDEXED).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("admEntityQueries"),
+  async (c) => {
+    const limitQuery = c.req.query("limit");
+    const cursorQuery = c.req.query("cursor");
+    const fromQuery = c.req.query("from");
+    const searchQuery = c.req.query("search");
+    const admEntityQueries = c.get("admEntityQueries");
+    const paginatedAdmEntities = await admEntityQueries.getUnionCursorPaginated(
+      {
+        limit: limitQuery ? Number(limitQuery) : 10,
+        cursorEncoded: cursorQuery,
+        encodeCursor: true,
+      },
+      {
+        from: fromQuery as (AdmLevelCode | undefined),
+        search: searchQuery,
+      },
+    );
+    return c.json(paginatedAdmEntities, StatusCodes.OK);
   },
 );
 

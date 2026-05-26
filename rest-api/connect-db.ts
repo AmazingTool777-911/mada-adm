@@ -69,6 +69,12 @@ export function getDbConnection(): Promise<{
         mysqlConnectionLimit: Deno.env.get("MYSQL_CONNECTION_LIMIT")
           ? Number(Deno.env.get("MYSQL_CONNECTION_LIMIT"))
           : undefined,
+        mysqlMaxIdle: Deno.env.get("MYSQL_MAX_IDLE")
+          ? Number(Deno.env.get("MYSQL_MAX_IDLE"))
+          : undefined,
+        mysqlIdleTimeout: Deno.env.get("MYSQL_IDLE_TIMEOUT")
+          ? Number(Deno.env.get("MYSQL_IDLE_TIMEOUT"))
+          : undefined,
 
         sqliteDbFile: Deno.env.get("SQLITE_DB_FILE"),
         sqliteDbPath: Deno.env.get("SQLITE_DB_PATH"),

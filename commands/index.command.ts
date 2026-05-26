@@ -34,8 +34,10 @@ import {
   MYSQL_CONNECTION_LIMIT_DESCRIPTION,
   MYSQL_DATABASE_DESCRIPTION,
   MYSQL_HOST_DESCRIPTION,
+  MYSQL_IDLE_TIMEOUT_DESCRIPTION,
   MYSQL_KEY_FILE_DESCRIPTION,
   MYSQL_KEY_PATH_DESCRIPTION,
+  MYSQL_MAX_IDLE_DESCRIPTION,
   MYSQL_PASSWORD_DESCRIPTION,
   MYSQL_PORT_DESCRIPTION,
   MYSQL_SSL_DESCRIPTION,
@@ -267,6 +269,14 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         "--mysql.connection-limit <limit:number>",
         MYSQL_CONNECTION_LIMIT_DESCRIPTION,
       )
+      .globalOption(
+        "--mysql.max-idle <max:number>",
+        MYSQL_MAX_IDLE_DESCRIPTION,
+      )
+      .globalOption(
+        "--mysql.idle-timeout <timeout:number>",
+        MYSQL_IDLE_TIMEOUT_DESCRIPTION,
+      )
       .group("SQLite configuration")
       .globalOption(
         "--sqlite.db-file <filename:string>",
@@ -381,6 +391,14 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
       .globalEnv(
         "MYSQL_CONNECTION_LIMIT=<limit:number>",
         MYSQL_CONNECTION_LIMIT_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_MAX_IDLE=<max:number>",
+        MYSQL_MAX_IDLE_DESCRIPTION,
+      )
+      .globalEnv(
+        "MYSQL_IDLE_TIMEOUT=<timeout:number>",
+        MYSQL_IDLE_TIMEOUT_DESCRIPTION,
       )
       .globalEnv("SQLITE_DB_FILE <filename:string>", SQLITE_DB_FILE_DESCRIPTION)
       .globalEnv("SQLITE_DB_PATH <path:string>", SQLITE_DB_PATH_DESCRIPTION)
@@ -1172,7 +1190,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
         }
       };
 
-      let resizeTimeout: number | undefined;
+      let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
       const onResize = () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {

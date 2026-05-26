@@ -111,6 +111,8 @@ export class MySQLDbConnection implements DbConnection {
         enableKeepAlive: true,
         keepAliveInitialDelay: 0,
         waitForConnections: true,
+        maxIdle: config.maxIdle,
+        idleTimeout: config.idleTimeout,
         connectionLimit: config.connectionLimit,
       };
 

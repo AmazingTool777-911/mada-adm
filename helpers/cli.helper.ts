@@ -89,6 +89,8 @@ export function resolveGlobalCliConfig(
       connectionLimit: args.mysql?.connectionLimit ??
         args.mysqlConnectionLimit ??
         10,
+      maxIdle: args.mysql?.maxIdle ?? args.mysqlMaxIdle,
+      idleTimeout: args.mysql?.idleTimeout ?? args.mysqlIdleTimeout,
     },
     sqlite: {
       dbFile: args.sqlite?.dbFile ?? args.sqliteDbFile,

@@ -80,6 +80,10 @@ export interface MySQLDbConnectionCliConfig {
   keyPath?: string;
   /** Maximum number of connections in the pool. */
   connectionLimit?: number;
+  /** Maximum numner of idle connections in the pool */
+  maxIdle?: number;
+  /** The maximum time a connection can sit unused in the pool before being closed. */
+  idleTimeout?: number;
 }
 
 /**
@@ -242,6 +246,10 @@ export type GlobalCliConfig = {
   mysqlKeyPath?: string;
   /** Environment variable mapped for MYSQL_CONNECTION_LIMIT. */
   mysqlConnectionLimit?: number;
+  /** Maximum numner of idle connections in the pool */
+  mysqlMaxIdle?: number;
+  /** The maximum time a connection can sit unused in the pool before being closed. */
+  mysqlIdleTimeout?: number;
   /** Environment variable mapped for PG_CONNECTION_LIMIT. */
   pgConnectionLimit?: number;
   /** Environment variable mapped for SQLITE_DB_FILE. */
@@ -396,6 +404,10 @@ export type GlobalCliConfigResolved = {
     keyPath?: string;
     /** Maximum number of connections in the pool. */
     connectionLimit: number;
+    /** Maximum number of idle connections in the pool. */
+    maxIdle?: number;
+    /** The maximum time a connection can sit unused in the pool before being closed. */
+    idleTimeout?: number;
   };
   /** Resolved SQLite connection configuration. */
   sqlite: SQLiteDbConnectionCliConfig;

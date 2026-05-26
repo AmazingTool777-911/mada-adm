@@ -210,6 +210,10 @@ export interface MySQLConnectionConfig {
   keyPath?: string;
   /** Maximum number of connections in the pool. */
   connectionLimit?: number;
+  /** Maximum numner of idle connections in the pool */
+  maxIdle?: number;
+  /** The maximum time a connection can sit unused in the pool before being closed. */
+  idleTimeout?: number;
 }
 
 /**

@@ -127,6 +127,9 @@ export async function attemptDbConnection(
           certPath: mysql.ssl ? mysql.certPath : undefined,
           keyFile: mysql.ssl ? mysql.keyFile : undefined,
           keyPath: mysql.ssl ? mysql.keyPath : undefined,
+          connectionLimit: mysql.connectionLimit,
+          maxIdle: mysql.maxIdle,
+          idleTimeout: mysql.idleTimeout,
         },
       };
       break;

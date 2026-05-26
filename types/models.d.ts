@@ -349,3 +349,54 @@ export type AdmAttributes =
     | CommuneAttributes
     | FokontanyAttributes
   );
+
+export type AdmEntityUnionRecord = {
+  id: EntityId;
+  admLevel: number;
+  province: Nullable<string>;
+  provinceId: Nullable<EntityId>;
+  region: Nullable<string>;
+  regionId: Nullable<EntityId>;
+  district: Nullable<string>;
+  districtId: Nullable<EntityId>;
+  commune: Nullable<string>;
+  communeId: Nullable<EntityId>;
+  fokontany: Nullable<string>;
+  fokontanyId: Nullable<EntityId>;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AdmEntitySnakeCasedUnionRecord = {
+  id: EntityId;
+  adm_level: number;
+  province: Nullable<string>;
+  province_id: Nullable<EntityId>;
+  region: Nullable<string>;
+  region_id: Nullable<EntityId>;
+  district: Nullable<string>;
+  district_id: Nullable<EntityId>;
+  commune: Nullable<string>;
+  commune_id: Nullable<EntityId>;
+  fokontany: Nullable<string>;
+  fokontany_id: Nullable<EntityId>;
+  created_at?: string | number | Date;
+  updated_at?: string | number | Date;
+};
+
+export type AdmEntityBSONUnionRecord = {
+  _id: ObjectId;
+  admLevel: number;
+  province: Nullable<string>;
+  provinceId: Nullable<ObjectId>;
+  region: Nullable<string>;
+  regionId: Nullable<ObjectId>;
+  district: Nullable<string>;
+  districtId: Nullable<ObjectId>;
+  commune: Nullable<string>;
+  communeId: Nullable<ObjectId>;
+  fokontany: Nullable<string>;
+  fokontanyId: Nullable<ObjectId>;
+  createdAt?: Date;
+  updatedAt?: Date;
+};

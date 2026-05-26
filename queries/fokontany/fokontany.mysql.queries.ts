@@ -33,7 +33,7 @@ export class FokontanyMySQLQueries extends FokontanyBaseQueries {
     toCursor: ({ fokontany, id }) => ({ fokontany, id }),
     cursorEncodedSchema: getManyFokontanysPaginationCursorSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
-      const columns = this.getColunmsWithoutGeojson({
+      const columns = this.getTableColunms({
         excludeGeojson: true,
       });
 

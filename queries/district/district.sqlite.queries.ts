@@ -33,7 +33,7 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
   >({
     toCursor: ({ district, id }) => ({ district, id }),
     queryFn: ({ limit, cursor }, queryParams = {}) => {
-      const columns = this.getColunmsWithoutGeojson({
+      const columns = this.getTableColunms({
         excludeGeojson: true,
       });
 

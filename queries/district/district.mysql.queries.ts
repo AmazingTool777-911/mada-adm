@@ -32,7 +32,7 @@ export class DistrictMySQLQueries extends DistrictBaseQueries {
   >({
     toCursor: ({ district, id }) => ({ district, id }),
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
-      const columns = this.getColunmsWithoutGeojson({
+      const columns = this.getTableColunms({
         excludeGeojson: true,
       });
 

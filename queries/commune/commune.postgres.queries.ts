@@ -41,7 +41,7 @@ export class CommunePostgresQueries extends CommuneBaseQueries
       const client = await this.#db.pool.connect();
       try {
         const tableName = `${this.#pgSchema}.${this.tableName}`;
-        const columns = this.getColunmsWithoutGeojson({
+        const columns = this.getTableColunms({
           excludeGeojson: true,
         });
 

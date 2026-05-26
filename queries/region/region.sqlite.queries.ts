@@ -23,7 +23,7 @@ export class RegionSqliteQueries extends AdmTableBaseQueries
   }
 
   getAll(): Region[] {
-    const columns = this.getColunmsWithoutGeojson({
+    const columns = this.getTableColunms({
       excludeGeojson: true,
     });
     const sql = `

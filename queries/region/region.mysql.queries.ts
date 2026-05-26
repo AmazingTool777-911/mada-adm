@@ -23,7 +23,7 @@ export class RegionMySQLQueries extends AdmTableBaseQueries
   }
 
   async getAll(): Promise<Region[]> {
-    const columns = this.getColunmsWithoutGeojson({
+    const columns = this.getTableColunms({
       excludeGeojson: true,
     });
     const sql = `

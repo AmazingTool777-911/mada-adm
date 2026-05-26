@@ -34,7 +34,7 @@ export class FokontanySqliteQueries extends FokontanyBaseQueries {
     toCursor: ({ fokontany, id }) => ({ fokontany, id }),
     cursorEncodedSchema: getManyFokontanysPaginationCursorSchema,
     queryFn: ({ limit, cursor }, queryParams = {}) => {
-      const columns = this.getColunmsWithoutGeojson({
+      const columns = this.getTableColunms({
         excludeGeojson: true,
       });
 

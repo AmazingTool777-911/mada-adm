@@ -29,7 +29,7 @@ export class ProvincePostgresQueries extends AdmTableBaseQueries
   async getAll(): Promise<Province[]> {
     const client = await this.#db.pool.connect();
     const tableName = `${this.#pgSchema}.${this.tableName}`;
-    const columns = this.getColunmsWithoutGeojson({
+    const columns = this.getTableColunms({
       excludeGeojson: true,
     });
     const sql = `

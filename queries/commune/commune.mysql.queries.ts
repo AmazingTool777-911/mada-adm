@@ -33,7 +33,7 @@ export class CommuneMySQLQueries extends CommuneBaseQueries {
     toCursor: ({ commune, id }) => ({ commune, id }),
     cursorEncodedSchema: getManyCommunesCursorPaginatedSchema,
     queryFn: async ({ limit, cursor }, queryParams = {}) => {
-      const columns = this.getColunmsWithoutGeojson({
+      const columns = this.getTableColunms({
         excludeGeojson: true,
       });
 

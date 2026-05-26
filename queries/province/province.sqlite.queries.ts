@@ -23,7 +23,7 @@ export class ProvinceSqliteQueries extends AdmTableBaseQueries
   }
 
   getAll(): Province[] {
-    const columns = this.getColunmsWithoutGeojson({
+    const columns = this.getTableColunms({
       excludeGeojson: true,
     });
     const sql = `

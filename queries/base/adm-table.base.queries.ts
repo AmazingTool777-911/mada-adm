@@ -12,7 +12,7 @@ export abstract class AdmTableBaseQueries {
     return getAdmTableName(this.admLevel, this.config, this.dbType);
   }
 
-  getColunmsWithoutGeojson(options?: GetAdmTableColumnsOptions): string[] {
+  getTableColunms(options?: GetAdmTableColumnsOptions): string[] {
     return getAdmTableColumns(this.admLevel, this.config, this.dbType, options);
   }
 

@@ -15,6 +15,8 @@ import {
 } from "@scope/consts/models";
 import { MadaAdmConfigConflictError } from "@scope/queries/helpers";
 import { ResponseErrorCode } from "./consts/response-error-code.const.ts";
+import { HTTPException } from "hono/http-exception";
+import { requestIdParamSchema } from "./schemas/request.schemas.ts";
 
 await getDbConnection();
 
@@ -119,20 +121,20 @@ app.get(
   ),
   injectQueriesMiddleware("admEntityQueries"),
   async (c) => {
-    const limitQuery = c.req.query("limit");
-    const cursorQuery = c.req.query("cursor");
-    const fromQuery = c.req.query("from");
-    const searchQuery = c.req.query("search");
+    const limit = c.req.query("limit");
+    const cursor = c.req.query("cursor");
+    const from = c.req.query("from");
+    const search = c.req.query("search");
     const admEntityQueries = c.get("admEntityQueries");
     const paginatedAdmEntities = await admEntityQueries.getUnionCursorPaginated(
       {
-        limit: limitQuery ? Number(limitQuery) : 10,
-        cursorEncoded: cursorQuery,
+        limit: limit ? Number(limit) : 10,
+        cursorEncoded: cursor,
         encodeCursor: true,
       },
       {
-        from: fromQuery as (AdmLevelCode | undefined),
-        search: searchQuery,
+        from: from as (AdmLevelCode | undefined),
+        search: search,
       },
     );
     return c.json(paginatedAdmEntities, StatusCodes.OK);
@@ -146,6 +148,34 @@ app.get(
     const provinceQueries = c.get("provinceQueries");
     const provinces = await provinceQueries.getAll();
     return c.json(provinces, StatusCodes.OK);
+  },
+);
+
+app.get(
+  "/api/provinces/:id",
+  zValidator("param", z.object({ id: requestIdParamSchema })),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("provinceQueries"),
+  async (c) => {
+    const id = c.req.param("id");
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const provinceQueries = c.get("provinceQueries");
+    const province = await provinceQueries.getById(id, {
+      excludeGeoJSON,
+    });
+    if (!province) {
+      throw new HTTPException(StatusCodes.NOT_FOUND, {
+        message: "Province not found",
+      });
+    }
+    return c.json(province, StatusCodes.OK);
   },
 );
 

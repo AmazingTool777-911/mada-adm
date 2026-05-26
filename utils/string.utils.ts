@@ -64,3 +64,38 @@ export function camelToSnakeCase(str: string): string {
     .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
     .toLowerCase();
 }
+
+/**
+ * Increments the Unicode code point of the final character in a string.
+ *
+ * This utility handles standard characters, precomposed accents (via NFC normalization),
+ * and supplementary plane characters (like emojis or symbols) safely without corrupting
+ * surrogate pairs. It is commonly used to generate exclusive upper bounds for lexical
+ * range queries.
+ *
+ * @param {string} text - The input string whose final character will be incremented.
+ * @returns {string} A new string with the final character advanced to the next Unicode code point.
+ *
+ * @example
+ * incrementLastCharacterCodePoint("café"); // Returns "cafè"
+ * incrementLastCharacterCodePoint("abc");  // Returns "abd"
+ */
+export function incrementLastCharacterCodePoint(text: string): string {
+  if (!text) return text;
+
+  // 1. Normalize the text so characters (like é) are unified
+  const normalized: string = text.normalize("NFC");
+
+  // 2. Convert to an array of true characters (handles emojis/surrogates safely)
+  const chars: string[] = Array.from(normalized);
+
+  // 3. Isolate the last character and its code point
+  const lastChar: string = chars[chars.length - 1];
+  const nextCodePoint: number = (lastChar.codePointAt(0) ?? 0) + 1;
+
+  // 4. Replace the last character with the incremented one
+  chars[chars.length - 1] = String.fromCodePoint(nextCodePoint);
+
+  // 5. Re-join into a single string
+  return chars.join("");
+}

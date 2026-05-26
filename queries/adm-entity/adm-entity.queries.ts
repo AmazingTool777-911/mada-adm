@@ -5,6 +5,7 @@ import type { MadaAdmConfigValues } from "@scope/types/models";
 import type { PostgresDbConnection } from "@scope/adapters/postgres/db";
 import type { SqliteDbConnection } from "@scope/adapters/sqlite/db";
 import type { MySQLDbConnection } from "@scope/adapters/mysql/db";
+import type { MongoDbConnection } from "@scope/adapters/mongo/db";
 
 export async function injectAdmEntityQueries(
   config: MadaAdmConfigValues,
@@ -41,8 +42,19 @@ export async function injectAdmEntityQueries(
         dbConnection as MySQLDbConnection,
       );
     }
+    case DbType.MongoDB: {
+      const { injectAdmEntityMongoQueries } = await import(
+        "./adm-entity.mongo.queries.ts"
+      );
+      return injectAdmEntityMongoQueries(
+        config,
+        dbConnection as MongoDbConnection,
+      );
+    }
     default: {
-      throw new Error(`Unsupported dbType: ${dbType}`);
+      throw new Error(
+        `Unsupported dbType: ${dbType satisfies never} when injecting adm entity queries`,
+      );
     }
   }
 }

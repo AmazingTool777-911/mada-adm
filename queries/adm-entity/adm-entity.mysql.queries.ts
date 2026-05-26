@@ -23,19 +23,21 @@ import {
   mapAdmEntityUnionSnakeCasedRecordToEntity,
 } from "@scope/helpers/models";
 import { getAdmEntitiesUnionPaginationCursorSchema } from "../schemas/adm-entity.schemas.ts";
-import type { SqliteDbConnection } from "@scope/adapters/sqlite/db";
+import type { MySQLDbConnection } from "@scope/adapters/mysql/db";
 import { getAdmTableName } from "@scope/helpers/db";
 import {
   ADM_ENTITIES_UNION_TARGET_COLUMN_NAME,
   DbType,
 } from "@scope/consts/db";
 
+export type GetSelectAdmEntitiesSetQueryTemplateParam = string | bigint;
+
 export type GetSelectAdmEntitiesSetQueryTemplateResult = {
   sql: string;
-  params: (string | number)[];
+  params: GetSelectAdmEntitiesSetQueryTemplateParam[];
 };
 
-export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
+export class AdmEntityMySQLQueries extends AdmEntityBaseQueries {
   #getUnionCursorPaginator!: QueryCursorPaginator<
     GetAdmEntitiesUnionPaginationCursor,
     AdmEntity,
@@ -52,7 +54,7 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
 
   constructor(
     private config: MadaAdmConfigValues,
-    private dbConnection: SqliteDbConnection,
+    private dbConnection: MySQLDbConnection,
   ) {
     super();
 
@@ -68,10 +70,10 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
         getAdmEntitiesUnionPaginationCursorSchema as z.Schema<
           GetAdmEntitiesUnionPaginationCursor
         >,
-      queryFn: (
+      queryFn: async (
         { limit, cursor },
         queryParams,
-      ): AdmEntity[] => {
+      ): Promise<AdmEntity[]> => {
         const queryParamsAdmLevelIndexFrom = ADM_LEVEL_INDEX_BY_CODE.get(
           queryParams?.from ?? AdmLevelCode.PROVINCE,
         )!;
@@ -83,7 +85,7 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
           : queryParamsAdmLevelIndexFrom;
 
         const unionSetsTemplates: string[] = [];
-        let unionSetsParams: (string | number)[] = [];
+        let unionSetsParams: GetSelectAdmEntitiesSetQueryTemplateParam[] = [];
 
         for (
           let i = startingAdmLevelIndex;
@@ -107,7 +109,7 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
         if (
           startingAdmLevelIndex < (ADM_LEVEL_CODES_INDEXED.length - 1)
         ) {
-          unionSetsParams.push(limit);
+          unionSetsParams.push(BigInt(limit));
           const limitClause = `LIMIT ?`;
 
           sql += `
@@ -116,10 +118,12 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
           `;
         }
 
-        const stmt = this.dbConnection.client.prepare(sql);
-        const rows = stmt.all(
-          ...unionSetsParams,
-        ) as AdmEntitySnakeCasedUnionRecord[];
+        await using conn = await this.dbConnection.pool.getConnection();
+        const result = await conn.execute(
+          sql,
+          unionSetsParams,
+        );
+        const rows = result[0] as AdmEntitySnakeCasedUnionRecord[];
 
         return rows.map<AdmEntity>((row) =>
           mapAdmEntityUnionSnakeCasedRecordToEntity(row)
@@ -134,7 +138,7 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
     const columnsData = getAdmEntityUnionSetColumns(
       admLevel,
       this.config,
-      DbType.SQLite,
+      DbType.MySQL,
     );
     return columnsData
       .map((colData) => {
@@ -149,7 +153,7 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
 
   private getSelectAdmEntitiesSetQueryTemplate(
     admLevel: AdmLevelCode,
-    templateParams: (string | number)[],
+    templateParams: GetSelectAdmEntitiesSetQueryTemplateParam[],
     paginationParams: CursorPaginationParams<
       GetAdmEntitiesUnionPaginationCursor
     >,
@@ -173,9 +177,13 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
           cursor.admLevel === AdmLevelCode.COMMUNE ||
           cursor.admLevel === AdmLevelCode.FOKONTANY
         ) {
-          templateParams.push(cursor.value, Number(cursor.id));
+          templateParams.push(
+            cursor.value,
+            cursor.value,
+            BigInt(Number(cursor.id)),
+          );
           conditionsTemplates.push(`
-            (${admLevelTitle}, id) >= (?, ?)
+            (${admLevelTitle} > ? OR (${admLevelTitle} = ? AND id >= ?))
           `);
         } else {
           templateParams.push(cursor.value);
@@ -190,7 +198,7 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
       admLevel === AdmLevelCode.COMMUNE || admLevel === AdmLevelCode.FOKONTANY
         ? `ORDER BY ${admLevelTitle}, id`
         : `ORDER BY ${admLevelTitle}`;
-    templateParams.push(limit);
+    templateParams.push(BigInt(limit));
     const limitClause = `LIMIT ?`;
     const tableName = getAdmTableName(
       admLevel,
@@ -215,15 +223,15 @@ export class AdmEntitySqliteQueries extends AdmEntityBaseQueries {
   }
 }
 
-let _instance: AdmEntitySqliteQueries | null = null;
+let _instance: AdmEntityMySQLQueries | null = null;
 
-export function injectAdmEntitySqliteQueries(
+export function injectAdmEntityMySQLQueries(
   config: MadaAdmConfigValues,
-  dbConnection: SqliteDbConnection,
-): AdmEntitySqliteQueries {
+  dbConnection: MySQLDbConnection,
+): AdmEntityMySQLQueries {
   if (_instance) {
     return _instance;
   }
-  _instance = new AdmEntitySqliteQueries(config, dbConnection);
+  _instance = new AdmEntityMySQLQueries(config, dbConnection);
   return _instance;
 }

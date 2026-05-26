@@ -52,7 +52,8 @@
       "deno.unstable",
       "node",
       "deno.ns",
-      "deno.worker"
+      "deno.worker",
+      "esnext"
     ]
   },
   "test": {

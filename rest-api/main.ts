@@ -504,6 +504,43 @@ app.get(
   },
 );
 
+app.get(
+  "/api/locations/:lat/:lng/fokontany",
+  zValidator(
+    "param",
+    z.object({ lat: z.coerce.number(), lng: z.coerce.number() }),
+  ),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("fokontanyQueries"),
+  async (c) => {
+    const coordinates = [
+      parseFloat(c.req.param("lng")),
+      parseFloat(c.req.param("lat")),
+    ] as PointCoordinates;
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const fokontanyQueries = c.get("fokontanyQueries");
+    const fokontany = await fokontanyQueries.getByPointCoordinates(
+      coordinates,
+      { excludeGeoJSON },
+    );
+    if (!fokontany) {
+      throw new AppHTTPException(
+        ResponseErrorCode.FokontanyNotFound,
+        StatusCodes.NOT_FOUND,
+        { message: "Fokontany not found at the location coordinates" },
+      );
+    }
+    return c.json(fokontany, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(

@@ -14,6 +14,7 @@ export default function SidebarAdmBoundariesLink({
       fPartial="/partials/adm"
       Icon={Landmark}
       isActive={isActive}
+      tooltip="Administrative boundaries"
     >
       ADM boundaries
     </SidebarNavLink>

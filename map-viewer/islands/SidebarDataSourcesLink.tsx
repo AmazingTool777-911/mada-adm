@@ -14,6 +14,7 @@ export default function SidebarDataSourcesLink({
       fPartial="/partials/data-sources"
       Icon={Database}
       isActive={isActive}
+      tooltip="Data sources"
     >
       Data sources
     </SidebarNavLink>

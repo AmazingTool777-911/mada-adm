@@ -14,6 +14,7 @@ export default function SidebarPinsLink({
       fPartial="/partials/pins"
       Icon={Pin}
       isActive={isActive}
+      tooltip="Pinned locations"
     >
       Pinned locations
     </SidebarNavLink>

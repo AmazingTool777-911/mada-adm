@@ -15,8 +15,9 @@ import {
 } from "@scope/consts/models";
 import { MadaAdmConfigConflictError } from "@scope/queries/helpers";
 import { ResponseErrorCode } from "./consts/response-error-code.const.ts";
-import { HTTPException } from "hono/http-exception";
-import { requestIdParamSchema } from "./schemas/request.schemas.ts";
+import { entityIdSchema } from "./schemas/request.schemas.ts";
+import { AppHTTPException } from "./errors/app-http-exception.error.ts";
+import { parseLimitQueryParam } from "./helpers/pagination.helper.ts";
 
 await getDbConnection();
 
@@ -128,7 +129,7 @@ app.get(
     const admEntityQueries = c.get("admEntityQueries");
     const paginatedAdmEntities = await admEntityQueries.getUnionCursorPaginated(
       {
-        limit: limit ? Number(limit) : 10,
+        limit: parseLimitQueryParam(limit),
         cursorEncoded: cursor,
         encodeCursor: true,
       },
@@ -153,7 +154,7 @@ app.get(
 
 app.get(
   "/api/provinces/:id",
-  zValidator("param", z.object({ id: requestIdParamSchema })),
+  zValidator("param", z.object({ id: entityIdSchema })),
   zValidator(
     "query",
     z.object({
@@ -171,10 +172,13 @@ app.get(
       excludeGeoJSON,
     });
     if (!province) {
-      throw new HTTPException(StatusCodes.NOT_FOUND, {
-        message: "Province not found",
-        cause: { id },
-      });
+      throw new AppHTTPException(
+        ResponseErrorCode.ProvinceNotFound,
+        StatusCodes.NOT_FOUND,
+        {
+          message: "Province not found",
+        },
+      );
     }
     return c.json(province, StatusCodes.OK);
   },
@@ -192,7 +196,7 @@ app.get(
 
 app.get(
   "/api/regions/:id",
-  zValidator("param", z.object({ id: requestIdParamSchema })),
+  zValidator("param", z.object({ id: entityIdSchema })),
   zValidator(
     "query",
     z.object({
@@ -210,12 +214,47 @@ app.get(
       excludeGeoJSON,
     });
     if (!region) {
-      throw new HTTPException(StatusCodes.NOT_FOUND, {
-        message: "Region not found",
-        cause: { id },
-      });
+      throw new AppHTTPException(
+        ResponseErrorCode.RegionNotFound,
+        StatusCodes.NOT_FOUND,
+        {
+          message: "Region not found",
+        },
+      );
     }
     return c.json(region, StatusCodes.OK);
+  },
+);
+
+app.get(
+  "/api/districts",
+  zValidator(
+    "query",
+    z.object({
+      limit: z.string().regex(/^\d+$/, "The limit must be a number").optional(),
+      cursor: z.string().optional(),
+      search: z.string().optional(),
+      province_id: entityIdSchema.optional(),
+      region_id: entityIdSchema.optional(),
+    }),
+  ),
+  injectQueriesMiddleware("districtQueries"),
+  async (c) => {
+    const limit = c.req.query("limit");
+    const cursor = c.req.query("cursor");
+    const search = c.req.query("search");
+    const provinceId = c.req.query("province_id");
+    const regionId = c.req.query("region_id");
+    const districtQueries = c.get("districtQueries");
+    const paginatedDistricts = await districtQueries.getManyCursorPaginated(
+      {
+        limit: parseLimitQueryParam(limit),
+        cursorEncoded: cursor,
+        encodeCursor: true,
+      },
+      { search, provinceId, regionId },
+    );
+    return c.json(paginatedDistricts, StatusCodes.OK);
   },
 );
 
@@ -242,13 +281,14 @@ app.onError((err, c) => {
     );
   }
 
-  if (err instanceof HTTPException) {
+  if (err instanceof AppHTTPException) {
     return c.json<ApiErrorResponse>(
       {
         error: err.message,
-        code: ResponseErrorCode.NotFoundError,
+        code: err.code,
         cause: err.cause,
       },
+      err,
     );
   }
 

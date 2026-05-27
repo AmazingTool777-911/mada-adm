@@ -63,14 +63,16 @@ export class QueryCursorPaginator<
       queryParams,
     );
 
-    const next = records.length > limit ? this.toCursor(records.at(-1)!) : null;
+    const hasNext = records.length > limit;
 
-    records.splice(-1, 1);
+    const next = hasNext ? this.toCursor(records.at(-1)!) : null;
+
+    hasNext && records.splice(-1, 1);
 
     const result: CursorPaginatedResult<TCursor, TRecord> = {
       records,
       limit,
-      current: cursor ?? null,
+      current: actualCursor ?? null,
       next,
     };
     if (encodeCursor) {

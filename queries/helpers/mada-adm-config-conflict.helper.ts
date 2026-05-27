@@ -30,7 +30,7 @@ export class ForeignKeysNotRepeatedError extends MadaAdmConfigConflictError {
     const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
     const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(parentAdmLevel)!;
     const message =
-      `Cannot directly fetch ${currentAdmLevelTitle}s of a ${parentAdmLevelTitle} because the foreign keys are not repeated in the database configuration.`;
+      `Cannot directly fetch the ${parentAdmLevelTitle}s of ${currentAdmLevelTitle}s because the foreign keys are not repeated in the database configuration.`;
     super(
       {
         current: {
@@ -55,7 +55,7 @@ export class ProvinceForeignKeyNotRepeatedError
   ) {
     const currentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(currentAdmLevel)!;
     const message =
-      `Cannot directly fetch ${currentAdmLevelTitle}s of a province because the province foreign key is not repeated in the database configuration.`;
+      `Cannot directly fetch the provinces of ${currentAdmLevelTitle}s because the province foreign key is not repeated in the database configuration.`;
     super(
       {
         current: {

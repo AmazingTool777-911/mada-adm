@@ -1,12 +1,14 @@
 import type {
   Commune,
   CommuneSnakeCased,
+  EntityId,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { MySQLDbConnection } from "@scope/adapters/mysql";
 import { mapCommuneSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetCommuneByIdOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
 } from "../queries.d.ts";
@@ -87,6 +89,27 @@ export class CommuneMySQLQueries extends CommuneBaseQueries {
     GetManyCommunesQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetCommuneByIdOptions,
+  ): Promise<Commune | null> {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const results = await this.#db.pool.execute(
+      sql,
+      [BigInt(Number(id))],
+    );
+    const rows = results[0] as CommuneSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapCommuneSnakeToCamel(rows[0]);
   }
 }
 

@@ -1,12 +1,13 @@
 import { AdmLevelCode } from "@scope/consts/models";
 import type { DbType } from "@scope/consts/db";
-import type { Commune } from "@scope/types/models";
+import type { Commune, EntityId } from "@scope/types/models";
 import type { MadaAdmConfigValues } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
 import type {
   CommuneQueries,
   CursorPaginatedResult,
   CursorPaginationParams,
+  GetCommuneByIdOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
 } from "@scope/queries/types";
@@ -31,6 +32,11 @@ export abstract class CommuneBaseQueries extends AdmTableBaseQueries
     Commune,
     GetManyCommunesQueryParams
   >;
+
+  abstract getById(
+    id: EntityId,
+    options?: GetCommuneByIdOptions,
+  ): MaybePromise<Commune | null>;
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,

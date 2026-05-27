@@ -97,6 +97,10 @@ export type GetManyCommunesQueryParams = {
   search?: string;
 };
 
+export type GetCommuneByIdOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface CommuneQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,
@@ -104,6 +108,11 @@ export interface CommuneQueries {
   ): MaybePromise<
     CursorPaginatedResult<GetManyCommunesPaginationCursor, Commune>
   >;
+
+  getById(
+    id: EntityId,
+    options?: GetCommuneByIdOptions,
+  ): MaybePromise<Commune | null>;
 }
 
 export type GetManyFokontanysPaginationCursor = {

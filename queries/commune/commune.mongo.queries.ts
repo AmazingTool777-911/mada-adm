@@ -3,12 +3,14 @@ import type {
   Commune,
   CommuneBSON,
   CommuneBSONRecordWithTimestamps,
+  EntityId,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapCommuneBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetCommuneByIdOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
 } from "../queries.d.ts";
@@ -88,6 +90,17 @@ export class CommuneMongoQueries extends CommuneBaseQueries {
     GetManyCommunesQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetCommuneByIdOptions,
+  ): Promise<Commune | null> {
+    const commune = await this.collection
+      .findOne({ _id: new ObjectId(id) });
+    if (!commune) return null;
+    options?.excludeGeoJSON && commune.geojson && delete commune.geojson;
+    return mapCommuneBsonToEntity(commune);
   }
 }
 

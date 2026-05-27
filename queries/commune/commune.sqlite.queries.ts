@@ -8,6 +8,7 @@ import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { mapCommuneSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetCommuneByIdOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
 } from "../queries.d.ts";
@@ -87,6 +88,22 @@ export class CommuneSqliteQueries extends CommuneBaseQueries {
     GetManyCommunesQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  getById(id: EntityId, options?: GetCommuneByIdOptions): Commune | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const rows = this.#db.client.prepare(sql).all(
+      Number(id),
+    ) as CommuneSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapCommuneSnakeToCamel(rows[0]);
   }
 }
 

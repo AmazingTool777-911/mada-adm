@@ -115,6 +115,10 @@ export type GetCommuneByIdOptions = {
   excludeGeoJSON?: boolean;
 };
 
+export type GetCommuneByPointCoordinatesOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface CommuneQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyCommunesPaginationCursor>,
@@ -126,6 +130,11 @@ export interface CommuneQueries {
   getById(
     id: EntityId,
     options?: GetCommuneByIdOptions,
+  ): MaybePromise<Commune | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetCommuneByPointCoordinatesOptions,
   ): MaybePromise<Commune | null>;
 }
 

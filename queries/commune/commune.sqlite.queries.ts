@@ -9,8 +9,10 @@ import { mapCommuneSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetCommuneByIdOptions,
+  GetCommuneByPointCoordinatesOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -102,6 +104,25 @@ export class CommuneSqliteQueries extends CommuneBaseQueries {
     const rows = this.#db.client.prepare(sql).all(
       Number(id),
     ) as CommuneSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapCommuneSnakeToCamel(rows[0]);
+  }
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetCommuneByPointCoordinatesOptions,
+  ): Commune | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE Contains(geojson, MakePoint(?, ?, 4326))
+    `;
+    const rows = this.#db.client
+      .prepare(sql)
+      .all(...coordinates) as CommuneSnakeCased[];
     if (rows.length === 0) return null;
     return mapCommuneSnakeToCamel(rows[0]);
   }

@@ -11,8 +11,10 @@ import { mapCommuneBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetCommuneByIdOptions,
+  GetCommuneByPointCoordinatesOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -98,6 +100,25 @@ export class CommuneMongoQueries extends CommuneBaseQueries {
   ): Promise<Commune | null> {
     const commune = await this.collection
       .findOne({ _id: new ObjectId(id) });
+    if (!commune) return null;
+    options?.excludeGeoJSON && commune.geojson && delete commune.geojson;
+    return mapCommuneBsonToEntity(commune);
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetCommuneByPointCoordinatesOptions,
+  ): Promise<Commune | null> {
+    const commune = await this.collection.findOne({
+      geojson: {
+        $geoIntersects: {
+          $geometry: {
+            type: "Point",
+            coordinates,
+          },
+        },
+      },
+    });
     if (!commune) return null;
     options?.excludeGeoJSON && commune.geojson && delete commune.geojson;
     return mapCommuneBsonToEntity(commune);

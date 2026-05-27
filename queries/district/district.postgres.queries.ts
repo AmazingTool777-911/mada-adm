@@ -127,7 +127,7 @@ export class DistrictPostgresQueries extends DistrictBaseQueries
     const sql = `
       SELECT ${columns.join(", ")}
       FROM ${tableName}
-      WHERE ST_CONTAINS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
+      WHERE ST_INTERSECTS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
     `;
     const result = await client.queryObject<DistrictSnakeCased>(
       sql,

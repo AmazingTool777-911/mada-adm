@@ -8,8 +8,10 @@ import type {
   CursorPaginatedResult,
   CursorPaginationParams,
   GetCommuneByIdOptions,
+  GetCommuneByPointCoordinatesOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
+  PointCoordinates,
 } from "@scope/queries/types";
 import { AdmTableBaseQueries } from "./adm-table.base.queries.ts";
 import type { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -36,6 +38,11 @@ export abstract class CommuneBaseQueries extends AdmTableBaseQueries
   abstract getById(
     id: EntityId,
     options?: GetCommuneByIdOptions,
+  ): MaybePromise<Commune | null>;
+
+  abstract getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetCommuneByPointCoordinatesOptions,
   ): MaybePromise<Commune | null>;
 
   getManyCursorPaginated(

@@ -108,7 +108,7 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
     const district = await this.collection
       .findOne({
         geojson: {
-          $geomWithin: {
+          $geoIntersects: {
             $geometry: {
               type: "Point",
               coordinates,

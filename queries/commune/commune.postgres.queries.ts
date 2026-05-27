@@ -10,8 +10,10 @@ import { DbType } from "@scope/consts/db";
 import type {
   CommuneQueries,
   GetCommuneByIdOptions,
+  GetCommuneByPointCoordinatesOptions,
   GetManyCommunesPaginationCursor,
   GetManyCommunesQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { CommuneBaseQueries } from "../base/commune.base.queries.ts";
@@ -115,6 +117,32 @@ export class CommunePostgresQueries extends CommuneBaseQueries
       const result = await client.queryObject<CommuneSnakeCased>(sql, [
         Number(id),
       ]);
+      if (result.rows.length === 0) return null;
+      return mapCommuneSnakeToCamel(result.rows[0]);
+    } finally {
+      client.release();
+    }
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetCommuneByPointCoordinatesOptions,
+  ): Promise<Commune | null> {
+    const client = await this.#db.pool.connect();
+    try {
+      const tableName = `${this.#pgSchema}.${this.tableName}`;
+      const columns = this.getTableColunms({
+        excludeGeojson: options?.excludeGeoJSON,
+      });
+      const sql = `
+        SELECT ${columns.join(", ")}
+        FROM ${tableName}
+        WHERE ST_INTERSECTS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
+      `;
+      const result = await client.queryObject<CommuneSnakeCased>(
+        sql,
+        coordinates,
+      );
       if (result.rows.length === 0) return null;
       return mapCommuneSnakeToCamel(result.rows[0]);
     } finally {

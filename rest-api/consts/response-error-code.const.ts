@@ -5,4 +5,5 @@ export enum ResponseErrorCode {
   ProvinceNotFound = "PROVINCE_NOT_FOUND",
   RegionNotFound = "REGION_NOT_FOUND",
   DistrictNotFound = "DISTRICT_NOT_FOUND",
+  CommuneNotFound = "COMMUNE_NOT_FOUND",
 }

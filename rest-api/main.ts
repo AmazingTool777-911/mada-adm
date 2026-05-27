@@ -324,6 +324,38 @@ app.get(
   },
 );
 
+app.get(
+  "/api/communes/:id",
+  zValidator("param", z.object({ id: entityIdSchema })),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("communeQueries"),
+  async (c) => {
+    const id = c.req.param("id");
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const communeQueries = c.get("communeQueries");
+    const commune = await communeQueries.getById(id, {
+      excludeGeoJSON,
+    });
+    if (!commune) {
+      throw new AppHTTPException(
+        ResponseErrorCode.CommuneNotFound,
+        StatusCodes.NOT_FOUND,
+        {
+          message: "Commune not found",
+        },
+      );
+    }
+    return c.json(commune, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(

@@ -10,8 +10,10 @@ import { DbType } from "@scope/consts/db";
 import type {
   DistrictQueries,
   GetDistrictByIdOptions,
+  GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
@@ -109,6 +111,28 @@ export class DistrictPostgresQueries extends DistrictBaseQueries
     const result = await client.queryObject<DistrictSnakeCased>(sql, [
       Number(id),
     ]);
+    if (result.rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(result.rows[0]);
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
+  ): Promise<District | null> {
+    const client = await this.#db.pool.connect();
+    const tableName = `${this.#pgSchema}.${this.tableName}`;
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${tableName}
+      WHERE ST_CONTAINS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
+    `;
+    const result = await client.queryObject<DistrictSnakeCased>(
+      sql,
+      coordinates,
+    );
     if (result.rows.length === 0) return null;
     return mapDistrictSnakeToCamel(result.rows[0]);
   }

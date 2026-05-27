@@ -8,8 +8,10 @@ import type {
   CursorPaginationParams,
   DistrictQueries,
   GetDistrictByIdOptions,
+  GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
+  PointCoordinates,
 } from "@scope/queries/types";
 import { AdmTableBaseQueries } from "./adm-table.base.queries.ts";
 import type { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -33,6 +35,11 @@ export abstract class DistrictBaseQueries extends AdmTableBaseQueries
   abstract getById(
     id: EntityId,
     options?: GetDistrictByIdOptions,
+  ): MaybePromise<District | null>;
+
+  abstract getByPointCoordinates(
+    id: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
   ): MaybePromise<District | null>;
 
   getManyCursorPaginated(

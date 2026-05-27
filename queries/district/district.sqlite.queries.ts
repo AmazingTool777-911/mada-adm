@@ -9,8 +9,10 @@ import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetDistrictByIdOptions,
+  GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -97,6 +99,25 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
     const rows = this.#db.client.prepare(sql).all(
       Number(id),
     ) as DistrictSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(rows[0]);
+  }
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
+  ): District | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE Contains(geojson, MakePoint(?, ?, 4326))
+    `;
+    const rows = this.#db.client
+      .prepare(sql)
+      .all(...coordinates) as DistrictSnakeCased[];
     if (rows.length === 0) return null;
     return mapDistrictSnakeToCamel(rows[0]);
   }

@@ -11,8 +11,10 @@ import { mapDistrictBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetDistrictByIdOptions,
+  GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -92,11 +94,31 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
     id: EntityId,
     options?: GetDistrictByIdOptions,
   ): Promise<District | null> {
-    const province = await this.collection
+    const district = await this.collection
       .findOne({ _id: new ObjectId(id) });
-    if (!province) return null;
-    options?.excludeGeoJSON && province.geojson && delete province.geojson;
-    return mapDistrictBsonToEntity(province);
+    if (!district) return null;
+    options?.excludeGeoJSON && district.geojson && delete district.geojson;
+    return mapDistrictBsonToEntity(district);
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
+  ): Promise<District | null> {
+    const district = await this.collection
+      .findOne({
+        geojson: {
+          $geomWithin: {
+            $geometry: {
+              type: "Point",
+              coordinates,
+            },
+          },
+        },
+      });
+    if (!district) return null;
+    options?.excludeGeoJSON && district.geojson && delete district.geojson;
+    return mapDistrictBsonToEntity(district);
   }
 }
 

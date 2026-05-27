@@ -30,6 +30,11 @@ export type CursorPaginatedResult<TCursor, TRecord> = {
   limit: number;
 };
 
+/**
+ * Location point coordinates in lng, lat format
+ */
+export type PointCoordinates = [number, number];
+
 export type GetProvinceByIdOptions = {
   excludeGeoJSON?: boolean;
 };
@@ -71,6 +76,10 @@ export type GetDistrictByIdOptions = {
   excludeGeoJSON?: boolean;
 };
 
+export type GetDistrictByPointCoodrdinatesOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface DistrictQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,
@@ -82,6 +91,11 @@ export interface DistrictQueries {
   getById(
     id: EntityId,
     options?: GetDistrictByIdOptions,
+  ): MaybePromise<District | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
   ): MaybePromise<District | null>;
 }
 

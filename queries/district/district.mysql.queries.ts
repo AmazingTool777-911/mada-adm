@@ -9,8 +9,10 @@ import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetDistrictByIdOptions,
+  GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -101,6 +103,27 @@ export class DistrictMySQLQueries extends DistrictBaseQueries {
     const results = await this.#db.pool.execute(
       sql,
       [BigInt(Number(id))],
+    );
+    const rows = results[0] as DistrictSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(rows[0]);
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
+  ): Promise<District | null> {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE ST_Contains(geojson, ST_GeomFromText(?, 4326))
+    `;
+    const results = await this.#db.pool.execute(
+      sql,
+      [`POINT(${coordinates[1]} ${coordinates[0]})`],
     );
     const rows = results[0] as DistrictSnakeCased[];
     if (rows.length === 0) return null;

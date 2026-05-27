@@ -30,6 +30,11 @@ app.get("/", (c) => {
   return c.json({});
 });
 
+app.get("/api/config", (c) => {
+  const config = c.get("madaAdmConfig");
+  return c.json(config, StatusCodes.OK);
+});
+
 app.get(
   "/api/adm_entities/in_batch",
   injectQueriesMiddleware(

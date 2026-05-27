@@ -1,6 +1,6 @@
 export enum ResponseErrorCode {
   ValidationError = "VALIDATION_ERROR",
-  MadaAdmConflict = "MADA_ADM_CONFLICT",
+  MadaAdmConfigConflict = "MADA_ADM_CONFIG_CONFLICT",
   UnexpectedError = "UNEXPECTED_ERROR",
   ProvinceNotFound = "PROVINCE_NOT_FOUND",
   RegionNotFound = "REGION_NOT_FOUND",

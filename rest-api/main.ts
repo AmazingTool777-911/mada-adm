@@ -290,6 +290,40 @@ app.get(
   },
 );
 
+app.get(
+  "/api/communes",
+  zValidator(
+    "query",
+    z.object({
+      limit: z.string().regex(/^\d+$/, "The limit must be a number").optional(),
+      cursor: z.string().optional(),
+      search: z.string().optional(),
+      province_id: entityIdSchema.optional(),
+      region_id: entityIdSchema.optional(),
+      district_id: entityIdSchema.optional(),
+    }),
+  ),
+  injectQueriesMiddleware("communeQueries"),
+  async (c) => {
+    const limit = c.req.query("limit");
+    const cursor = c.req.query("cursor");
+    const search = c.req.query("search");
+    const provinceId = c.req.query("province_id");
+    const regionId = c.req.query("region_id");
+    const districtId = c.req.query("district_id");
+    const communeQueries = c.get("communeQueries");
+    const paginatedCommunes = await communeQueries.getManyCursorPaginated(
+      {
+        limit: parseLimitQueryParam(limit),
+        cursorEncoded: cursor,
+        encodeCursor: true,
+      },
+      { search, provinceId, regionId, districtId },
+    );
+    return c.json(paginatedCommunes, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(
@@ -306,7 +340,7 @@ app.onError((err, c) => {
     return c.json<ApiErrorResponse>(
       {
         error: err.message,
-        code: ResponseErrorCode.MadaAdmConflict,
+        code: ResponseErrorCode.MadaAdmConfigConflict,
         data: err.data,
       },
       StatusCodes.BAD_REQUEST,

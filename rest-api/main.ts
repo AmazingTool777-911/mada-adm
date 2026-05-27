@@ -392,6 +392,38 @@ app.get(
   },
 );
 
+app.get(
+  "/api/fokontanys/:id",
+  zValidator("param", z.object({ id: entityIdSchema })),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("fokontanyQueries"),
+  async (c) => {
+    const id = c.req.param("id");
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const fokontanyQueries = c.get("fokontanyQueries");
+    const fokontany = await fokontanyQueries.getById(id, {
+      excludeGeoJSON,
+    });
+    if (!fokontany) {
+      throw new AppHTTPException(
+        ResponseErrorCode.FokontanyNotFound,
+        StatusCodes.NOT_FOUND,
+        {
+          message: "Fokontany not found",
+        },
+      );
+    }
+    return c.json(fokontany, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(

@@ -128,6 +128,10 @@ export type GetManyFokontanysQueryParams = {
   search?: string;
 };
 
+export type GetFokontanyByIdOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface FokontanyQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,
@@ -135,6 +139,11 @@ export interface FokontanyQueries {
   ): MaybePromise<
     CursorPaginatedResult<GetManyFokontanysPaginationCursor, Fokontany>
   >;
+
+  getById(
+    id: EntityId,
+    options?: GetFokontanyByIdOptions,
+  ): MaybePromise<Fokontany | null>;
 }
 
 export type GetAdmEntitiesUnionPaginationCursor =

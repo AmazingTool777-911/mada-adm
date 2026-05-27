@@ -1,5 +1,6 @@
 import { type Collection, type Document, type Filter, ObjectId } from "mongodb";
 import type {
+  EntityId,
   Fokontany,
   FokontanyBSON,
   FokontanyBSONRecordWithTimestamps,
@@ -9,6 +10,7 @@ import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapFokontanyBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetFokontanyByIdOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
 } from "../queries.d.ts";
@@ -92,6 +94,17 @@ export class FokontanyMongoQueries extends FokontanyBaseQueries {
     GetManyFokontanysQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetFokontanyByIdOptions,
+  ): Promise<Fokontany | null> {
+    const fokontany = await this.collection
+      .findOne({ _id: new ObjectId(id) });
+    if (!fokontany) return null;
+    options?.excludeGeoJSON && fokontany.geojson && delete fokontany.geojson;
+    return mapFokontanyBsonToEntity(fokontany);
   }
 }
 

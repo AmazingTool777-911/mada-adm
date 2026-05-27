@@ -8,6 +8,7 @@ import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { mapFokontanySnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetFokontanyByIdOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
 } from "../queries.d.ts";
@@ -92,6 +93,22 @@ export class FokontanySqliteQueries extends FokontanyBaseQueries {
     GetManyFokontanysQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  getById(id: EntityId, options?: GetFokontanyByIdOptions): Fokontany | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const rows = this.#db.client.prepare(sql).all(
+      Number(id),
+    ) as FokontanySnakeCased[];
+    if (rows.length === 0) return null;
+    return mapFokontanySnakeToCamel(rows[0]);
   }
 }
 

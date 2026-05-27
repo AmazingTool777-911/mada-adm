@@ -1,4 +1,5 @@
 import type {
+  EntityId,
   Fokontany,
   FokontanySnakeCased,
   MadaAdmConfigValues,
@@ -7,6 +8,7 @@ import type { MySQLDbConnection } from "@scope/adapters/mysql";
 import { mapFokontanySnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetFokontanyByIdOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
 } from "../queries.d.ts";
@@ -92,6 +94,27 @@ export class FokontanyMySQLQueries extends FokontanyBaseQueries {
     GetManyFokontanysQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetFokontanyByIdOptions,
+  ): Promise<Fokontany | null> {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const results = await this.#db.pool.execute(
+      sql,
+      [BigInt(Number(id))],
+    );
+    const rows = results[0] as FokontanySnakeCased[];
+    if (rows.length === 0) return null;
+    return mapFokontanySnakeToCamel(rows[0]);
   }
 }
 

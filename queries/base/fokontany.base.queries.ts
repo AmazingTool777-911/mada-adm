@@ -1,12 +1,13 @@
 import { AdmLevelCode } from "@scope/consts/models";
 import type { DbType } from "@scope/consts/db";
-import type { Fokontany } from "@scope/types/models";
+import type { EntityId, Fokontany } from "@scope/types/models";
 import type { MadaAdmConfigValues } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
 import type {
   CursorPaginatedResult,
   CursorPaginationParams,
   FokontanyQueries,
+  GetFokontanyByIdOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
 } from "@scope/queries/types";
@@ -31,6 +32,11 @@ export abstract class FokontanyBaseQueries extends AdmTableBaseQueries
     Fokontany,
     GetManyFokontanysQueryParams
   >;
+
+  abstract getById(
+    id: EntityId,
+    options?: GetFokontanyByIdOptions,
+  ): MaybePromise<Fokontany | null>;
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,

@@ -467,6 +467,43 @@ app.get(
   },
 );
 
+app.get(
+  "/api/locations/:lat/:lng/commune",
+  zValidator(
+    "param",
+    z.object({ lat: z.coerce.number(), lng: z.coerce.number() }),
+  ),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("communeQueries"),
+  async (c) => {
+    const coordinates = [
+      parseFloat(c.req.param("lng")),
+      parseFloat(c.req.param("lat")),
+    ] as PointCoordinates;
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const communeQueries = c.get("communeQueries");
+    const commune = await communeQueries.getByPointCoordinates(
+      coordinates,
+      { excludeGeoJSON },
+    );
+    if (!commune) {
+      throw new AppHTTPException(
+        ResponseErrorCode.CommuneNotFound,
+        StatusCodes.NOT_FOUND,
+        { message: "Commune not found at the location coordinates" },
+      );
+    }
+    return c.json(commune, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(

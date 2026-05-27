@@ -1,0 +1,27 @@
+info:
+  name: Get the commune at a location
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/locations/{{LAT}}/{{LNG}}/commune"
+  params:
+    - name: include_geojson
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+runtime:
+  variables:
+    - name: LAT
+      value: "-18.894006"
+    - name: LNG
+      value: "47.558926"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

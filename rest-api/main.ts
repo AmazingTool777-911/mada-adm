@@ -356,6 +356,42 @@ app.get(
   },
 );
 
+app.get(
+  "/api/fokontanys",
+  zValidator(
+    "query",
+    z.object({
+      limit: z.string().regex(/^\d+$/, "The limit must be a number").optional(),
+      cursor: z.string().optional(),
+      search: z.string().optional(),
+      province_id: entityIdSchema.optional(),
+      region_id: entityIdSchema.optional(),
+      district_id: entityIdSchema.optional(),
+      commune_id: entityIdSchema.optional(),
+    }),
+  ),
+  injectQueriesMiddleware("fokontanyQueries"),
+  async (c) => {
+    const limit = c.req.query("limit");
+    const cursor = c.req.query("cursor");
+    const search = c.req.query("search");
+    const provinceId = c.req.query("province_id");
+    const regionId = c.req.query("region_id");
+    const districtId = c.req.query("district_id");
+    const communeId = c.req.query("commune_id");
+    const fokontanyQueries = c.get("fokontanyQueries");
+    const paginatedFokontanys = await fokontanyQueries.getManyCursorPaginated(
+      {
+        limit: parseLimitQueryParam(limit),
+        cursorEncoded: cursor,
+        encodeCursor: true,
+      },
+      { search, provinceId, regionId, districtId, communeId },
+    );
+    return c.json(paginatedFokontanys, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(

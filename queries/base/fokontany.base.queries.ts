@@ -42,18 +42,12 @@ export abstract class FokontanyBaseQueries extends AdmTableBaseQueries
       throw new ProvinceForeignKeyNotRepeatedError(this.admLevel);
     }
     if (
-      (queryParams?.regionId ||
-        queryParams?.districtId ||
-        queryParams?.communeId) &&
+      (queryParams?.regionId || queryParams?.districtId) &&
       !this.config.isFkRepeated
     ) {
       throw new ForeignKeysNotRepeatedError(
         this.admLevel,
-        queryParams?.regionId
-          ? AdmLevelCode.REGION
-          : queryParams?.districtId
-          ? AdmLevelCode.DISTRICT
-          : AdmLevelCode.COMMUNE,
+        queryParams?.regionId ? AdmLevelCode.REGION : AdmLevelCode.DISTRICT,
       );
     }
     return this.getManyCursorPaginator.query(paginationParams, queryParams);

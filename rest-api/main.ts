@@ -258,6 +258,38 @@ app.get(
   },
 );
 
+app.get(
+  "/api/districts/:id",
+  zValidator("param", z.object({ id: entityIdSchema })),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("districtQueries"),
+  async (c) => {
+    const id = c.req.param("id");
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const districtQueries = c.get("districtQueries");
+    const district = await districtQueries.getById(id, {
+      excludeGeoJSON,
+    });
+    if (!district) {
+      throw new AppHTTPException(
+        ResponseErrorCode.DistrictNotFound,
+        StatusCodes.NOT_FOUND,
+        {
+          message: "District not found",
+        },
+      );
+    }
+    return c.json(district, StatusCodes.OK);
+  },
+);
+
 app.onError((err, c) => {
   if (err instanceof z.ZodError) {
     return c.json<ApiErrorResponse>(

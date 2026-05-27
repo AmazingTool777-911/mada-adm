@@ -1,12 +1,14 @@
 import type {
   District,
   DistrictSnakeCased,
+  EntityId,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { MySQLDbConnection } from "@scope/adapters/mysql";
 import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetDistrictByIdOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
 } from "../queries.d.ts";
@@ -82,6 +84,27 @@ export class DistrictMySQLQueries extends DistrictBaseQueries {
     GetManyDistrictsQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetDistrictByIdOptions,
+  ): Promise<District | null> {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const results = await this.#db.pool.execute(
+      sql,
+      [BigInt(Number(id))],
+    );
+    const rows = results[0] as DistrictSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(rows[0]);
   }
 }
 

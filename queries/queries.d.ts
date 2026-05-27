@@ -67,6 +67,10 @@ export type GetManyDistrictsQueryParams = {
   search?: string;
 };
 
+export type GetDistrictByIdOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface DistrictQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,
@@ -74,6 +78,11 @@ export interface DistrictQueries {
   ): MaybePromise<
     CursorPaginatedResult<GetManyDistrictsPaginationCursor, District>
   >;
+
+  getById(
+    id: EntityId,
+    options?: GetDistrictByIdOptions,
+  ): MaybePromise<District | null>;
 }
 
 export type GetManyCommunesPaginationCursor = {

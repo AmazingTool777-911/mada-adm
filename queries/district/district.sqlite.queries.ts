@@ -8,6 +8,7 @@ import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetDistrictByIdOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
 } from "../queries.d.ts";
@@ -82,6 +83,22 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
     GetManyDistrictsQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  getById(id: EntityId, options?: GetDistrictByIdOptions): District | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE id = ?
+    `;
+    const rows = this.#db.client.prepare(sql).all(
+      Number(id),
+    ) as DistrictSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(rows[0]);
   }
 }
 

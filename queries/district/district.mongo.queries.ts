@@ -3,12 +3,14 @@ import type {
   District,
   DistrictBSON,
   DistrictBSONRecordWithTimestamps,
+  EntityId,
   MadaAdmConfigValues,
 } from "@scope/types/models";
 import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapDistrictBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
+  GetDistrictByIdOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
 } from "../queries.d.ts";
@@ -84,6 +86,17 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
     GetManyDistrictsQueryParams
   > {
     return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetDistrictByIdOptions,
+  ): Promise<District | null> {
+    const province = await this.collection
+      .findOne({ _id: new ObjectId(id) });
+    if (!province) return null;
+    options?.excludeGeoJSON && province.geojson && delete province.geojson;
+    return mapDistrictBsonToEntity(province);
   }
 }
 

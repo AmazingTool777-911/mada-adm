@@ -1,12 +1,13 @@
 import { AdmLevelCode } from "@scope/consts/models";
 import type { DbType } from "@scope/consts/db";
-import type { District } from "@scope/types/models";
+import type { District, EntityId } from "@scope/types/models";
 import type { MadaAdmConfigValues } from "@scope/types/db";
 import type { MaybePromise } from "@scope/types/utils";
 import type {
   CursorPaginatedResult,
   CursorPaginationParams,
   DistrictQueries,
+  GetDistrictByIdOptions,
   GetManyDistrictsPaginationCursor,
   GetManyDistrictsQueryParams,
 } from "@scope/queries/types";
@@ -28,6 +29,11 @@ export abstract class DistrictBaseQueries extends AdmTableBaseQueries
     District,
     GetManyDistrictsQueryParams
   >;
+
+  abstract getById(
+    id: EntityId,
+    options?: GetDistrictByIdOptions,
+  ): MaybePromise<District | null>;
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,

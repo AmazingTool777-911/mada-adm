@@ -18,6 +18,7 @@ import { ResponseErrorCode } from "./consts/response-error-code.const.ts";
 import { entityIdSchema } from "./schemas/request.schemas.ts";
 import { AppHTTPException } from "./errors/app-http-exception.error.ts";
 import { parseLimitQueryParam } from "./helpers/pagination.helper.ts";
+import type { PointCoordinates } from "@scope/queries/types";
 
 await getDbConnection();
 
@@ -426,6 +427,43 @@ app.get(
       );
     }
     return c.json(fokontany, StatusCodes.OK);
+  },
+);
+
+app.get(
+  "/api/locations/:lat/:lng/district",
+  zValidator(
+    "param",
+    z.object({ lat: z.coerce.number(), lng: z.coerce.number() }),
+  ),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("districtQueries"),
+  async (c) => {
+    const coordinates = [
+      parseFloat(c.req.param("lng")),
+      parseFloat(c.req.param("lat")),
+    ] as PointCoordinates;
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const districtQueries = c.get("districtQueries");
+    const district = await districtQueries.getByPointCoordinates(
+      coordinates,
+      { excludeGeoJSON },
+    );
+    if (!district) {
+      throw new AppHTTPException(
+        ResponseErrorCode.DistrictNotFound,
+        StatusCodes.NOT_FOUND,
+        { message: "District not found at the location coordinates" },
+      );
+    }
+    return c.json(district, StatusCodes.OK);
   },
 );
 

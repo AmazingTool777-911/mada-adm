@@ -11,8 +11,10 @@ import { mapFokontanyBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetFokontanyByIdOptions,
+  GetFokontanyByPointCoordinatesOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -102,6 +104,25 @@ export class FokontanyMongoQueries extends FokontanyBaseQueries {
   ): Promise<Fokontany | null> {
     const fokontany = await this.collection
       .findOne({ _id: new ObjectId(id) });
+    if (!fokontany) return null;
+    options?.excludeGeoJSON && fokontany.geojson && delete fokontany.geojson;
+    return mapFokontanyBsonToEntity(fokontany);
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetFokontanyByPointCoordinatesOptions,
+  ): Promise<Fokontany | null> {
+    const fokontany = await this.collection.findOne({
+      geojson: {
+        $geoIntersects: {
+          $geometry: {
+            type: "Point",
+            coordinates,
+          },
+        },
+      },
+    });
     if (!fokontany) return null;
     options?.excludeGeoJSON && fokontany.geojson && delete fokontany.geojson;
     return mapFokontanyBsonToEntity(fokontany);

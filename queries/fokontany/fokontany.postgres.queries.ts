@@ -10,8 +10,10 @@ import { DbType } from "@scope/consts/db";
 import type {
   FokontanyQueries,
   GetFokontanyByIdOptions,
+  GetFokontanyByPointCoordinatesOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
@@ -120,6 +122,32 @@ export class FokontanyPostgresQueries extends FokontanyBaseQueries
       const result = await client.queryObject<FokontanySnakeCased>(sql, [
         Number(id),
       ]);
+      if (result.rows.length === 0) return null;
+      return mapFokontanySnakeToCamel(result.rows[0]);
+    } finally {
+      client.release();
+    }
+  }
+
+  async getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetFokontanyByPointCoordinatesOptions,
+  ): Promise<Fokontany | null> {
+    const client = await this.#db.pool.connect();
+    try {
+      const tableName = `${this.#pgSchema}.${this.tableName}`;
+      const columns = this.getTableColunms({
+        excludeGeojson: options?.excludeGeoJSON,
+      });
+      const sql = `
+        SELECT ${columns.join(", ")}
+        FROM ${tableName}
+        WHERE ST_INTERSECTS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
+      `;
+      const result = await client.queryObject<FokontanySnakeCased>(
+        sql,
+        coordinates,
+      );
       if (result.rows.length === 0) return null;
       return mapFokontanySnakeToCamel(result.rows[0]);
     } finally {

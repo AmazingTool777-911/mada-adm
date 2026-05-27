@@ -8,8 +8,10 @@ import type {
   CursorPaginationParams,
   FokontanyQueries,
   GetFokontanyByIdOptions,
+  GetFokontanyByPointCoordinatesOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
+  PointCoordinates,
 } from "@scope/queries/types";
 import { AdmTableBaseQueries } from "./adm-table.base.queries.ts";
 import type { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -36,6 +38,11 @@ export abstract class FokontanyBaseQueries extends AdmTableBaseQueries
   abstract getById(
     id: EntityId,
     options?: GetFokontanyByIdOptions,
+  ): MaybePromise<Fokontany | null>;
+
+  abstract getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetFokontanyByPointCoordinatesOptions,
   ): MaybePromise<Fokontany | null>;
 
   getManyCursorPaginated(

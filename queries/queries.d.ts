@@ -155,6 +155,10 @@ export type GetFokontanyByIdOptions = {
   excludeGeoJSON?: boolean;
 };
 
+export type GetFokontanyByPointCoordinatesOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface FokontanyQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,
@@ -166,6 +170,11 @@ export interface FokontanyQueries {
   getById(
     id: EntityId,
     options?: GetFokontanyByIdOptions,
+  ): MaybePromise<Fokontany | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetFokontanyByPointCoordinatesOptions,
   ): MaybePromise<Fokontany | null>;
 }
 

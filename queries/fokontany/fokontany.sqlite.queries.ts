@@ -9,8 +9,10 @@ import { mapFokontanySnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
 import type {
   GetFokontanyByIdOptions,
+  GetFokontanyByPointCoordinatesOptions,
   GetManyFokontanysPaginationCursor,
   GetManyFokontanysQueryParams,
+  PointCoordinates,
 } from "../queries.d.ts";
 import { FokontanyBaseQueries } from "../base/fokontany.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
@@ -107,6 +109,25 @@ export class FokontanySqliteQueries extends FokontanyBaseQueries {
     const rows = this.#db.client.prepare(sql).all(
       Number(id),
     ) as FokontanySnakeCased[];
+    if (rows.length === 0) return null;
+    return mapFokontanySnakeToCamel(rows[0]);
+  }
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetFokontanyByPointCoordinatesOptions,
+  ): Fokontany | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE Contains(geojson, MakePoint(?, ?, 4326))
+    `;
+    const rows = this.#db.client
+      .prepare(sql)
+      .all(...coordinates) as FokontanySnakeCased[];
     if (rows.length === 0) return null;
     return mapFokontanySnakeToCamel(rows[0]);
   }

@@ -1,8 +1,8 @@
 import { useRef } from "preact/hooks";
 import { useEffect } from "preact/hooks";
-import type L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import libGeoJSONVT from "geojson-vt";
+// import type L from "leaflet";
+// import "leaflet/dist/leaflet.css";
+// import libGeoJSONVT from "geojson-vt";
 import {
   ADM_GEOJSON_OVERLAY_PANE,
   CARTO_DB_PANE,
@@ -12,7 +12,7 @@ import {
   INITIAL_ZOOM,
   MAX_ZOOM,
   OSM_TILE_LAYER_DATA,
-} from "@/consts/base-map.consts.ts";
+} from "@/consts/map.consts.ts";
 import {
   admGeojsonData,
   admGeojsonDataActiveDownloads,

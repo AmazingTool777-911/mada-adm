@@ -2,6 +2,7 @@ import { Partial } from "fresh/runtime";
 import { define } from "../utils.ts";
 // import BaseMap from "@/islands/BaseMap.tsx";
 // import { AdmLevelCode } from "@scope/consts/models";
+import AppMap from "@/islands/AppMap.tsx";
 import AppLogoLink from "@/islands/AppLogoLink.tsx";
 import SidebarAdmBoundariesLink from "@/islands/SidebarAdmBoundariesLink.tsx";
 import SidebarDataSourcesLink from "@/islands/SidebarDataSourcesLink.tsx";
@@ -48,7 +49,7 @@ export default define.layout(({ Component, url }) => {
   return (
     <div f-client-nav class="w-screen h-dvh flex">
       <div
-        class="border-r border-slate-300 py-4 relative z-10 bg-white"
+        class="border-r border-slate-300 py-3 relative z-10 bg-white"
         style="width: var(--sidebar-width); z-index: calc(var(--base-z-index) + 40)"
       >
         <header class="h-full flex flex-col justify-between gap-y-12">
@@ -79,8 +80,8 @@ export default define.layout(({ Component, url }) => {
         </Partial>
       </RoutePageDrawer>
       <div className="grow shrink basis-auto h-full">
-        Hello world
         {/* <BaseMap admGeojsonDataVersionByCode={admGeojsonDataVersionByCode} /> */}
+        <AppMap />
       </div>
     </div>
   );

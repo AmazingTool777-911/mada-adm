@@ -16,9 +16,9 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const overlayIsOpen = useSignal(false);
 
-  useEffect(() => {
-    pageDrawerIsOpen.value = true;
-  }, []);
+  // useEffect(() => {
+  //   pageDrawerIsOpen.value = true;
+  // }, []);
 
   const overlayAnimationStyles = [
     { opacity: 0 },
@@ -85,7 +85,7 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
             <button
               type="button"
               aria-label={toggleLabel}
-              class="btn btn-square btn-lg shadow text-base-content/80 hover:text-base-content duration-300"
+              class="btn btn-square btn-lg shadow text-base-content/90 hover:text-base-content duration-300"
               onClick={() => (pageDrawerIsOpen.value = !pageDrawerIsOpen
                 .value)}
             >

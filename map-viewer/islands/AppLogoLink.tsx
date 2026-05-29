@@ -1,6 +1,8 @@
-import { pageDrawerIsOpen } from "@/stores/layout.store.ts";
+import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
 
 export default function AppLogoLink() {
+  const appLayoutStore = injectAppLayoutStore();
+
   return (
     <div class="tooltip tooltip-right" data-tip="Go to the homepage">
       <a
@@ -8,7 +10,7 @@ export default function AppLogoLink() {
         f-partial="/partials/landing"
         aria-label="Go to the homepage"
         class="flex flex-col items-center gap-1 px-1"
-        onClick={() => pageDrawerIsOpen.value = true}
+        onClick={() => appLayoutStore.toggleSidebar(true)}
       >
         <svg
           version="1.1"

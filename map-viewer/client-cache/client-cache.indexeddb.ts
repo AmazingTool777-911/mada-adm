@@ -1,4 +1,5 @@
 import {
+  ADM_GEOJSON_METADATA_STORE_NAME,
   ADM_GEOJSON_STORE_NAME,
   INDEXED_DB_NAME,
   INDEXED_DB_VERSION,
@@ -18,6 +19,9 @@ export class ClientCacheIndexdDbConnection {
       request.onupgradeneeded = (e) => {
         const db = (e.target as IDBOpenDBRequest).result;
         db.createObjectStore(ADM_GEOJSON_STORE_NAME, {
+          keyPath: "admLevelCode",
+        });
+        db.createObjectStore(ADM_GEOJSON_METADATA_STORE_NAME, {
           keyPath: "admLevelCode",
         });
       };

@@ -1,17 +1,21 @@
 import { AdmLevelCode } from "@scope/consts/models";
-import { ADM_GEOJSON_STORE_NAME } from "@/consts/indexeddb.consts.ts";
+import {
+  ADM_GEOJSON_METADATA_STORE_NAME,
+  ADM_GEOJSON_STORE_NAME,
+} from "@/consts/indexeddb.consts.ts";
 import { ClientCacheIndexdDbConnection } from "./client-cache.indexeddb.ts";
-import type { GeoJSONFeatureCollection } from "@scope/types/utils";
+import {
+  AdmGeojsonClientCacheItem,
+  AdmGeojsonMetadataClientCacheItem,
+} from "@/types/cache.d.ts";
 
-export type AdmGeojsonClientCacheItem = {
-  admLevelCode: AdmLevelCode;
-  geojson: GeoJSONFeatureCollection<Record<string, unknown>>;
-  version: number;
-  lastModified: Date;
-};
+export type UpsertAdmGeoJsonPayload =
+  & AdmGeojsonMetadataClientCacheItem
+  & AdmGeojsonClientCacheItem;
 
 export class AdmGeojsonClientCache {
-  readonly store = ADM_GEOJSON_STORE_NAME;
+  readonly metadataStore = ADM_GEOJSON_METADATA_STORE_NAME;
+  readonly geojsonStore = ADM_GEOJSON_STORE_NAME;
 
   #connection!: ClientCacheIndexdDbConnection;
 
@@ -19,10 +23,10 @@ export class AdmGeojsonClientCache {
     this.#connection = indexedDbConnection;
   }
 
-  async getAll(): Promise<AdmGeojsonClientCacheItem[]> {
+  async getAllMetadata(): Promise<AdmGeojsonMetadataClientCacheItem[]> {
     const db = await this.#connection.db;
-    const transaction = db.transaction(this.store, "readonly");
-    const store = transaction.objectStore(this.store);
+    const transaction = db.transaction(this.metadataStore, "readonly");
+    const store = transaction.objectStore(this.metadataStore);
     const request = store.getAll();
     return new Promise((resolve, reject) => {
       request.onsuccess = () => {
@@ -34,29 +38,101 @@ export class AdmGeojsonClientCache {
     });
   }
 
-  async upsert(item: AdmGeojsonClientCacheItem): Promise<IDBValidKey> {
+  async getMetadataByCode(
+    admLevelCode: AdmLevelCode,
+  ): Promise<AdmGeojsonMetadataClientCacheItem | null> {
     const db = await this.#connection.db;
-    const transaction = db.transaction(this.store, "readwrite");
-    const store = transaction.objectStore(this.store);
-
-    return new Promise<IDBValidKey>((resolve, reject) => {
-      const getRequest = store.get(item.admLevelCode);
-
-      getRequest.onsuccess = () => {
-        const writeRequest = getRequest.result !== undefined
-          ? store.put(item)
-          : store.add(item);
-
-        writeRequest.onsuccess = () => {
-          resolve(writeRequest.result);
-        };
-        writeRequest.onerror = () => {
-          reject(writeRequest.error);
-        };
+    const transaction = db.transaction(this.metadataStore, "readonly");
+    const store = transaction.objectStore(this.metadataStore);
+    const request = store.get(admLevelCode);
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => {
+        resolve(request.result ?? null);
       };
+      request.onerror = () => {
+        reject(request.error);
+      };
+    });
+  }
 
-      getRequest.onerror = () => {
-        reject(getRequest.error);
+  async getAllGeoJson(): Promise<AdmGeojsonClientCacheItem[]> {
+    const db = await this.#connection.db;
+    const transaction = db.transaction(this.geojsonStore, "readonly");
+    const store = transaction.objectStore(this.geojsonStore);
+    const request = store.getAll();
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+      request.onerror = () => {
+        reject(request.error);
+      };
+    });
+  }
+
+  async getGeojsonByCode(
+    admLevelCode: AdmLevelCode,
+  ): Promise<AdmGeojsonClientCacheItem | null> {
+    const db = await this.#connection.db;
+    const transaction = db.transaction(this.geojsonStore, "readonly");
+    const store = transaction.objectStore(this.geojsonStore);
+    const request = store.get(admLevelCode);
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => {
+        resolve(request.result ?? null);
+      };
+      request.onerror = () => {
+        reject(request.error);
+      };
+    });
+  }
+
+  async upsert(payload: UpsertAdmGeoJsonPayload): Promise<void> {
+    const db = await this.#connection.db;
+    const transaction = db.transaction(
+      [this.geojsonStore, this.metadataStore],
+      "readwrite",
+    );
+    const metadataStore = transaction.objectStore(this.metadataStore);
+    const geojsonStore = transaction.objectStore(this.geojsonStore);
+
+    const admGeoJsonMetadata = await new Promise<
+      AdmGeojsonMetadataClientCacheItem | null
+    >((resolve, reject) => {
+      const req = metadataStore.get(payload.admLevelCode);
+      req.onsuccess = () => {
+        resolve((req.result as AdmGeojsonMetadataClientCacheItem) ?? null);
+      };
+      req.onerror = () => {
+        reject(req.error);
+      };
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      const req = admGeoJsonMetadata
+        ? metadataStore.put(admGeoJsonMetadata)
+        : metadataStore.add(payload);
+      req.onsuccess = () => {
+        resolve();
+      };
+      req.onerror = () => {
+        reject(req.error);
+      };
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      const geoJson: AdmGeojsonClientCacheItem = {
+        admLevelCode: payload.admLevelCode,
+        geojson: payload.geojson,
+      };
+      const req = admGeoJsonMetadata
+        ? geojsonStore.put(geoJson)
+        : geojsonStore.add(geoJson);
+      req.onsuccess = () => {
+        resolve();
+      };
+      req.onerror = () => {
+        reject(req.error);
       };
     });
   }

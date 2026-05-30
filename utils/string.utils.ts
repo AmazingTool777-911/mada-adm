@@ -99,3 +99,43 @@ export function incrementLastCharacterCodePoint(text: string): string {
   // 5. Re-join into a single string
   return chars.join("");
 }
+
+/**
+ * Returns the singular or plural form of a word based on a condition.
+ *
+ * @param word - The singular form of the word.
+ * @param plural
+ *   How to pluralize the word:
+ *   - A string starting with `'+'` appends the rest as a suffix:
+ *     ```ts
+ *     pluralize('layer', '+s')   // → 'layers'
+ *     pluralize('match', '+es')  // → 'matches'
+ *     ```
+ *   - Any other string replaces the word entirely:
+ *     ```ts
+ *     pluralize('goose', 'geese')   // → 'geese'
+ *     pluralize('radius', 'radii')  // → 'radii'
+ *     ```
+ *   - A function receives the singular and returns the plural:
+ *     ```ts
+ *     pluralize('city', w => w.slice(0, -1) + 'ies')  // → 'cities'
+ *     pluralize('cactus', w => w.replace('us', 'i'))   // → 'cacti'
+ *     ```
+ * @param condition - When `false`, returns the singular word unchanged. Defaults to `true`.
+ *   ```ts
+ *   const count = selectedLayers.length;
+ *   `${count} ${pluralize('layer', '+s', count !== 1)} selected`
+ *   // → '1 layer selected' / '3 layers selected'
+ *   ```
+ * @returns The singular or plural form of the word.
+ */
+export function pluralize(
+  word: string,
+  plural: string | ((word: string) => string),
+  condition: boolean = true,
+): string {
+  if (!condition) return word;
+  if (typeof plural === "function") return plural(word);
+  if (plural.startsWith("+")) return word + plural.slice(1);
+  return plural;
+}

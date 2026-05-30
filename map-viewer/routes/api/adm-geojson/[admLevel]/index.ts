@@ -18,7 +18,7 @@ export const handler = define.handlers({
       );
     }
 
-    const fetchFileResponse = await fetch(source.url);
+    const fetchFileResponse = await fetch(source.rawURL);
 
     return new Response(fetchFileResponse.body, {
       headers: {

@@ -1,3 +1,8 @@
-export type GetAdmGeojsonSizeResponse = {
-  fileSize: number;
+import type { AdmLevelCode } from "@scope/consts/models";
+
+export type GetAdmGeojsonFileSizeResponseItem = {
+  admLevelCode: AdmLevelCode;
+  fileSize: number | null;
+  rawURL: string;
+  previewURL: string;
 };

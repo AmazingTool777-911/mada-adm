@@ -38,7 +38,6 @@ export default function AppMapAdmGeoJsonDownloadModal() {
       "close",
       () => {
         const returnValue = dialogRef.current?.returnValue;
-        console.log("returnValue", returnValue);
         if (returnValue === "download") {
           for (
             const admLevelCode of admGeoJsonStore.admLevelCodesToBeDownloaded

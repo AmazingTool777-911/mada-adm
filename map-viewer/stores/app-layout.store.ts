@@ -8,6 +8,8 @@ export class AppLayoutStore {
       ? isOpen
       : !this.sidebarIsOpen.value;
   }
+
+  readonly firstNavLinkIsLoaded = signal(false);
 }
 
 let appLayoutStore: AppLayoutStore | null = null;

@@ -1,5 +1,5 @@
 import { computed, signal } from "@preact/signals";
-import { AdmLevelCode } from "@scope/consts/models";
+import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 import { ADM_GEOJSON_DATA_SOURCE_BY_CODE } from "@/consts/adm-geojson.consts.ts";
 import { GeoJSONFeature, GeoJSONFeatureCollection } from "@scope/types/utils";
 import type { GetAdmGeojsonFileSizeResponseItem } from "@/types/api.d.ts";
@@ -13,7 +13,24 @@ export type AdmGeojsonDataDownloadItem = {
   geojson?: GeoJSONFeatureCollection<Record<string, unknown>>;
 };
 
+export type AdmGeojsonDataDownloadsToastItem =
+  & { type: "warning" | "success" | "error" | "info" }
+  & (
+    | {
+      notification: "starting";
+      admLevelCodes: AdmLevelCode[];
+    }
+    | {
+      notification: "updates-available";
+      admLevelCodes: AdmLevelCode[];
+    }
+    | { notification: "success"; admLevelCode: AdmLevelCode }
+    | { notification: "error"; admLevelCode: AdmLevelCode }
+  );
+
 export class AdmGeoJsonStore {
+  readonly admGeoJsonDataVersionByCode = signal<Map<AdmLevelCode, number>>();
+
   readonly downloads = signal<AdmGeojsonDataDownloadItem[]>([]);
 
   readonly downloadByAdmLevelCode = computed<
@@ -124,11 +141,21 @@ export class AdmGeoJsonStore {
 
       download.status = "success";
       this.upsertDownload({ ...download, geojson: geojsonFeatureCollection });
+      this.upsertAdmGeojsonDataDownloadsToast({
+        type: "success",
+        notification: "success",
+        admLevelCode: download.admLevelCode,
+      });
 
       return geojsonFeatureCollection;
     } catch (error) {
       download.status = "failed";
       this.upsertDownload({ ...download });
+      this.upsertAdmGeojsonDataDownloadsToast({
+        type: "error",
+        notification: "error",
+        admLevelCode: download.admLevelCode,
+      });
       throw error;
     }
   }
@@ -176,7 +203,46 @@ export class AdmGeoJsonStore {
     this.admLevelCodesToBeDownloaded.value = [];
   }
 
-  cachedMetadata = signal<AdmGeojsonMetadataClientCacheItem[]>([]);
+  readonly cachedMetadata = signal<AdmGeojsonMetadataClientCacheItem[]>([]);
+  readonly cachedMetadataIsLoaded = signal(false);
+
+  readonly allLayersAreUpToDate = computed(() => {
+    if (
+      !this.cachedMetadataIsLoaded.value ||
+      !this.admGeoJsonDataVersionByCode.value
+    ) return false;
+    return ADM_LEVEL_CODES_INDEXED.every((admLevelCode) => {
+      const cachedMetadata = this.cachedMetadata.value.find((m) =>
+        m.admLevelCode === admLevelCode
+      );
+      return cachedMetadata && cachedMetadata.version <
+          this.admGeoJsonDataVersionByCode.value!.get(admLevelCode)!;
+    });
+  });
+
+  readonly layersToDownload = computed<
+    Record<"nonCached" | "cached", AdmLevelCode[]> | null
+  >(() => {
+    if (
+      !this.cachedMetadataIsLoaded.value ||
+      !this.admGeoJsonDataVersionByCode.value
+    ) return null;
+    if (this.allLayersAreUpToDate.value) return null;
+    const nonCached: AdmLevelCode[] = [];
+    const cached: AdmLevelCode[] = [];
+    for (const admLevelCode of ADM_LEVEL_CODES_INDEXED) {
+      const cachedMetadata = this.cachedMetadata.value.find((m) =>
+        m.admLevelCode === admLevelCode
+      );
+      if (!cachedMetadata) nonCached.push(admLevelCode);
+      else if (
+        cachedMetadata.version <
+          this.admGeoJsonDataVersionByCode.value.get(admLevelCode)!
+      ) cached.push(admLevelCode);
+    }
+    if (nonCached.length === 0 && cached.length === 0) return null;
+    return { cached, nonCached };
+  });
 
   cachedMetadataCodes = computed<Set<AdmLevelCode>>(() => {
     return new Set(
@@ -193,6 +259,84 @@ export class AdmGeoJsonStore {
     } else {
       this.cachedMetadata.value[i] = metadata;
       this.cachedMetadata.value = [...this.cachedMetadata.value];
+    }
+  }
+
+  private readonly admGeoJsonDataDownloadsToastsWithTimeouts = signal<
+    [AdmGeojsonDataDownloadsToastItem, ReturnType<typeof setTimeout>][]
+  >([]);
+
+  readonly admGeoJsonDataDownloadsToasts = computed<
+    AdmGeojsonDataDownloadsToastItem[]
+  >(() => {
+    return this.admGeoJsonDataDownloadsToastsWithTimeouts.value.map(
+      (d) => d[0],
+    );
+  });
+
+  upsertAdmGeojsonDataDownloadsToast(toast: AdmGeojsonDataDownloadsToastItem) {
+    const existingToastData = this.admGeoJsonDataDownloadsToastsWithTimeouts
+      .value.find(
+        (d) => {
+          if (
+            toast.notification === "starting" ||
+            toast.notification === "updates-available"
+          ) {
+            return d[0].notification === toast.notification;
+          } else {
+            return d[0].notification === toast.notification &&
+              d[0].admLevelCode === toast.admLevelCode;
+          }
+        },
+      );
+    if (existingToastData) {
+      this.removeAdmGeojsonDataDownloadsToast(
+        toast,
+      );
+    }
+    const closeTimeout = setTimeout(() => {
+      this.removeAdmGeojsonDataDownloadsToast(
+        toast,
+      );
+    }, 5000);
+    this.admGeoJsonDataDownloadsToastsWithTimeouts.value = [
+      ...this.admGeoJsonDataDownloadsToastsWithTimeouts.value,
+      [toast, closeTimeout],
+    ];
+  }
+
+  removeAdmGeojsonDataDownloadsToast(toast: AdmGeojsonDataDownloadsToastItem) {
+    const toastDataIndex = this.admGeoJsonDataDownloadsToastsWithTimeouts.value
+      .findIndex(
+        (d) => {
+          if (
+            toast.notification === "starting" ||
+            toast.notification === "updates-available"
+          ) {
+            return d[0].notification === toast.notification;
+          } else {
+            return d[0].notification === toast.notification &&
+              d[0].admLevelCode === toast.admLevelCode;
+          }
+        },
+      );
+    // console.log(
+    //   "toastDataIndex",
+    //   toastDataIndex,
+    //   "toast",
+    //   this.admGeoJsonDataDownloadsToastsWithTimeouts.value[0],
+    // );
+    if (toastDataIndex >= 0) {
+      clearTimeout(
+        this.admGeoJsonDataDownloadsToastsWithTimeouts.value[toastDataIndex][1],
+      );
+      this.admGeoJsonDataDownloadsToastsWithTimeouts.value.splice(
+        toastDataIndex,
+        1,
+      );
+      this.admGeoJsonDataDownloadsToastsWithTimeouts.value = [
+        ...this.admGeoJsonDataDownloadsToastsWithTimeouts.value,
+      ];
     }
   }
 }

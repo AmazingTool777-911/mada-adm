@@ -4,7 +4,7 @@ import { ADM_GEOJSON_DATA_SOURCE_BY_CODE } from "@/consts/adm-geojson.consts.ts"
 import { GetAdmGeojsonFileSizeResponseItem } from "@/types/api.d.ts";
 
 export const handler = define.handlers({
-  async GET(ctx) {
+  GET(ctx) {
     const sources = ctx.params.admLevel.split(",") as AdmLevelCode[];
     for (const source of sources) {
       const _source = ADM_GEOJSON_DATA_SOURCE_BY_CODE.get(source);
@@ -18,24 +18,17 @@ export const handler = define.handlers({
       }
     }
 
-    const fileSizesByAdmLevelCode = await Promise.all(
-      sources.map<Promise<GetAdmGeojsonFileSizeResponseItem>>(
-        async (source) => {
-          const sourceData = ADM_GEOJSON_DATA_SOURCE_BY_CODE.get(source)!;
-          const fetchFileResponse = await fetch(sourceData.rawURL, {
-            method: "HEAD",
-          });
-          const fileSizeHeader =
-            fetchFileResponse.headers.get("content-length") ?? null;
-          return {
-            admLevelCode: source,
-            rawURL: sourceData.rawURL,
-            previewURL: sourceData.previewURL,
-            fileSize: fileSizeHeader ? Number(fileSizeHeader) : null,
-          };
-        },
-      ),
-    );
+    const fileSizesByAdmLevelCode: GetAdmGeojsonFileSizeResponseItem[] = [];
+
+    for (const source of sources) {
+      const sourceData = ADM_GEOJSON_DATA_SOURCE_BY_CODE.get(source)!;
+      fileSizesByAdmLevelCode.push({
+        admLevelCode: source,
+        rawURL: sourceData.rawURL,
+        previewURL: sourceData.previewURL,
+        fileSize: sourceData.fileSize,
+      });
+    }
 
     return new Response(JSON.stringify(fileSizesByAdmLevelCode), {
       status: 200,

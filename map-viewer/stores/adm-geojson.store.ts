@@ -320,12 +320,6 @@ export class AdmGeoJsonStore {
           }
         },
       );
-    // console.log(
-    //   "toastDataIndex",
-    //   toastDataIndex,
-    //   "toast",
-    //   this.admGeoJsonDataDownloadsToastsWithTimeouts.value[0],
-    // );
     if (toastDataIndex >= 0) {
       clearTimeout(
         this.admGeoJsonDataDownloadsToastsWithTimeouts.value[toastDataIndex][1],

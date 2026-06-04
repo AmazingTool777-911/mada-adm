@@ -41,7 +41,10 @@ export default function AppToasts() {
   }
 
   return (
-    <div class="toast max-w-sm" style="z-index: calc(var(--base-z-index) + 40)">
+    <div
+      class="toast"
+      style="z-index: calc(var(--base-z-index) + 40); width: min(calc(100vw - 2 * 16px), 380px)"
+    >
       {admGeoJsonStore.admGeoJsonDataDownloadsToasts.value.map((toast) => {
         const alertType = toast.type === "info"
           ? "alert-info"

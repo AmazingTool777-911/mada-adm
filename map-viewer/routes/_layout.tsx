@@ -8,6 +8,7 @@ import SidebarDataSourcesLink from "@/islands/SidebarDataSourcesLink.tsx";
 import SidebarPinsLink from "@/islands/SidebarPinsLink.tsx";
 import ViewConfigModal from "@/islands/ViewConfigModal.tsx";
 import RoutePageDrawer from "@/islands/RoutePageDrawer.tsx";
+import AppToasts from "@/islands/AppToasts.tsx";
 
 export default define.layout(({ Component, url }) => {
   const admGeojsonDataVersionByCode = new Map<AdmLevelCode, number>([
@@ -46,7 +47,7 @@ export default define.layout(({ Component, url }) => {
   const isActive = (href: string) => url.pathname === href;
 
   return (
-    <div f-client-nav class="w-screen h-dvh flex">
+    <div f-client-nav class="w-screen h-dvh max-h-dvh flex">
       <div
         class="border-r border-slate-300 py-3 relative z-10 bg-white"
         style="width: var(--sidebar-width); z-index: calc(var(--base-z-index) + 40)"
@@ -54,7 +55,7 @@ export default define.layout(({ Component, url }) => {
         <header class="h-full flex flex-col justify-between gap-y-12">
           <AppLogoLink />
           <nav>
-            <ul class="flex flex-col list-none p-0 m-0 gap-y-2">
+            <ul class="flex flex-col list-none p-0 m-0 gap-x-0">
               <li>
                 <SidebarAdmBoundariesLink isActive={isActive("/adm")} />
               </li>
@@ -81,6 +82,7 @@ export default define.layout(({ Component, url }) => {
       <div className="grow shrink basis-auto h-full">
         <AppMap admGeojsonDataVersionByCode={admGeojsonDataVersionByCode} />
       </div>
+      <AppToasts />
     </div>
   );
 });

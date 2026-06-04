@@ -33,7 +33,8 @@
     "culori": "npm:culori@^4.0.2",
     "maplibre-gl": "npm:maplibre-gl@^5.24.0",
     "mongodb": "npm:mongodb@^6.21.0",
-    "mysql2": "npm:mysql2@^3.22.3"
+    "mysql2": "npm:mysql2@^3.22.3",
+    "simplebar": "npm:simplebar@^6.3.3"
   },
   "workspace": [
     "./consts",

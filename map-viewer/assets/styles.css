@@ -28,4 +28,17 @@
 html {
   --sidebar-width: 5rem;
   --base-z-index: 1000;
+  --base-drawer-width: 20rem;
+}
+
+@media (min-width: 1024px) {
+  html {
+    --base-drawer-width: 21rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    --base-drawer-width: 22rem;
+  }
 }

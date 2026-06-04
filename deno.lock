@@ -87,6 +87,7 @@
     "npm:preact@^10.28.2": "10.29.2",
     "npm:preact@^10.29.1": "10.29.2",
     "npm:rollup@^4.55.1": "4.60.4",
+    "npm:simplebar@^6.3.3": "6.3.3",
     "npm:tailwindcss@^4.1.10": "4.3.0",
     "npm:vite@^7.1.3": "7.3.3_@types+node@25.9.1",
     "npm:vite@^7.1.4": "7.3.3_@types+node@25.9.1",
@@ -1484,6 +1485,12 @@
         "lightningcss-win32-x64-msvc"
       ]
     },
+    "lodash-es@4.18.1": {
+      "integrity": "sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A=="
+    },
+    "lodash@4.18.1": {
+      "integrity": "sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q=="
+    },
     "long@5.3.2": {
       "integrity": "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA=="
     },
@@ -1679,6 +1686,19 @@
       "integrity": "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==",
       "bin": true
     },
+    "simplebar-core@1.3.2": {
+      "integrity": "sha512-qKgTTuTqapjsFGkNhCjyPhysnbZGpQqNmjk0nOYjFN5ordC/Wjvg+RbYCyMSnW60l/Z0ZS82GbNltly6PMUH1w==",
+      "dependencies": [
+        "lodash",
+        "lodash-es"
+      ]
+    },
+    "simplebar@6.3.3": {
+      "integrity": "sha512-ni9cIiA8GRitiaenV7A/gh8nTStiVqO3gLxrfCMmq6CSy/pB+fz+QxqvJLo142QHb2Tvgvr8ILwZxf3qzAq7pg==",
+      "dependencies": [
+        "simplebar-core"
+      ]
+    },
     "source-map-js@1.2.1": {
       "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA=="
     },
@@ -1783,7 +1803,8 @@
       "npm:culori@^4.0.2",
       "npm:maplibre-gl@^5.24.0",
       "npm:mongodb@^6.21.0",
-      "npm:mysql2@^3.22.3"
+      "npm:mysql2@^3.22.3",
+      "npm:simplebar@^6.3.3"
     ],
     "members": {
       "map-viewer": {

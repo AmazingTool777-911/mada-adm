@@ -2,7 +2,10 @@ import { ComponentChildren } from "preact";
 import { computed, useSignal } from "@preact/signals";
 import { useEffect, useRef } from "preact/hooks";
 import { PanelRightClose, PanelRightOpen } from "lucide-preact";
+import { default as SimpleBar } from "simplebar";
+import "simplebar/dist/simplebar.css";
 import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
+import useScrollToDataSourcesDownload from "@/hooks/useScrollToDataSourcesDownload.ts";
 
 export type RoutePageDrawerProps = {
   children: ComponentChildren;
@@ -58,15 +61,27 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
     }
   }, [overlayIsOpen.value]);
 
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollableRef.current) {
+      scrollableRef.current.classList.remove("overflow-y-hidden");
+      // @ts-ignore - SimpleBar typings are wrong
+      new SimpleBar(scrollableRef.current);
+    }
+  }, []);
+
+  useScrollToDataSourcesDownload();
+
   return (
     <div
-      class={`h-dvh bg-white fixed left-(--sidebar-width) lg:relative lg:left-0 ${
+      class={`h-full max-h-full bg-white fixed left-(--sidebar-width) lg:relative lg:left-0 ${
         appLayoutStore.sidebarIsOpen.value ? "w-(--drawer-width)" : "w-0"
       }`}
-      style="--drawer-width: min(calc(100vw - var(--sidebar-width)), 20rem); transition: all 400ms; z-index: calc(var(--base-z-index) + 30);"
+      style="--drawer-width: min(calc(100vw - var(--sidebar-width)), var(--base-drawer-width)); transition: all 400ms; z-index: calc(var(--base-z-index) + 30);"
     >
       <div
-        class="absolute w-[min(calc(100vw-var(--sidebar-width)),20rem)] h-full top-0 right-0 py-4 bg-white"
+        class="absolute w-[min(calc(100vw-var(--sidebar-width)),var(--base-drawer-width))] h-full top-0 right-0 bg-white"
         style={{
           boxShadow: `2px 0 2px rgba(0, 0, 0, 0.125)`,
           zIndex: `calc(var(--base-z-index) + 30)`,
@@ -101,10 +116,13 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
           </div>
         </div>
         <div
-          className="duration-300"
+          ref={scrollableRef}
+          className="duration-300 h-full max-h-full overflow-y-hidden"
           style={{ opacity: appLayoutStore.sidebarIsOpen.value ? "1" : "0" }}
         >
-          {children}
+          <div class="pt-5 px-3 lg:px-4 pb-4">
+            {children}
+          </div>
         </div>
       </div>
       {overlayIsOpen.value && (

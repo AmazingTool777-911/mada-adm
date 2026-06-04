@@ -52,26 +52,29 @@ export default function AppMap(props: AppMapProps) {
   }, []);
 
   async function syncExistingAdmGeoJsonData() {
+    admGeoJsonStore.admGeoJsonDataVersionByCode.value =
+      props.admGeojsonDataVersionByCode;
+
     const admGeoJsonMetadata = await admGeoJsonClientCache.getAllMetadata();
 
     admGeoJsonStore.cachedMetadata.value = admGeoJsonMetadata;
+    admGeoJsonStore.cachedMetadataIsLoaded.value = true;
 
-    const admGeoJsonToBeUpdated = admGeoJsonMetadata.filter((metadata) => {
-      return metadata.version <
-        props.admGeojsonDataVersionByCode.get(metadata.admLevelCode)!;
-    });
-    if (admGeoJsonToBeUpdated.length === 0) return;
-    await Promise.all(admGeoJsonToBeUpdated.map((metadata) => {
-      return admGeoJsonStore.downloadForAdmLevel(metadata.admLevelCode);
-    }));
+    const updatableCachedMetadata = admGeoJsonStore.cachedMetadata
+      .value.filter((m) => {
+        return m.version <
+          props.admGeojsonDataVersionByCode.get(
+            m.admLevelCode,
+          )!;
+      });
+    if (updatableCachedMetadata.length > 0) {
+      admGeoJsonStore.upsertAdmGeojsonDataDownloadsToast({
+        type: "warning",
+        notification: "updates-available",
+        admLevelCodes: updatableCachedMetadata.map((m) => m.admLevelCode),
+      });
+    }
   }
-
-  useEffect(() => {
-    console.log(
-      "downloads",
-      admGeoJsonStore.downloads.value,
-    );
-  }, [admGeoJsonStore.downloads.value]);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -247,20 +250,24 @@ export default function AppMap(props: AppMapProps) {
       admGeoJsonStore.upsertCachedMetadata(metadata);
       if (!cachedMetadata) {
         checkAdmGeoJsonLayer(download.admLevelCode, true);
-      }
-      console.log("Layer added from downloads");
-      // TODO: Add GeoJSON to the map
-      if (
-        !mapLayerSwitcherControlRef.current?.hasStaticAdmGeoJsonLayer(
-          download.admLevelCode,
-        )
-      ) {
         mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
           download.admLevelCode,
           download.geojson!,
         );
-        delete download.geojson; // Free the reference to the geojson data from memory
+      } else if (
+        mapLayerSwitcherControlRef.current?.hasStaticAdmGeoJsonLayer(
+          download.admLevelCode,
+        )
+      ) {
+        mapLayerSwitcherControlRef.current?.removeStaticAdmGeoJsonLayer(
+          download.admLevelCode,
+        );
+        mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
+          download.admLevelCode,
+          download.geojson!,
+        );
       }
+      delete download.geojson; // Free the reference to the geojson data from memory
     }
   }
 

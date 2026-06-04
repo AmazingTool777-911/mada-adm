@@ -16,7 +16,7 @@ export default function AppMapAdmGeoJsonDownloadModal() {
     return pluralize(
       "layer",
       "+s",
-      admGeoJsonStore.fileSizes.value.length > 1,
+      admGeoJsonStore.admLevelCodesToBeDownloaded.value.length > 1,
     );
   });
 
@@ -39,6 +39,11 @@ export default function AppMapAdmGeoJsonDownloadModal() {
       () => {
         const returnValue = dialogRef.current?.returnValue;
         if (returnValue === "download") {
+          admGeoJsonStore.upsertAdmGeojsonDataDownloadsToast({
+            type: "info",
+            notification: "starting",
+            admLevelCodes: admGeoJsonStore.admLevelCodesToBeDownloaded.value,
+          });
           for (
             const admLevelCode of admGeoJsonStore.admLevelCodesToBeDownloaded
               .value
@@ -133,7 +138,8 @@ export default function AppMapAdmGeoJsonDownloadModal() {
               </svg>
               <span>
                 Layers will be cached locally for offline use. When updates are
-                available on the server, they'll be downloaded automatically.
+                available on the server, you can download those updated layers
+                as you wish.
               </span>
             </div>
             <form method="dialog">
@@ -142,10 +148,10 @@ export default function AppMapAdmGeoJsonDownloadModal() {
                   Close
                 </button>
                 <button type="submit" value="download" class="btn btn-primary">
-                  <Download />
+                  <Download size={18} />
                   Download
                   {admGeoJsonStore.fileSizes.value.length > 1 &&
-                    "all"}
+                    " all"}
                 </button>
               </div>
             </form>

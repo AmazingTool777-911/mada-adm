@@ -60,7 +60,8 @@ export default function AppMapAdmGeoJsonDownloadModal() {
     <dialog ref={dialogRef} class="modal">
       <div class="modal-box w-11/12 md:w-8/12 lg:w-7/12 max-w-5xl">
         <h3 class="text-lg font-bold flex items-center gap-x-3 mb-4">
-          <Download /> <span>Download the ADM {layerTextWithPlural}</span>
+          <Download />{" "}
+          <span>Download & Cache the ADM {layerTextWithPlural}</span>
         </h3>
         {admGeoJsonStore.isLoadingFileSizes.value &&
           admGeoJsonStore.fileSizes.value.length === 0 && (

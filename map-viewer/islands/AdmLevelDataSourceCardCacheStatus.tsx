@@ -91,18 +91,26 @@ export default function AdmLevelDataSourceCardCacheStatus(
           >
             <div class="flex justify-between items-center">
               <div class="space-y-1">
-                <strong
-                  title={cacheLastUpdatedAt.value ?? undefined}
-                  class={"flex items-center gap-x-2 text-sm font-medium " +
-                    (isCached.value ? "text-success" : "text-error")}
-                >
-                  {isCached.value
-                    ? <DatabaseZap size={18} />
-                    : <Database size={18} />}
-                  <span>
-                    {isCached.value ? "Cached" : "Not cached"}
-                  </span>
-                </strong>
+                {isCached.value
+                  ? (
+                    <strong
+                      title={cacheLastUpdatedAt.value!}
+                      class="flex items-center gap-x-2 text-sm font-medium text-success"
+                    >
+                      <DatabaseZap size={18} />
+                      <span>
+                        Cached
+                      </span>
+                    </strong>
+                  )
+                  : (
+                    <strong class="flex items-center gap-x-2 text-sm font-medium text-error">
+                      <Database size={18} />
+                      <span>
+                        Not cached
+                      </span>
+                    </strong>
+                  )}
                 {hasNewVersion.value && (
                   <em
                     class="flex items-center gap-x-2 text-xs font-semibold"
@@ -120,14 +128,21 @@ export default function AdmLevelDataSourceCardCacheStatus(
               {(!isCached.value || (isCached.value && hasNewVersion.value)) && (
                 currentDownloadIsDownloadable.value
                   ? (
-                    <button
-                      type="button"
-                      class="btn btn-primary btn-outline btn-sm"
-                      onClick={handleDownloadClick}
+                    <div
+                      class="tooltip tooltip-left"
+                      data-tip={`Download & ${
+                        isCached.value ? "Update" : "Cache"
+                      }`}
                     >
-                      <Download size={18} />
-                      <span>Download</span>
-                    </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-outline btn-sm"
+                        onClick={handleDownloadClick}
+                      >
+                        <Download size={18} />
+                        <span>Download</span>
+                      </button>
+                    </div>
                   )
                   : (
                     <span class="text-sm text-base-content/70">

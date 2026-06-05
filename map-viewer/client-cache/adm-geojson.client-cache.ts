@@ -89,47 +89,41 @@ export class AdmGeojsonClientCache {
 
   async upsert(payload: UpsertAdmGeoJsonPayload): Promise<void> {
     const db = await this.#connection.db;
-    const transaction = db.transaction(
-      [this.geojsonStore, this.metadataStore],
-      "readwrite",
-    );
-    const metadataStore = transaction.objectStore(this.metadataStore);
-    const geojsonStore = transaction.objectStore(this.geojsonStore);
 
-    const admGeoJsonMetadata = await new Promise<
-      AdmGeojsonMetadataClientCacheItem | null
-    >((resolve, reject) => {
-      const req = metadataStore.get(payload.admLevelCode);
-      req.onsuccess = () => {
-        resolve((req.result as AdmGeojsonMetadataClientCacheItem) ?? null);
-      };
-      req.onerror = () => {
-        reject(req.error);
-      };
-    });
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(
+        [this.geojsonStore, this.metadataStore],
+        "readwrite",
+      );
+      const metadataStore = transaction.objectStore(this.metadataStore);
+      const geojsonStore = transaction.objectStore(this.geojsonStore);
 
-    await new Promise<void>((resolve, reject) => {
-      const req = admGeoJsonMetadata
-        ? metadataStore.put(admGeoJsonMetadata)
-        : metadataStore.add(payload);
+      let req = metadataStore.get(payload.admLevelCode);
       req.onsuccess = () => {
-        resolve();
-      };
-      req.onerror = () => {
-        reject(req.error);
-      };
-    });
+        const admGeoJsonMetadata =
+          (req.result as AdmGeojsonMetadataClientCacheItem) ?? null;
 
-    await new Promise<void>((resolve, reject) => {
-      const geoJson: AdmGeojsonClientCacheItem = {
-        admLevelCode: payload.admLevelCode,
-        geojson: payload.geojson,
-      };
-      const req = admGeoJsonMetadata
-        ? geojsonStore.put(geoJson)
-        : geojsonStore.add(geoJson);
-      req.onsuccess = () => {
-        resolve();
+        req = admGeoJsonMetadata
+          ? metadataStore.put(payload)
+          : metadataStore.add(payload);
+        req.onsuccess = () => {
+          const geoJson: AdmGeojsonClientCacheItem = {
+            admLevelCode: payload.admLevelCode,
+            geojson: payload.geojson,
+          };
+          const req = admGeoJsonMetadata
+            ? geojsonStore.put(geoJson)
+            : geojsonStore.add(geoJson);
+          req.onsuccess = () => {
+            resolve();
+          };
+          req.onerror = () => {
+            reject(req.error);
+          };
+        };
+        req.onerror = () => {
+          reject(req.error);
+        };
       };
       req.onerror = () => {
         reject(req.error);

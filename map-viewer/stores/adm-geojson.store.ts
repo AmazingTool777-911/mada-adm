@@ -215,7 +215,7 @@ export class AdmGeoJsonStore {
       const cachedMetadata = this.cachedMetadata.value.find((m) =>
         m.admLevelCode === admLevelCode
       );
-      return cachedMetadata && cachedMetadata.version <
+      return cachedMetadata && cachedMetadata.version >=
           this.admGeoJsonDataVersionByCode.value!.get(admLevelCode)!;
     });
   });

@@ -1,7 +1,7 @@
 import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
 import { useComputed } from "@preact/signals";
 import { ADM_LEVEL_INDEX_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import { Download } from "lucide-preact";
+import { CheckCircle, Download } from "lucide-preact";
 import { pluralize } from "@scope/utils/string";
 
 export default function DataSourcesPageCacheStatus() {
@@ -42,6 +42,7 @@ export default function DataSourcesPageCacheStatus() {
   return admGeoJsonStore.allLayersAreUpToDate.value
     ? (
       <div role="alert" class="alert alert-success alert-soft">
+        <CheckCircle size={18} />
         <span>All the layers' caches are up to date.</span>
       </div>
     )

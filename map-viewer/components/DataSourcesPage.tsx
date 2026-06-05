@@ -1,6 +1,7 @@
-import { AdmLevelCode } from "@scope/consts/models";
+import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import AdmLevelDataSourceCard from "@/components/AdmLevelDataSourceCard.tsx";
 import DataSourcesPageCacheStatus from "@/islands/DataSourcesPageCacheStatus.tsx";
+import { ADM_GEOJSON_DATA_SOURCE_BY_CODE } from "@/consts/adm-geojson.consts.ts";
 
 export default function DataSourcesPage() {
   return (
@@ -63,51 +64,19 @@ export default function DataSourcesPage() {
               start={0}
               class="m-0 p-0 pl-4 list-decimal list-inside text-sm mb-4"
             >
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Provinces_of_Madagascar"
-                  target="_blank"
-                  class="link link-primary"
-                >
-                  Provinces
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
-                  target="_blank"
-                  class="link link-primary"
-                >
-                  Regions
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Districts_of_Madagascar"
-                  target="_blank"
-                  class="link link-primary"
-                >
-                  Districts
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://fr.wikipedia.org/wiki/Commune_(Madagascar)"
-                  target="_blank"
-                  class="link link-primary"
-                >
-                  Communes
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://fr.wikipedia.org/wiki/Fokontany"
-                  target="_blank"
-                  class="link link-primary"
-                >
-                  Fokontanys
-                </a>
-              </li>
+              {ADM_GEOJSON_DATA_SOURCE_BY_CODE.entries().toArray().map((
+                [admLevelCode, { previewURL }],
+              ) => (
+                <li key={admLevelCode}>
+                  <a
+                    href={previewURL}
+                    target="_blank"
+                    class="link link-primary capitalize"
+                  >
+                    {ADM_LEVEL_TITLE_BY_CODE.get(admLevelCode)!}s
+                  </a>
+                </li>
+              ))}
             </ol>
           </header>
           <DataSourcesPageCacheStatus />

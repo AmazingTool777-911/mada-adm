@@ -1,6 +1,6 @@
-import AdmPage from "@/components/AdmPage.tsx";
+import AdmExplorerPage from "@/components/AdmExplorerPage.tsx";
 import { define } from "../utils.ts";
 
 export default define.page(function AdministrativeBoundaries(_ctx) {
-  return <AdmPage />;
+  return <AdmExplorerPage />;
 });

@@ -1,6 +1,6 @@
 import { Partial } from "fresh/runtime";
 import { RouteConfig } from "fresh";
-import AdmPage from "@/components/AdmPage.tsx";
+import AdmExplorerPage from "@/components/AdmExplorerPage.tsx";
 import { define } from "../../utils.ts";
 
 // We only want to render the content, so disable
@@ -14,7 +14,7 @@ export const config: RouteConfig = {
 export default define.page(function AdministrativeBoundaries(_ctx) {
   return (
     <Partial name="route-page">
-      <AdmPage />
+      <AdmExplorerPage />
     </Partial>
   );
 });

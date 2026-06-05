@@ -57,7 +57,9 @@ export default define.layout(({ Component, url }) => {
           <nav>
             <ul class="flex flex-col list-none p-0 m-0 gap-x-0">
               <li>
-                <SidebarAdmBoundariesLink isActive={isActive("/adm")} />
+                <SidebarAdmBoundariesLink
+                  isActive={isActive("/adm-explorer")}
+                />
               </li>
               <li>
                 <SidebarPinsLink isActive={isActive("/pins")} />

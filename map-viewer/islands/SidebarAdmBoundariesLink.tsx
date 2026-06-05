@@ -1,4 +1,4 @@
-import { Landmark } from "lucide-preact";
+import { Search } from "lucide-preact";
 import SidebarNavLink from "@/islands/SidebarNavLink.tsx";
 
 export type SidebarAdmBoundariesLinkProps = {
@@ -10,13 +10,13 @@ export default function SidebarAdmBoundariesLink({
 }: SidebarAdmBoundariesLinkProps) {
   return (
     <SidebarNavLink
-      href="/adm"
-      fPartial="/partials/adm"
-      Icon={Landmark}
+      href="/adm-explorer"
+      fPartial="/partials/adm-explorer"
+      Icon={Search}
       isActive={isActive}
-      tooltip="Administrative boundaries"
+      tooltip="Administrative explorer"
     >
-      ADM boundaries
+      ADM explorer
     </SidebarNavLink>
   );
 }

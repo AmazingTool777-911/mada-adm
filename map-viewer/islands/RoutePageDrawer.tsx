@@ -120,7 +120,7 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
           className="duration-300 h-full max-h-full overflow-y-hidden"
           style={{ opacity: appLayoutStore.sidebarIsOpen.value ? "1" : "0" }}
         >
-          <div class="pt-8 sm:pt-5 px-3 lg:px-4 pb-4">
+          <div class="pt-8 sm:pt-5 px-3 lg:px-4 pb-4 relative">
             {children}
           </div>
         </div>

@@ -1,4 +1,5 @@
 import AdmExplorerPageCountsPills from "@/islands/AdmExplorerPageCountsPills.tsx";
+import AdmExplorerPageSearchModeTabs from "@/islands/AdmExplorerPageSearchModeTabs.tsx";
 
 export default function AdmPage() {
   return (
@@ -10,23 +11,58 @@ export default function AdmPage() {
           Madagascar, from major <strong>provinces</strong> down to localized
           {" "}
           <strong>fokontanys</strong>. Use the tools below to check{" "}
-          <strong>total counts</strong>{" "}
+          <a
+            href="#territory-distribution-summary-title"
+            class="link link-primary"
+          >
+            total counts
+          </a>{" "}
           or look up specific territories using our{" "}
-          <strong>flexible search modes</strong>.
+          <a href="#select-search-mode-title" class="link link-primary">
+            flexible search modes
+          </a>.
         </p>
       </header>
       <section
         aria-labelledby="territory-distribution-summary-title"
+        aria-describedby="territory-distribution-summary-description"
         data-theme="adm"
+        class="mb-5"
       >
-        <h2 id="territory-distribution-summary-title" class="font-bold mb-2">
+        <h3 id="territory-distribution-summary-title" class="font-bold mb-2">
           Territory Distribution Summary
-        </h2>
-        <p className="text-base-content/90 text-sm mb-4">
+        </h3>
+        <p id="territory-distribution-summary-description" class="text-sm mb-3">
           A high-level overview of the total recorded administrative divisions
           currently mapped across Madagascar.
         </p>
         <AdmExplorerPageCountsPills />
+      </section>
+      <section
+        aria-labelledby="select-search-mode-title"
+        aria-describedby="select-search-mode-description"
+      >
+        <h2 id="select-search-mode-title" class="font-bold mb-2">
+          Select your search mode
+        </h2>
+        <p
+          id="select-search-mode-description"
+          class="text-base-content/90 text-sm mb-2"
+        >
+          Choose how you want to explore the data hierarchy.
+        </p>
+        <ul class="text-sm pl-4 list-disc space-y-1 mb-2">
+          <li>
+            <strong>Global Level Filtering</strong>: Pick a starting
+            administrative tier and search for any territory at or beneath that
+            level.
+          </li>
+          <li>
+            <strong>Hierarchical Cascade</strong>: Drill down sequentially from
+            Province to Fokontany to explore precise nested relationships.
+          </li>
+        </ul>
+        <AdmExplorerPageSearchModeTabs />
       </section>
     </main>
   );

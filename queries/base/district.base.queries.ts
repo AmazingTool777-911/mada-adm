@@ -15,7 +15,10 @@ import type {
 } from "@scope/queries/types";
 import { AdmTableBaseQueries } from "./adm-table.base.queries.ts";
 import type { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
-import { ProvinceForeignKeyNotRepeatedError } from "../helpers/mada-adm-config-conflict.helper.ts";
+import {
+  GeoJsonFieldNotSupportedError,
+  ProvinceForeignKeyNotRepeatedError,
+} from "../helpers/mada-adm-config-conflict.helper.ts";
 
 export abstract class DistrictBaseQueries extends AdmTableBaseQueries
   implements DistrictQueries {
@@ -37,10 +40,20 @@ export abstract class DistrictBaseQueries extends AdmTableBaseQueries
     options?: GetDistrictByIdOptions,
   ): MaybePromise<District | null>;
 
-  abstract getByPointCoordinates(
-    id: PointCoordinates,
+  abstract _getByPointCoordinates(
+    coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
   ): MaybePromise<District | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
+  ): MaybePromise<District | null> {
+    if (!this.config.hasGeojson) {
+      throw new GeoJsonFieldNotSupportedError();
+    }
+    return this._getByPointCoordinates(coordinates, options);
+  }
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,

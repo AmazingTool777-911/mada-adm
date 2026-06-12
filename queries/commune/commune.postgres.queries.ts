@@ -124,7 +124,7 @@ export class CommunePostgresQueries extends CommuneBaseQueries
     }
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetCommuneByPointCoordinatesOptions,
   ): Promise<Commune | null> {

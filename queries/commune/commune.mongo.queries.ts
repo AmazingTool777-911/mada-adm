@@ -105,7 +105,7 @@ export class CommuneMongoQueries extends CommuneBaseQueries {
     return mapCommuneBsonToEntity(commune);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetCommuneByPointCoordinatesOptions,
   ): Promise<Commune | null> {

@@ -109,7 +109,7 @@ export class DistrictMySQLQueries extends DistrictBaseQueries {
     return mapDistrictSnakeToCamel(rows[0]);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
   ): Promise<District | null> {

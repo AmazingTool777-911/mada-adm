@@ -16,9 +16,9 @@ http:
 runtime:
   variables:
     - name: LAT
-      value: "-18.894006"
+      value: ""
     - name: LNG
-      value: "47.558926"
+      value: ""
 
 settings:
   encodeUrl: true

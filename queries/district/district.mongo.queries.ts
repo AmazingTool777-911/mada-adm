@@ -101,7 +101,7 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
     return mapDistrictBsonToEntity(district);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
   ): Promise<District | null> {

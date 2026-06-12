@@ -103,7 +103,7 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
     return mapDistrictSnakeToCamel(rows[0]);
   }
 
-  getByPointCoordinates(
+  _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
   ): District | null {

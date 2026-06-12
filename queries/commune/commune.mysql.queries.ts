@@ -114,7 +114,7 @@ export class CommuneMySQLQueries extends CommuneBaseQueries {
     return mapCommuneSnakeToCamel(rows[0]);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetCommuneByPointCoordinatesOptions,
   ): Promise<Commune | null> {

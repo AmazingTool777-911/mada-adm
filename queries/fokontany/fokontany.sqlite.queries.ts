@@ -113,7 +113,7 @@ export class FokontanySqliteQueries extends FokontanyBaseQueries {
     return mapFokontanySnakeToCamel(rows[0]);
   }
 
-  getByPointCoordinates(
+  _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetFokontanyByPointCoordinatesOptions,
   ): Fokontany | null {

@@ -108,7 +108,7 @@ export class CommuneSqliteQueries extends CommuneBaseQueries {
     return mapCommuneSnakeToCamel(rows[0]);
   }
 
-  getByPointCoordinates(
+  _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetCommuneByPointCoordinatesOptions,
   ): Commune | null {

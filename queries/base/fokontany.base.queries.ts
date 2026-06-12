@@ -17,6 +17,7 @@ import { AdmTableBaseQueries } from "./adm-table.base.queries.ts";
 import type { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import {
   ForeignKeysNotRepeatedError,
+  GeoJsonFieldNotSupportedError,
   ProvinceForeignKeyNotRepeatedError,
 } from "../helpers/mada-adm-config-conflict.helper.ts";
 
@@ -40,10 +41,20 @@ export abstract class FokontanyBaseQueries extends AdmTableBaseQueries
     options?: GetFokontanyByIdOptions,
   ): MaybePromise<Fokontany | null>;
 
-  abstract getByPointCoordinates(
+  abstract _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetFokontanyByPointCoordinatesOptions,
   ): MaybePromise<Fokontany | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetFokontanyByPointCoordinatesOptions,
+  ): MaybePromise<Fokontany | null> {
+    if (!this.config.hasGeojson) {
+      throw new GeoJsonFieldNotSupportedError();
+    }
+    return this._getByPointCoordinates(coordinates, options);
+  }
 
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyFokontanysPaginationCursor>,

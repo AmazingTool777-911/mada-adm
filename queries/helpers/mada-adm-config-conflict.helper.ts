@@ -2,11 +2,11 @@ import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import type { MadaAdmConfigValues } from "@scope/types/models";
 
 export type MadaAdmConfigConflictErrorData = {
-  current: {
+  current?: {
     admLevel: AdmLevelCode;
     title: string;
   };
-  parent: {
+  parent?: {
     admLevel: AdmLevelCode;
     title: string;
   };
@@ -67,6 +67,19 @@ export class ProvinceForeignKeyNotRepeatedError
           title: ADM_LEVEL_TITLE_BY_CODE.get(AdmLevelCode.PROVINCE)!,
         },
         config: { isProvinceFkRepeated: false },
+      },
+      message,
+    );
+  }
+}
+
+export class GeoJsonFieldNotSupportedError extends MadaAdmConfigConflictError {
+  constructor() {
+    const message =
+      `Cannot operate on the geojson field because the geojson field is not supported in the database configuration.`;
+    super(
+      {
+        config: { hasGeojson: false },
       },
       message,
     );

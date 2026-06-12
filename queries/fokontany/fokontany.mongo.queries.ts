@@ -109,7 +109,7 @@ export class FokontanyMongoQueries extends FokontanyBaseQueries {
     return mapFokontanyBsonToEntity(fokontany);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetFokontanyByPointCoordinatesOptions,
   ): Promise<Fokontany | null> {

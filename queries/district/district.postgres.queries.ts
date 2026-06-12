@@ -115,7 +115,7 @@ export class DistrictPostgresQueries extends DistrictBaseQueries
     return mapDistrictSnakeToCamel(result.rows[0]);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
   ): Promise<District | null> {

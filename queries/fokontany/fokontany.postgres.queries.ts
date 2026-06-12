@@ -129,7 +129,7 @@ export class FokontanyPostgresQueries extends FokontanyBaseQueries
     }
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetFokontanyByPointCoordinatesOptions,
   ): Promise<Fokontany | null> {

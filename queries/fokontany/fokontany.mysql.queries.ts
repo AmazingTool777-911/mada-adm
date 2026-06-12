@@ -119,7 +119,7 @@ export class FokontanyMySQLQueries extends FokontanyBaseQueries {
     return mapFokontanySnakeToCamel(rows[0]);
   }
 
-  async getByPointCoordinates(
+  async _getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetFokontanyByPointCoordinatesOptions,
   ): Promise<Fokontany | null> {

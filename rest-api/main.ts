@@ -452,7 +452,7 @@ app.get(
     const excludeGeoJSON = !includeGeoJSON ||
       (!!includeGeoJSON && includeGeoJSON === "0");
     const districtQueries = c.get("districtQueries");
-    const district = await districtQueries.getByPointCoordinates(
+    const district = await districtQueries._getByPointCoordinates(
       coordinates,
       { excludeGeoJSON },
     );
@@ -489,7 +489,7 @@ app.get(
     const excludeGeoJSON = !includeGeoJSON ||
       (!!includeGeoJSON && includeGeoJSON === "0");
     const communeQueries = c.get("communeQueries");
-    const commune = await communeQueries.getByPointCoordinates(
+    const commune = await communeQueries._getByPointCoordinates(
       coordinates,
       { excludeGeoJSON },
     );
@@ -526,7 +526,7 @@ app.get(
     const excludeGeoJSON = !includeGeoJSON ||
       (!!includeGeoJSON && includeGeoJSON === "0");
     const fokontanyQueries = c.get("fokontanyQueries");
-    const fokontany = await fokontanyQueries.getByPointCoordinates(
+    const fokontany = await fokontanyQueries._getByPointCoordinates(
       coordinates,
       { excludeGeoJSON },
     );

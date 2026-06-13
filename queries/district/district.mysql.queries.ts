@@ -7,7 +7,10 @@ import type {
 import type { MySQLDbConnection } from "@scope/adapters/mysql";
 import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
+import { AdmLevelCode } from "@scope/consts/models";
+import { getAdmTableName } from "@scope/helpers/db";
 import type {
+  GetDistrictByFokontanyGeoJsonOptions,
   GetDistrictByIdOptions,
   GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
@@ -124,6 +127,32 @@ export class DistrictMySQLQueries extends DistrictBaseQueries {
     const results = await this.#db.pool.execute(
       sql,
       [`POINT(${coordinates[1]} ${coordinates[0]})`],
+    );
+    const rows = results[0] as DistrictSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(rows[0]);
+  }
+
+  async _getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
+  ): Promise<District | null> {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const fokontanyTable = getAdmTableName(
+      AdmLevelCode.FOKONTANY,
+      this.config,
+      this.dbType,
+    );
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE ST_Contains(geojson, (SELECT geojson FROM ${fokontanyTable} WHERE id = ?))
+    `;
+    const results = await this.#db.pool.execute(
+      sql,
+      [BigInt(Number(fokontanyId))],
     );
     const rows = results[0] as DistrictSnakeCased[];
     if (rows.length === 0) return null;

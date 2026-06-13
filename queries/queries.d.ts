@@ -80,6 +80,10 @@ export type GetDistrictByPointCoodrdinatesOptions = {
   excludeGeoJSON?: boolean;
 };
 
+export type GetDistrictByFokontanyGeoJsonOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface DistrictQueries {
   getManyCursorPaginated(
     paginationParams: CursorPaginationParams<GetManyDistrictsPaginationCursor>,
@@ -96,6 +100,11 @@ export interface DistrictQueries {
   getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
+  ): MaybePromise<District | null>;
+
+  getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
   ): MaybePromise<District | null>;
 }
 

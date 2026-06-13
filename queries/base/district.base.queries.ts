@@ -7,6 +7,7 @@ import type {
   CursorPaginatedResult,
   CursorPaginationParams,
   DistrictQueries,
+  GetDistrictByFokontanyGeoJsonOptions,
   GetDistrictByIdOptions,
   GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
@@ -45,6 +46,11 @@ export abstract class DistrictBaseQueries extends AdmTableBaseQueries
     options?: GetDistrictByPointCoodrdinatesOptions,
   ): MaybePromise<District | null>;
 
+  abstract _getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
+  ): MaybePromise<District | null>;
+
   getByPointCoordinates(
     coordinates: PointCoordinates,
     options?: GetDistrictByPointCoodrdinatesOptions,
@@ -53,6 +59,16 @@ export abstract class DistrictBaseQueries extends AdmTableBaseQueries
       throw new GeoJsonFieldNotSupportedError();
     }
     return this._getByPointCoordinates(coordinates, options);
+  }
+
+  getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
+  ): MaybePromise<District | null> {
+    if (!this.config.hasGeojson) {
+      throw new GeoJsonFieldNotSupportedError();
+    }
+    return this._getByFokontanyGeoJson(fokontanyId, options);
   }
 
   getManyCursorPaginated(

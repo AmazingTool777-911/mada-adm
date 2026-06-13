@@ -9,7 +9,11 @@ import type {
 import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapDistrictBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
+import { incrementLastCharacterCodePoint } from "@scope/utils/string";
+import { getAdmTableName } from "@scope/helpers/db";
+import { AdmLevelCode } from "@scope/consts/models";
 import type {
+  GetDistrictByFokontanyGeoJsonOptions,
   GetDistrictByIdOptions,
   GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
@@ -19,7 +23,6 @@ import type {
 import { DistrictBaseQueries } from "../base/district.base.queries.ts";
 import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
 import { getManyDistrictPaginationCursorSchema } from "../schemas/district.schemas.ts";
-import { incrementLastCharacterCodePoint } from "@scope/utils/string";
 
 export class DistrictMongoQueries extends DistrictBaseQueries {
   #db!: MongoDbConnection;
@@ -113,6 +116,35 @@ export class DistrictMongoQueries extends DistrictBaseQueries {
               type: "Point",
               coordinates,
             },
+          },
+        },
+      });
+    if (!district) return null;
+    options?.excludeGeoJSON && district.geojson && delete district.geojson;
+    return mapDistrictBsonToEntity(district);
+  }
+
+  async _getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
+  ): Promise<District | null> {
+    const fokontanyCollection = getAdmTableName(
+      AdmLevelCode.FOKONTANY,
+      this.config,
+      this.dbType,
+    );
+    const fokontany = await this.#db.db
+      .collection(fokontanyCollection)
+      .findOne(
+        { _id: new ObjectId(fokontanyId) },
+      );
+    if (!fokontany || !fokontany.geojson) return null;
+
+    const district = await this.collection
+      .findOne({
+        geojson: {
+          $geoWithin: {
+            $geometry: fokontany.geojson,
           },
         },
       });

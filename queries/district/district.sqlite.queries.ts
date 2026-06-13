@@ -7,7 +7,10 @@ import type {
 import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
+import { getAdmTableName } from "@scope/helpers/db";
+import { AdmLevelCode } from "@scope/consts/models";
 import type {
+  GetDistrictByFokontanyGeoJsonOptions,
   GetDistrictByIdOptions,
   GetDistrictByPointCoodrdinatesOptions,
   GetManyDistrictsPaginationCursor,
@@ -118,6 +121,30 @@ export class DistrictSqliteQueries extends DistrictBaseQueries {
     const rows = this.#db.client
       .prepare(sql)
       .all(...coordinates) as DistrictSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(rows[0]);
+  }
+
+  _getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
+  ): District | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const fokontanyTable = getAdmTableName(
+      AdmLevelCode.FOKONTANY,
+      this.config,
+      this.dbType,
+    );
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE Contains(geojson, (SELECT geojson FROM ${fokontanyTable} WHERE id = ?))
+    `;
+    const rows = this.#db.client
+      .prepare(sql)
+      .all(Number(fokontanyId)) as DistrictSnakeCased[];
     if (rows.length === 0) return null;
     return mapDistrictSnakeToCamel(rows[0]);
   }

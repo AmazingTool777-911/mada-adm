@@ -1,4 +1,5 @@
 export enum ResponseErrorCode {
+  InvalidQueryParam = "INVALID_QUERY_PARAM",
   ValidationError = "VALIDATION_ERROR",
   MadaAdmConfigConflict = "MADA_ADM_CONFIG_CONFLICT",
   UnexpectedError = "UNEXPECTED_ERROR",

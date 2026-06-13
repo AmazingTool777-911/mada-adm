@@ -13,12 +13,16 @@ import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import { MadaAdmConfigConflictError } from "@scope/queries/helpers";
+import type { District } from "@scope/types/models";
+import type { PointCoordinates } from "@scope/queries/types";
+import {
+  ForeignKeysNotRepeatedError,
+  MadaAdmConfigConflictError,
+} from "@scope/queries/helpers";
 import { ResponseErrorCode } from "./consts/response-error-code.const.ts";
 import { entityIdSchema } from "./schemas/request.schemas.ts";
 import { AppHTTPException } from "./errors/app-http-exception.error.ts";
 import { parseLimitQueryParam } from "./helpers/pagination.helper.ts";
-import type { PointCoordinates } from "@scope/queries/types";
 
 await getDbConnection();
 
@@ -431,6 +435,72 @@ app.get(
 );
 
 app.get(
+  "/api/fokontanys/:id/district",
+  zValidator("param", z.object({ id: entityIdSchema })),
+  zValidator(
+    "query",
+    z.object({
+      include_geojson: z.enum(["0", "1"]).optional(),
+      strategy: z.enum(["fk", "geojson"]).optional(),
+    }),
+  ),
+  injectQueriesMiddleware("fokontanyQueries", "districtQueries"),
+  async (c) => {
+    const id = c.req.param("id");
+    const includeGeoJSON = c.req.query("include_geojson");
+    const excludeGeoJSON = !includeGeoJSON ||
+      (!!includeGeoJSON && includeGeoJSON === "0");
+    const fokontanyQueries = c.get("fokontanyQueries");
+    const fokontany = await fokontanyQueries.getById(id, {
+      excludeGeoJSON,
+    });
+    if (!fokontany) {
+      throw new AppHTTPException(
+        ResponseErrorCode.FokontanyNotFound,
+        StatusCodes.NOT_FOUND,
+        {
+          message: "Fokontany not found",
+        },
+      );
+    }
+    const districtQueries = c.get("districtQueries");
+    const strategy = c.req.query("strategy") ?? "fk";
+    let district: District | null;
+    if (strategy === "fk") {
+      if (!fokontany.districtId) {
+        throw new ForeignKeysNotRepeatedError(
+          AdmLevelCode.FOKONTANY,
+          AdmLevelCode.DISTRICT,
+        );
+      }
+      district = await districtQueries.getById(fokontany.districtId, {
+        excludeGeoJSON,
+      });
+    } else if (strategy === "geojson") {
+      district = await districtQueries.getByFokontanyGeoJson(fokontany.id, {
+        excludeGeoJSON,
+      });
+    } else {
+      throw new AppHTTPException(
+        ResponseErrorCode.InvalidQueryParam,
+        StatusCodes.BAD_REQUEST,
+        {
+          message: `Unknown strategy "${strategy}" query param`,
+        },
+      );
+    }
+    if (!district) {
+      throw new AppHTTPException(
+        ResponseErrorCode.DistrictNotFound,
+        StatusCodes.NOT_FOUND,
+        { message: "District not found" },
+      );
+    }
+    return c.json(district, StatusCodes.OK);
+  },
+);
+
+app.get(
   "/api/locations/:lat/:lng/district",
   zValidator(
     "param",
@@ -452,7 +522,7 @@ app.get(
     const excludeGeoJSON = !includeGeoJSON ||
       (!!includeGeoJSON && includeGeoJSON === "0");
     const districtQueries = c.get("districtQueries");
-    const district = await districtQueries._getByPointCoordinates(
+    const district = await districtQueries.getByPointCoordinates(
       coordinates,
       { excludeGeoJSON },
     );
@@ -489,7 +559,7 @@ app.get(
     const excludeGeoJSON = !includeGeoJSON ||
       (!!includeGeoJSON && includeGeoJSON === "0");
     const communeQueries = c.get("communeQueries");
-    const commune = await communeQueries._getByPointCoordinates(
+    const commune = await communeQueries.getByPointCoordinates(
       coordinates,
       { excludeGeoJSON },
     );
@@ -526,7 +596,7 @@ app.get(
     const excludeGeoJSON = !includeGeoJSON ||
       (!!includeGeoJSON && includeGeoJSON === "0");
     const fokontanyQueries = c.get("fokontanyQueries");
-    const fokontany = await fokontanyQueries._getByPointCoordinates(
+    const fokontany = await fokontanyQueries.getByPointCoordinates(
       coordinates,
       { excludeGeoJSON },
     );

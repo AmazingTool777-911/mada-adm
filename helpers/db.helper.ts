@@ -288,7 +288,7 @@ export function getAdmTableName(
   admLevel: AdmLevelCode,
   config: MadaAdmConfigValues,
   dbType: DbType,
-) {
+): string {
   const baseName = `${ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!}s`;
   return dbType === DbType.MongoDB
     ? prefixWithSnakeCase(config.tablesPrefix, baseName)

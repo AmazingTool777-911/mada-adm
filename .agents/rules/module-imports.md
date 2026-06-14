@@ -23,7 +23,7 @@ Imports must be ordered into the following categories, from top to bottom:
 
 2. **Remote Standard Libraries (JSR @std)**: Standard libraries from JSR.
    ```ts
-   import { assert } from "jsr:@std/assert";
+   import { assert } from "@std/assert";
    import { copy } from "jsr:@std/io";
    ```
 

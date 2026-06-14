@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { decodeToJsonObject, encodeToBase64 } from "./json-base64.helper.ts";
 
 Deno.test("json-base64 helper", async (t) => {

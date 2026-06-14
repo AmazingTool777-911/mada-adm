@@ -139,3 +139,16 @@ export function pluralize(
   if (plural.startsWith("+")) return word + plural.slice(1);
   return plural;
 }
+
+/**
+ * Checks if a string is in snake_case.
+ * Rules:
+ * - Must contain at least one underscore
+ * - Only lowercase letters, digits, and underscores allowed
+ * - Cannot start or end with an underscore
+ * - No consecutive underscores
+ */
+export function isSnakeCase(value: string): boolean {
+  if (!value.includes("_")) return false;
+  return /^[a-z0-9]+(_[a-z0-9]+)+$/.test(value);
+}

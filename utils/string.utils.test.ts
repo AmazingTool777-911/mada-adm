@@ -2,6 +2,7 @@ import { assertEquals } from "@std/assert";
 
 import {
   camelToSnakeCase,
+  isSnakeCase,
   prefixWithCamelCase,
   prefixWithSnakeCase,
 } from "./string.utils.ts";
@@ -44,4 +45,47 @@ Deno.test("StringUtils - camelToSnakeCase", () => {
   assertEquals(camelToSnakeCase("simple"), "simple");
   assertEquals(camelToSnakeCase("ID"), "id");
   assertEquals(camelToSnakeCase(""), "");
+});
+
+Deno.test("isSnakeCase", async (t) => {
+  await t.step("returns true for valid snake_case strings", () => {
+    assertEquals(isSnakeCase("hello_world"), true);
+    assertEquals(isSnakeCase("foo_bar_baz"), true);
+    assertEquals(isSnakeCase("my_variable_name"), true);
+    assertEquals(isSnakeCase("with_123_numbers"), true);
+    assertEquals(isSnakeCase("a_b"), true);
+  });
+
+  await t.step("returns false when no underscore is present", () => {
+    assertEquals(isSnakeCase("helloworld"), false);
+    assertEquals(isSnakeCase("camelCase"), false);
+    assertEquals(isSnakeCase("kebab-case"), false);
+    assertEquals(isSnakeCase(""), false);
+  });
+
+  await t.step(
+    "returns false for strings starting or ending with underscore",
+    () => {
+      assertEquals(isSnakeCase("_hello_world"), false);
+      assertEquals(isSnakeCase("hello_world_"), false);
+      assertEquals(isSnakeCase("_hello_"), false);
+    },
+  );
+
+  await t.step("returns false for consecutive underscores", () => {
+    assertEquals(isSnakeCase("hello__world"), false);
+    assertEquals(isSnakeCase("foo___bar"), false);
+  });
+
+  await t.step("returns false for uppercase letters", () => {
+    assertEquals(isSnakeCase("Hello_World"), false);
+    assertEquals(isSnakeCase("HELLO_WORLD"), false);
+    assertEquals(isSnakeCase("hello_World"), false);
+  });
+
+  await t.step("returns false for special characters", () => {
+    assertEquals(isSnakeCase("hello_world!"), false);
+    assertEquals(isSnakeCase("hello_wörld"), false);
+    assertEquals(isSnakeCase("hello_world world"), false);
+  });
 });

@@ -1,4 +1,4 @@
-import { createMiddleware } from "hono/factory";
+import { createMiddleware } from "@hono/hono/factory";
 
 import { injectMadaAdmConfigDML } from "@scope/db";
 import type { MadaAdmConfig } from "@scope/types/models";

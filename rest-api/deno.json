@@ -5,7 +5,6 @@
   "imports": {
     "@hono/zod-validator": "jsr:@hono/zod-validator@^0.8.0",
     "@zod/zod": "jsr:@zod/zod@^4.4.3",
-    "hono": "jsr:@hono/hono@^4.12.21",
     "http-status-codes": "npm:http-status-codes@^2.3.0"
   },
   "tasks": {
@@ -13,6 +12,12 @@
   },
   "compilerOptions": {
     "jsx": "precompile",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "strict": true
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
   }
 }

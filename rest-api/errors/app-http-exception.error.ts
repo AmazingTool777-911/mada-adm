@@ -1,4 +1,4 @@
-import { HTTPException } from "hono/http-exception";
+import { HTTPException } from "@hono/hono/http-exception";
 
 import type { ResponseErrorCode } from "../consts/response-error-code.const.ts";
 

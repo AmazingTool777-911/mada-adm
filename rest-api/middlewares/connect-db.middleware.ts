@@ -1,4 +1,4 @@
-import { createMiddleware } from "hono/factory";
+import { createMiddleware } from "@hono/hono/factory";
 
 import type { RestApiEnv } from "../rest-api.d.ts";
 import { getDbConnection } from "../connect-db.ts";

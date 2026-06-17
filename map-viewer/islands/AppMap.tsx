@@ -18,6 +18,8 @@ import AppMapAdmGeoJsonDownloadModal from "@/islands/AppMapAdmGeoJsonDownloadMod
 import { AdmGeojsonMetadataClientCacheItem } from "@/types/cache.d.ts";
 import { injectAppMapStore } from "@/stores/app-map.store.ts";
 import { LayerSwitcherControl } from "@/helpers/map-layer-switch-control.helper.ts";
+import { injectAdmEntityApi } from "@/api/adm-entity.api.ts";
+import { injectApiStore } from "@/stores/api.store.ts";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -209,6 +211,27 @@ export default function AppMap(props: AppMapProps) {
       delete download.geojson; // Free the reference to the geojson data from memory
     }
   }
+
+  const apiStore = injectApiStore();
+
+  const admEntityApi = injectAdmEntityApi();
+
+  useEffect(() => {
+    admEntityApi.getAllInBatch()
+      .then((batch) => {
+        const [adm0, adm1, adm2, adm3, adm4] = batch;
+        apiStore.provinces.value = adm0.provinces;
+        apiStore.regions.value = adm1.regions;
+        apiStore.districtsAreLoaded.value = true;
+        apiStore.districts.value = adm2.paginatedDistricts.records;
+        apiStore.communesAreLoaded.value = true;
+        apiStore.communes.value = adm3.paginatedCommunes.records;
+        apiStore.fokontanysAreLoaded.value = true;
+        apiStore.fokontanys.value = adm4.paginatedFokontanys.records;
+        apiStore.initialAdmEntitiesAreLoaded.value = true;
+      })
+      .catch((e) => console.log(e));
+  }, []);
 
   return (
     <>

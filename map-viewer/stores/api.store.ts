@@ -3,11 +3,16 @@ import {
   Commune,
   District,
   Fokontany,
+  MadaAdmConfig,
   Province,
   Region,
 } from "@scope/types/models";
 
 export class ApiStore {
+  readonly config = signal<MadaAdmConfig | null>(null);
+
+  readonly initialAdmEntitiesAreLoaded = signal(false);
+
   readonly provinces = signal<Province[]>([]);
   readonly provinceByName = computed(() => {
     return new Map(this.provinces.value.map((p) => [p.province, p]));

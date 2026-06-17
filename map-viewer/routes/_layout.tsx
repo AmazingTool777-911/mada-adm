@@ -1,16 +1,26 @@
 import { Partial } from "fresh/runtime";
 import { define } from "../utils.ts";
 import { AdmLevelCode } from "@scope/consts/models";
+import { MadaAdmConfig } from "@scope/types/models";
 import AppMap from "@/islands/AppMap.tsx";
+import ViewConfigModal from "@/components/ViewConfigModal.tsx";
 import AppLogoLink from "@/islands/AppLogoLink.tsx";
 import SidebarAdmBoundariesLink from "@/islands/SidebarAdmBoundariesLink.tsx";
 import SidebarDataSourcesLink from "@/islands/SidebarDataSourcesLink.tsx";
 import SidebarPinsLink from "@/islands/SidebarPinsLink.tsx";
-import ViewConfigModal from "@/islands/ViewConfigModal.tsx";
 import RoutePageDrawer from "@/islands/RoutePageDrawer.tsx";
 import AppToasts from "@/islands/AppToasts.tsx";
+import { injectMadaAdmConfigApi } from "@/api/mada-adm-config.api.ts";
 
-export default define.layout(({ Component, url }) => {
+export default define.layout(async ({ Component, url }) => {
+  let madaAdmConfig: MadaAdmConfig | null = null;
+  let madaAdmConfigLoadingError: string | null = null;
+  try {
+    madaAdmConfig = await injectMadaAdmConfigApi().get();
+  } catch (error) {
+    madaAdmConfigLoadingError = (error as Error).message;
+  }
+
   const admGeojsonDataVersionByCode = new Map<AdmLevelCode, number>([
     [
       AdmLevelCode.PROVINCE,
@@ -72,7 +82,10 @@ export default define.layout(({ Component, url }) => {
             </ul>
           </nav>
           <div>
-            <ViewConfigModal />
+            <ViewConfigModal
+              config={madaAdmConfig}
+              configLoadingError={madaAdmConfigLoadingError}
+            />
           </div>
         </header>
       </div>

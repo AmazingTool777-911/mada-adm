@@ -1,4 +1,5 @@
 import { Hono } from "@hono/hono";
+import { cors } from "@hono/hono/cors";
 import { StatusCodes } from "http-status-codes";
 
 import { connectDbMiddleware } from "./middlewares/connect-db.middleware.ts";
@@ -19,6 +20,7 @@ await getDbConnection();
 const app = new Hono<RestApiEnv>()
   .use(connectDbMiddleware)
   .use(loadConfigMiddleware)
+  .use(cors())
   .get("/", (c) => {
     return c.json({});
   })

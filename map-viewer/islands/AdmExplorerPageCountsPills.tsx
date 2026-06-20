@@ -20,7 +20,7 @@ export default function AdmExplorerPageCountsPill() {
   const appMapStore = injectAppMapStore(admGeoJsonClientCache, admGeoJsonStore);
 
   async function handleClick(admLevelCode: AdmLevelCode) {
-    await appMapStore.enableAdmGeoJsonLayer(admLevelCode);
+    await appMapStore.enableAdmGeoJsonLayer(admLevelCode, { fitBbox: true });
   }
 
   return (

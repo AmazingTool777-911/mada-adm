@@ -1,6 +1,5 @@
 import { Signal } from "@preact/signals";
 import maplibregl from "maplibre-gl";
-import { bbox as bboxFn } from "@turf/bbox";
 import {
   ADM_LEVEL_CODES_INDEXED,
   ADM_LEVEL_TITLE_BY_CODE,
@@ -20,6 +19,10 @@ import {
 } from "@/consts/map.consts.ts";
 import { GeoJSONFeatureCollection } from "@scope/types/utils";
 import { tailwindCssColorVarToRgb } from "@/helpers/css-vars.helper.ts";
+import type {
+  GeometryCalculationWorkerMessageData,
+  GeometryCalculationWorkerResponseData,
+} from "@/islands/geometry-bbox-calculator.worker.ts";
 
 export type LayerSwitcherControlOptions = {
   onAdmGeoJsonLayerCheckoxChange: (
@@ -119,7 +122,51 @@ export class LayerSwitcherControl implements maplibregl.IControl {
     return this.map.getSource(source) !== undefined;
   }
 
-  addStaticAdmGeoJsonLayer(
+  private async calculateGeoJsonBbox(
+    geojson: GeoJSONFeatureCollection<Record<string, unknown>>,
+  ) {
+    const worker = new Worker(
+      new URL(
+        "../islands/geometry-bbox-calculator.worker.ts",
+        import.meta.url,
+      ),
+      { type: "module" },
+    );
+    const id = Date.now().toString();
+    const data: GeometryCalculationWorkerMessageData = {
+      id,
+      geojson,
+    };
+    worker.postMessage(data);
+    const bbox = await new Promise<
+      GeometryCalculationWorkerResponseData["bbox"]
+    >((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        worker.terminate();
+        reject(new Error("Geometry calculation timeout"));
+      }, 10000);
+      worker.onmessage = (e) => {
+        const response = e.data as GeometryCalculationWorkerResponseData;
+        if (response.id === data.id) {
+          clearTimeout(timeout);
+          resolve(response.bbox);
+        }
+      };
+    });
+    return bbox as maplibregl.LngLatBoundsLike;
+  }
+
+  async fitGeoJsonBbox(
+    geojson: GeoJSONFeatureCollection<Record<string, unknown>>,
+  ) {
+    const bbox = await this.calculateGeoJsonBbox(geojson);
+    this.map.fitBounds(bbox as maplibregl.LngLatBoundsLike, {
+      padding: 25,
+      duration: 1000,
+    });
+  }
+
+  async addStaticAdmGeoJsonLayer(
     admLevelCode: AdmLevelCode,
     geojson: GeoJSONFeatureCollection<Record<string, unknown>>,
     options?: AddStaticAdmGeoJsonLayerOptions,
@@ -246,11 +293,7 @@ export class LayerSwitcherControl implements maplibregl.IControl {
     }, layerId);
 
     if (fitBbox) {
-      const bbox = bboxFn(geojson);
-      this.map.fitBounds(bbox as maplibregl.LngLatBoundsLike, {
-        padding: 25,
-        duration: 1000,
-      });
+      await this.fitGeoJsonBbox(geojson);
     }
   }
 

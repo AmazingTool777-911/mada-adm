@@ -191,7 +191,7 @@ export default function AppMap(props: AppMapProps) {
       admGeoJsonStore.upsertCachedMetadata(metadata);
       if (!cachedMetadata) {
         appMapStore.checkAdmGeoJsonLayer(download.admLevelCode, true);
-        mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
+        await mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
           download.admLevelCode,
           download.geojson!,
         );
@@ -203,7 +203,7 @@ export default function AppMap(props: AppMapProps) {
         mapLayerSwitcherControlRef.current?.removeStaticAdmGeoJsonLayer(
           download.admLevelCode,
         );
-        mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
+        await mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
           download.admLevelCode,
           download.geojson!,
         );

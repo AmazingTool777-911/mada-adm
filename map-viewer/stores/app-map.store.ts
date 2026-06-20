@@ -6,6 +6,10 @@ import { AdmGeojsonMetadataClientCacheItem } from "@/types/cache.d.ts";
 import { AdmGeoJsonStore } from "@/stores/adm-geojson.store.ts";
 import { LayerSwitcherControl } from "@/helpers/map-layer-switch-control.helper.ts";
 
+export type EnableAdmGeoJsonLayerOptions = {
+  fitBbox?: boolean;
+};
+
 export class AppMapStore {
   constructor(
     private admGeoJsonClientCache: AdmGeojsonClientCache,
@@ -44,7 +48,10 @@ export class AppMapStore {
     }
   }
 
-  async enableAdmGeoJsonLayer(admLevelCode: AdmLevelCode) {
+  async enableAdmGeoJsonLayer(
+    admLevelCode: AdmLevelCode,
+    options?: EnableAdmGeoJsonLayerOptions,
+  ) {
     let admGeoJsonMetadata: AdmGeojsonMetadataClientCacheItem | null =
       this.admGeoJsonStore.cachedMetadata.value.find((metadata) =>
         metadata.admLevelCode === admLevelCode
@@ -62,7 +69,7 @@ export class AppMapStore {
       this.checkAdmGeoJsonLayer(admLevelCode, true);
       await this.admGeoJsonStore.openDownloadModal([admLevelCode]);
     } else {
-      const isFirstTimeChecked =
+      const fitBbox = options?.fitBbox ??
         this.admGeoJsonLayersCheckboxesStates.value.find((state) =>
           state.code === admLevelCode
         )!.isFirstTime;
@@ -71,17 +78,22 @@ export class AppMapStore {
       const geojsonData = await this.admGeoJsonClientCache.getGeojsonByCode(
         admGeoJsonMetadata.admLevelCode,
       );
-      if (
-        geojsonData &&
-        !this.mapLayerSwitcherControl.value?.hasStaticAdmGeoJsonLayer(
-          admGeoJsonMetadata.admLevelCode,
-        )
-      ) {
-        this.mapLayerSwitcherControl.value?.addStaticAdmGeoJsonLayer(
-          admGeoJsonMetadata.admLevelCode,
-          geojsonData.geojson,
-          { fitBbox: isFirstTimeChecked },
-        );
+      if (geojsonData) {
+        if (
+          !this.mapLayerSwitcherControl.value?.hasStaticAdmGeoJsonLayer(
+            admGeoJsonMetadata.admLevelCode,
+          )
+        ) {
+          await this.mapLayerSwitcherControl.value?.addStaticAdmGeoJsonLayer(
+            admGeoJsonMetadata.admLevelCode,
+            geojsonData.geojson,
+            { fitBbox },
+          );
+        } else if (fitBbox) {
+          await this.mapLayerSwitcherControl.value?.fitGeoJsonBbox(
+            geojsonData.geojson,
+          );
+        }
       }
     }
   }

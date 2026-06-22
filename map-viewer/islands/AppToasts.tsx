@@ -54,7 +54,7 @@ export default function AppToasts() {
         return (
           <div
             key={getToastId(toast)}
-            class={`alert ${alertType} alert-vertical md:alert-horizontal`}
+            class={`alert ${alertType} alert-vertical sm:alert-horizontal`}
           >
             <div>
               {toast.notification === "starting"

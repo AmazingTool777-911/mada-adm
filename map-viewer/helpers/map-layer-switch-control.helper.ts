@@ -19,10 +19,7 @@ import {
 } from "@/consts/map.consts.ts";
 import { GeoJSONFeatureCollection } from "@scope/types/utils";
 import { tailwindCssColorVarToRgb } from "@/helpers/css-vars.helper.ts";
-import type {
-  GeometryCalculationWorkerMessageData,
-  GeometryCalculationWorkerResponseData,
-} from "@/islands/geometry-bbox-calculator.worker.ts";
+import { fitGeoJsonBboxIntoMap } from "@/helpers/app-map.helper.ts";
 
 export type LayerSwitcherControlOptions = {
   onAdmGeoJsonLayerCheckoxChange: (
@@ -120,50 +117,6 @@ export class LayerSwitcherControl implements maplibregl.IControl {
   hasStaticAdmGeoJsonLayer(admLevelCode: AdmLevelCode) {
     const source = STATIC_ADM_GEOJSON_SOURCE_BY_CODE.get(admLevelCode)!;
     return this.map.getSource(source) !== undefined;
-  }
-
-  private async calculateGeoJsonBbox(
-    geojson: GeoJSONFeatureCollection<Record<string, unknown>>,
-  ) {
-    const worker = new Worker(
-      new URL(
-        "../islands/geometry-bbox-calculator.worker.ts",
-        import.meta.url,
-      ),
-      { type: "module" },
-    );
-    const id = Date.now().toString();
-    const data: GeometryCalculationWorkerMessageData = {
-      id,
-      geojson,
-    };
-    worker.postMessage(data);
-    const bbox = await new Promise<
-      GeometryCalculationWorkerResponseData["bbox"]
-    >((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        worker.terminate();
-        reject(new Error("Geometry calculation timeout"));
-      }, 10000);
-      worker.onmessage = (e) => {
-        const response = e.data as GeometryCalculationWorkerResponseData;
-        if (response.id === data.id) {
-          clearTimeout(timeout);
-          resolve(response.bbox);
-        }
-      };
-    });
-    return bbox as maplibregl.LngLatBoundsLike;
-  }
-
-  async fitGeoJsonBbox(
-    geojson: GeoJSONFeatureCollection<Record<string, unknown>>,
-  ) {
-    const bbox = await this.calculateGeoJsonBbox(geojson);
-    this.map.fitBounds(bbox as maplibregl.LngLatBoundsLike, {
-      padding: 25,
-      duration: 1000,
-    });
   }
 
   async addStaticAdmGeoJsonLayer(
@@ -293,7 +246,7 @@ export class LayerSwitcherControl implements maplibregl.IControl {
     }, layerId);
 
     if (fitBbox) {
-      await this.fitGeoJsonBbox(geojson);
+      await fitGeoJsonBboxIntoMap(this.map, geojson);
     }
   }
 

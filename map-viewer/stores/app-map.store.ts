@@ -5,6 +5,8 @@ import { AdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.t
 import { AdmGeojsonMetadataClientCacheItem } from "@/types/cache.d.ts";
 import { AdmGeoJsonStore } from "@/stores/adm-geojson.store.ts";
 import { LayerSwitcherControl } from "@/helpers/map-layer-switch-control.helper.ts";
+import { GeoJSONFeature } from "@scope/types/utils";
+import { fitGeoJsonBboxIntoMap } from "@/helpers/app-map.helper.ts";
 
 export type EnableAdmGeoJsonLayerOptions = {
   fitBbox?: boolean;
@@ -90,7 +92,8 @@ export class AppMapStore {
             { fitBbox },
           );
         } else if (fitBbox) {
-          await this.mapLayerSwitcherControl.value?.fitGeoJsonBbox(
+          await fitGeoJsonBboxIntoMap(
+            this.map.value!,
             geojsonData.geojson,
           );
         }

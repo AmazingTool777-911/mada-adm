@@ -5,18 +5,17 @@ info:
 
 http:
   method: GET
-  url: "{{BASE_URL}}/api/communes/{{COMMUNE_ID}}"
+  url: "{{BASE_URL}}/api/communes/{{COMMUNE_ID}}?include_geojson="
   params:
     - name: include_geojson
       value: ""
       type: query
-      disabled: true
   auth: inherit
 
 runtime:
   variables:
     - name: COMMUNE_ID
-      value: "5"
+      value: ""
 
 settings:
   encodeUrl: true

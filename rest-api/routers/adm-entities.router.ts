@@ -8,51 +8,12 @@ import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
-import type { RestApiEnv } from "../rest-api.d.ts";
+import type {
+  GetAdmEntitiesInBatchResponseBody,
+  RestApiEnv,
+} from "../rest-api.d.ts";
 import { injectQueriesMiddleware } from "../middlewares/inject-queries.middleware.ts";
 import { parseLimitQueryParam } from "../helpers/pagination.helper.ts";
-import type {
-  Commune,
-  District,
-  Fokontany,
-  Province,
-  Region,
-} from "@scope/types/models";
-import type {
-  CursorPaginatedResult,
-  GetManyCommunesPaginationCursor,
-  GetManyDistrictsPaginationCursor,
-  GetManyFokontanysPaginationCursor,
-} from "@scope/queries/types";
-
-export type GetAdmEntitiesInBatchResponseBody = [
-  {
-    admLevel: { code: AdmLevelCode.PROVINCE; title: string };
-    provinces: Province[];
-  },
-  { admLevel: { code: AdmLevelCode.REGION; title: string }; regions: Region[] },
-  {
-    admLevel: { code: AdmLevelCode.DISTRICT; title: string };
-    paginatedDistricts: CursorPaginatedResult<
-      GetManyDistrictsPaginationCursor,
-      District
-    >;
-  },
-  {
-    admLevel: { code: AdmLevelCode.COMMUNE; title: string };
-    paginatedCommunes: CursorPaginatedResult<
-      GetManyCommunesPaginationCursor,
-      Commune
-    >;
-  },
-  {
-    admLevel: { code: AdmLevelCode.FOKONTANY; title: string };
-    paginatedFokontanys: CursorPaginatedResult<
-      GetManyFokontanysPaginationCursor,
-      Fokontany
-    >;
-  },
-];
 
 export const admEntitiesRouter = new Hono<RestApiEnv>()
   .get(

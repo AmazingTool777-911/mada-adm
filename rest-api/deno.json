@@ -1,7 +1,10 @@
 {
   "name": "@scope/rest-api",
   "version": "0.0.1",
-  "exports": "./main.ts",
+  "exports": {
+    ".": "./main.ts",
+    "./types": "./rest-api.d.ts"
+  },
   "imports": {
     "@hono/zod-validator": "jsr:@hono/zod-validator@^0.8.0",
     "@zod/zod": "jsr:@zod/zod@^4.4.3",

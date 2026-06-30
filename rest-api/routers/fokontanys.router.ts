@@ -98,9 +98,7 @@ export const fokontanysRouter = new Hono<RestApiEnv>()
       const excludeGeoJSON = !includeGeoJSON ||
         (!!includeGeoJSON && includeGeoJSON === "0");
       const fokontanyQueries = c.get("fokontanyQueries");
-      const fokontany = await fokontanyQueries.getById(id, {
-        excludeGeoJSON,
-      });
+      const fokontany = await fokontanyQueries.getById(id);
       if (!fokontany) {
         throw new AppHTTPException(
           ResponseErrorCode.FokontanyNotFound,

@@ -1,19 +1,30 @@
+import { TargetedMouseEvent } from "preact";
 import { AdmLevelCode } from "@scope/consts/models";
 
 export type AdmPillProps<TValue = unknown> = {
   admLevelCode: AdmLevelCode;
   text: string;
+  title?: string;
   value?: TValue;
   badge?: string;
   closable?: boolean;
   onClick?: (admLevelCode: AdmLevelCode, value?: TValue) => void;
+  onClose?: (admLevelCode: AdmLevelCode, value?: TValue) => void;
 };
 
 export default function AdmPill<TValue = unknown>(
-  { admLevelCode, text, badge = "200", closable = false, value, onClick }:
-    AdmPillProps<
-      TValue
-    >,
+  {
+    admLevelCode,
+    text,
+    title,
+    badge,
+    closable = false,
+    value,
+    onClick,
+    onClose,
+  }: AdmPillProps<
+    TValue
+  >,
 ) {
   let colorClassName!: string;
   switch (admLevelCode) {
@@ -38,13 +49,20 @@ export default function AdmPill<TValue = unknown>(
       );
   }
 
+  function handleClose(e: TargetedMouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    onClose?.(admLevelCode, value);
+  }
+
   return (
     <div
-      class={`btn ${colorClassName} flex items-center gap-x-2`}
+      tabIndex={0}
+      title={title ?? text}
+      class={`btn ${colorClassName} flex items-center gap-x-2 w-fit max-w-full`}
       style="border-radius: 1.25rem"
       onClick={() => onClick?.(admLevelCode, value)}
     >
-      <span class="capitalize">
+      <span class="capitalize block truncate">
         {text}
       </span>
       {typeof badge === "string" && (
@@ -53,11 +71,12 @@ export default function AdmPill<TValue = unknown>(
         </strong>
       )}
       {closable && (
-        <div class="tooltip tooltip-top" data-tip="Remove">
+        <div class="tooltip tooltip-left" data-tip="Remove">
           <button
             type="button"
             aria-label="Remove"
             class="btn btn-xs btn-neutral"
+            onClick={handleClose}
           >
             &times;
           </button>

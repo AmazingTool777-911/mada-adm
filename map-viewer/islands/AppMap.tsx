@@ -3,7 +3,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "preact/hooks";
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 
-import { AdmLevelCode } from "@scope/consts/models";
+import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 
 import {
   INITIAL_MAP_CENTER,
@@ -26,6 +26,7 @@ import { injectDistrictApi } from "@/api/district.api.ts";
 import { injectCommuneApi } from "@/api/commune.api.ts";
 import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import AppMapDynamicAdmGeoJsonLayer from "@/islands/AppMapDynamicAdmGeoJsonLayer.tsx";
+import { UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL } from "@/config/adm-entities.config.ts";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -273,6 +274,15 @@ export default function AppMap(props: AppMapProps) {
     return appMapStore.fokontanysGeoJsonEntries.value
       .filter((e) => e.isRendered);
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      for (const admLevelCode of ADM_LEVEL_CODES_INDEXED) {
+        appMapStore.removeNonReferencedAdmEntityGeoJsonEntries(admLevelCode);
+      }
+    }, UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>

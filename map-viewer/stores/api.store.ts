@@ -17,6 +17,14 @@ export class ApiStore {
   readonly provinceByName = computed(() => {
     return new Map(this.provinces.value.map((p) => [p.province, p]));
   });
+  readonly provinceByRegionName = computed(() => {
+    return new Map<string, Province>(
+      this.regions.value.map<[string, Province]>((region) => [
+        region.region,
+        this.provinceByName.value.get(region.province!)!,
+      ]),
+    );
+  });
 
   readonly regions = signal<Region[]>([]);
   readonly regionByName = computed(() => {

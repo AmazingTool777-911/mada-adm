@@ -33,6 +33,16 @@ export type GeoJSONFeatureCollection<T extends Record<string, unknown>> = {
   features: GeoJSONFeature<T>[];
 };
 
+/**
+ * Replaces the keys of an object with a new type.
+ */
 export type ReplaceKeys<T, TNewType> = {
   [K in keyof T]: TNewType;
 };
+
+/**
+ * Makes the K keys of T required.
+ */
+export type WithRequiredFields<T, K extends keyof T> =
+  & Omit<T, K>
+  & Required<Pick<T, K>>;

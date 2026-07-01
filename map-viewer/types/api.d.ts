@@ -6,3 +6,12 @@ export type GetAdmGeojsonFileSizeResponseItem = {
   rawURL: string;
   previewURL: string;
 };
+
+export type ApiCallPaginationParams = {
+  cursor?: string;
+  limit: number;
+};
+
+export type ApiRequestOptions = {
+  signal?: AbortSignal;
+};

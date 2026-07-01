@@ -1,7 +1,7 @@
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "preact/hooks";
-import { useSignal, useSignalEffect } from "@preact/signals";
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 
 import { AdmLevelCode } from "@scope/consts/models";
 
@@ -20,6 +20,12 @@ import { injectAppMapStore } from "@/stores/app-map.store.ts";
 import { LayerSwitcherControl } from "@/helpers/map-layer-switch-control.helper.ts";
 import { injectAdmEntityApi } from "@/api/adm-entity.api.ts";
 import { injectApiStore } from "@/stores/api.store.ts";
+import { injectProvinceApi } from "@/api/province.api.ts";
+import { injectRegionApi } from "@/api/region.api.ts";
+import { injectDistrictApi } from "@/api/district.api.ts";
+import { injectCommuneApi } from "@/api/commune.api.ts";
+import { injectFokontanyApi } from "@/api/fokontany.api.ts";
+import AppMapDynamicAdmGeoJsonLayer from "@/islands/AppMapDynamicAdmGeoJsonLayer.tsx";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -62,7 +68,23 @@ export default function AppMap(props: AppMapProps) {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
-  const appMapStore = injectAppMapStore(admGeoJsonClientCache, admGeoJsonStore);
+  const apiStore = injectApiStore();
+
+  const provinceApi = injectProvinceApi();
+  const regionApi = injectRegionApi();
+  const districtApi = injectDistrictApi();
+  const communeApi = injectCommuneApi();
+  const fokontanyApi = injectFokontanyApi();
+  const appMapStore = injectAppMapStore(
+    admGeoJsonClientCache,
+    admGeoJsonStore,
+    apiStore,
+    provinceApi,
+    regionApi,
+    districtApi,
+    communeApi,
+    fokontanyApi,
+  );
 
   const mapRef = useRef<maplibregl.Map>();
   const mapLayerSwitcherControlRef = useRef<LayerSwitcherControl>();
@@ -212,8 +234,6 @@ export default function AppMap(props: AppMapProps) {
     }
   }
 
-  const apiStore = injectApiStore();
-
   const admEntityApi = injectAdmEntityApi();
 
   useEffect(() => {
@@ -230,8 +250,29 @@ export default function AppMap(props: AppMapProps) {
         apiStore.fokontanys.value = adm4.paginatedFokontanys.records;
         apiStore.initialAdmEntitiesAreLoaded.value = true;
       })
-      .catch((e) => console.log(e));
+      .catch((e) => console.error(e));
   }, []);
+
+  const renderedProviceGeoJsonEntries = useComputed(() => {
+    return appMapStore.provincesGeoJsonEntries.value
+      .filter((e) => e.isRendered);
+  });
+  const renderedRegionGeoJsonEntries = useComputed(() => {
+    return appMapStore.regionsGeoJsonEntries.value
+      .filter((e) => e.isRendered);
+  });
+  const renderedDistrictGeoJsonEntries = useComputed(() => {
+    return appMapStore.districtsGeoJsonEntries.value
+      .filter((e) => e.isRendered);
+  });
+  const renderedCommuneGeoJsonEntries = useComputed(() => {
+    return appMapStore.communesGeoJsonEntries.value
+      .filter((e) => e.isRendered);
+  });
+  const renderedFokontanyGeoJsonEntries = useComputed(() => {
+    return appMapStore.fokontanysGeoJsonEntries.value
+      .filter((e) => e.isRendered);
+  });
 
   return (
     <>
@@ -239,6 +280,61 @@ export default function AppMap(props: AppMapProps) {
       <div ref={mapContainerRef} class="h-full w-full"></div>
       {/* Confirm ADM GeoJSON data download modal */}
       <AppMapAdmGeoJsonDownloadModal />
+      {/* Dynamic ADM GeoJSON layers */}
+      {appMapStore.map.value && (
+        <>
+          {renderedProviceGeoJsonEntries.value.map((entry) => {
+            const key = `${AdmLevelCode.PROVINCE}-${entry.name}`;
+            return (
+              <AppMapDynamicAdmGeoJsonLayer
+                key={key}
+                map={appMapStore.map.value!}
+                admGeoJsonEntry={entry}
+              />
+            );
+          })}
+          {renderedRegionGeoJsonEntries.value.map((entry) => {
+            const key = `${AdmLevelCode.REGION}-${entry.name}`;
+            return (
+              <AppMapDynamicAdmGeoJsonLayer
+                key={key}
+                map={appMapStore.map.value!}
+                admGeoJsonEntry={entry}
+              />
+            );
+          })}
+          {renderedDistrictGeoJsonEntries.value.map((entry) => {
+            const key = `${AdmLevelCode.DISTRICT}-${entry.name}`;
+            return (
+              <AppMapDynamicAdmGeoJsonLayer
+                key={key}
+                map={appMapStore.map.value!}
+                admGeoJsonEntry={entry}
+              />
+            );
+          })}
+          {renderedCommuneGeoJsonEntries.value.map((entry) => {
+            const key = `${AdmLevelCode.COMMUNE}-${entry.name}`;
+            return (
+              <AppMapDynamicAdmGeoJsonLayer
+                key={key}
+                map={appMapStore.map.value!}
+                admGeoJsonEntry={entry}
+              />
+            );
+          })}
+          {renderedFokontanyGeoJsonEntries.value.map((entry) => {
+            const key = `${AdmLevelCode.FOKONTANY}-${entry.name}`;
+            return (
+              <AppMapDynamicAdmGeoJsonLayer
+                key={key}
+                map={appMapStore.map.value!}
+                admGeoJsonEntry={entry}
+              />
+            );
+          })}
+        </>
+      )}
     </>
   );
 }

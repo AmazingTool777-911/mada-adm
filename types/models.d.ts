@@ -292,6 +292,23 @@ export type AdmValuesDiscriminated =
     values: FokontanyRecord;
   };
 
+export type AdmEntityDiscriminated = {
+  admLevelCode: AdmLevelCode.PROVINCE;
+  entity: Province;
+} | {
+  admLevelCode: AdmLevelCode.REGION;
+  entity: Region;
+} | {
+  admLevelCode: AdmLevelCode.DISTRICT;
+  entity: District;
+} | {
+  admLevelCode: AdmLevelCode.COMMUNE;
+  entity: Commune;
+} | {
+  admLevelCode: AdmLevelCode.FOKONTANY;
+  entity: Fokontany;
+};
+
 export type AdmEntityBSON =
   | ProvinceBSON
   | RegionBSON

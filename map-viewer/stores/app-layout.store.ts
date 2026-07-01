@@ -1,7 +1,8 @@
 import { signal } from "@preact/signals";
+import { PAGE_CONTENT_DRAWER_DEFAULT_OPEN } from "@/config/app-layout.config.ts";
 
 export class AppLayoutStore {
-  readonly sidebarIsOpen = signal(false);
+  readonly sidebarIsOpen = signal(PAGE_CONTENT_DRAWER_DEFAULT_OPEN);
 
   toggleSidebar(isOpen?: boolean) {
     this.sidebarIsOpen.value = typeof isOpen === "boolean"

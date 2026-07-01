@@ -19,7 +19,10 @@ import {
 } from "@/consts/map.consts.ts";
 import { GeoJSONFeatureCollection } from "@scope/types/utils";
 import { tailwindCssColorVarToRgb } from "@/helpers/css-vars.helper.ts";
-import { fitGeoJsonBboxIntoMap } from "@/helpers/app-map.helper.ts";
+import {
+  addGeoJsonLayerToMap,
+  fitGeoJsonBboxIntoMap,
+} from "@/helpers/app-map.helper.ts";
 
 export type LayerSwitcherControlOptions = {
   onAdmGeoJsonLayerCheckoxChange: (
@@ -126,96 +129,37 @@ export class LayerSwitcherControl implements maplibregl.IControl {
   ) {
     const { fitBbox = true } = options ?? {};
 
-    const source = STATIC_ADM_GEOJSON_SOURCE_BY_CODE.get(admLevelCode)!;
-    this.map.addSource(source, {
-      type: "geojson",
-      data: geojson,
-      generateId: true,
-    });
-
-    const sentinelLayerId = STATIC_ADM_GEOJSON_SENTINEL_LAYER_ID_BY_CODE.get(
-      admLevelCode,
-    )!;
-    const color = tailwindCssColorVarToRgb("primary");
-    const layerId = STATIC_ADM_GEOJSON_LAYER_ID_BY_CODE.get(admLevelCode)!;
-    this.map.addLayer({
-      id: layerId,
-      type: "fill",
-      source,
-      paint: {
-        "fill-color": color,
-        "fill-opacity": [
-          "case",
-          ["boolean", ["feature-state", "hover"], false],
-          0.4,
-          0.2,
-        ],
-      },
-    }, sentinelLayerId);
-
-    let hoveredId: number | null = null;
-    let isGrabbing = false;
-    this.map.on("mousedown", () => {
-      isGrabbing = true;
-      this.map.getCanvas().style.cursor = "grabbing";
-    });
-    this.map.on("mouseup", () => {
-      isGrabbing = false;
-      this.map.getCanvas().style.cursor = hoveredId ? "pointer" : "grab";
-    });
-    this.map.on("mousemove", layerId, (e) => {
-      if (e.features!.length > 0) {
-        if (hoveredId !== null) {
-          this.map.setFeatureState({ source, id: hoveredId }, {
-            hover: false,
-          });
-        }
-        hoveredId = e.features![0].id as number;
-        this.map.setFeatureState({ source, id: hoveredId }, {
-          hover: true,
-        });
-      }
-    });
-    this.map.on("mouseenter", layerId, () => {
-      if (isGrabbing) return;
-      this.map.getCanvas().style.cursor = "pointer";
-    });
-    this.map.on("mouseleave", layerId, () => {
-      if (hoveredId !== null) {
-        this.map.setFeatureState({ source, id: hoveredId }, {
-          hover: false,
-        });
-      }
-      hoveredId = null;
-      if (isGrabbing) return;
-      this.map.getCanvas().style.cursor = "grab";
-    });
-
-    let activePopup: maplibregl.Popup | null = null;
-    this.map.on("click", layerId, (e) => {
-      if (activePopup) activePopup.remove();
-      const feature = e.features![0];
-      const featureProperties = Object.entries(feature.properties!);
-      const layerTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+    addGeoJsonLayerToMap(this.map, geojson, {
+      source: STATIC_ADM_GEOJSON_SOURCE_BY_CODE.get(admLevelCode)!,
+      sentinelLayerId: STATIC_ADM_GEOJSON_SENTINEL_LAYER_ID_BY_CODE.get(
         admLevelCode,
-      )!;
-      const layerTitleHTML = `
-        <h3 class="font-bold text-sm flex items-center gap-x-2 mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers2-icon lucide-layers-2"><path d="M13 13.74a2 2 0 0 1-2 0L2.5 8.87a1 1 0 0 1 0-1.74L11 2.26a2 2 0 0 1 2 0l8.5 4.87a1 1 0 0 1 0 1.74z"/><path d="m20 14.285 1.5.845a1 1 0 0 1 0 1.74L13 21.74a2 2 0 0 1-2 0l-8.5-4.87a1 1 0 0 1 0-1.74l1.5-.845"/></svg>
-          <div>
-            ${admLevelCode}:
-            <span class="capitalize">${layerTitle}s</span>
-          </div>
-        </h3>
-      `;
-      const featuresRowsHTML = featureProperties.map(([key, value]) => {
-        return `<tr><td>${key}</td><td>${value}</td></tr>`;
-      }).join("");
-      activePopup = new maplibregl.Popup({ maxWidth: "none" })
-        .setLngLat(e.lngLat)
-        .setHTML(`
+      )!,
+      color: tailwindCssColorVarToRgb("primary"),
+      layerId: STATIC_ADM_GEOJSON_LAYER_ID_BY_CODE.get(admLevelCode)!,
+      outlineLayerId: STATIC_ADM_GEOJSON_OUTLINE_LAYER_ID_BY_CODE.get(
+        admLevelCode,
+      )!,
+      renderPopupHTML(features) {
+        const feature = features![0];
+        const featureProperties = Object.entries(feature.properties!);
+        const layerTitle = ADM_LEVEL_TITLE_BY_CODE.get(
+          admLevelCode,
+        )!;
+        const layerTitleHTML = `
+          <h3 class="font-bold text-sm flex items-center gap-x-2 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers2-icon lucide-layers-2"><path d="M13 13.74a2 2 0 0 1-2 0L2.5 8.87a1 1 0 0 1 0-1.74L11 2.26a2 2 0 0 1 2 0l8.5 4.87a1 1 0 0 1 0 1.74z"/><path d="m20 14.285 1.5.845a1 1 0 0 1 0 1.74L13 21.74a2 2 0 0 1-2 0l-8.5-4.87a1 1 0 0 1 0-1.74l1.5-.845"/></svg>
+            <div>
+              ${admLevelCode}:
+              <span class="capitalize">${layerTitle}s</span>
+            </div>
+          </h3>
+        `;
+        const featuresRowsHTML = featureProperties.map(([key, value]) => {
+          return `<tr><td>${key}</td><td>${value}</td></tr>`;
+        }).join("");
+        return `
           <article>
-            <h3>${layerTitleHTML}</h3>
+            ${layerTitleHTML}
             <table class="table table-sm">
               <thead>
                 <tr>
@@ -228,22 +172,9 @@ export class LayerSwitcherControl implements maplibregl.IControl {
               </tbody>
             </table>
           </article>
-        `)
-        .addTo(this.map);
-    });
-
-    const outlineLayerId = STATIC_ADM_GEOJSON_OUTLINE_LAYER_ID_BY_CODE.get(
-      admLevelCode,
-    )!;
-    this.map.addLayer({
-      id: outlineLayerId,
-      type: "line",
-      source,
-      paint: {
-        "line-color": color,
-        "line-width": 2,
+        `;
       },
-    }, layerId);
+    });
 
     if (fitBbox) {
       await fitGeoJsonBboxIntoMap(this.map, geojson);

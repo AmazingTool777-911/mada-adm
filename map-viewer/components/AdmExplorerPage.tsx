@@ -1,7 +1,7 @@
 import AdmExplorerPageCountsPills from "@/islands/AdmExplorerPageCountsPills.tsx";
 import AdmExplorerPageSearchModeTabs from "@/islands/AdmExplorerPageSearchModeTabs.tsx";
 
-export default function AdmPage() {
+export default function AdmExplorerPage() {
   return (
     <main>
       <header class="mb-5">

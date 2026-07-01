@@ -3,8 +3,8 @@ import AdmExplorerPageSearchModeTabs from "@/islands/AdmExplorerPageSearchModeTa
 
 export default function AdmExplorerPage() {
   return (
-    <main>
-      <header class="mb-5">
+    <main class="space-y-8">
+      <header>
         <h1 class="font-bold text-lg mb-2">Administrative explorer</h1>
         <p class="text-sm text-base-content/90">
           Discover and query the hierarchical administrative boundaries of
@@ -27,7 +27,6 @@ export default function AdmExplorerPage() {
         aria-labelledby="territory-distribution-summary-title"
         aria-describedby="territory-distribution-summary-description"
         data-theme="adm"
-        class="mb-5"
       >
         <h3 id="territory-distribution-summary-title" class="font-bold mb-2">
           Territory Distribution Summary

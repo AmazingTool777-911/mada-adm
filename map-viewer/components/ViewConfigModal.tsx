@@ -342,7 +342,7 @@ export default function ViewConfigModal(
           </form>
         </dialog>
       </div>
-      {config && <ViewConfigModalConfigStoreSetter config={config} />}
+      <ViewConfigModalConfigStoreSetter config={config ?? null} />
     </>
   );
 }

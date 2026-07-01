@@ -3,7 +3,7 @@ import { MadaAdmConfig } from "@scope/types/models";
 import { injectApiStore } from "@/stores/api.store.ts";
 
 export type ViewConfigModalConfigStoreSetterProps = {
-  config: MadaAdmConfig;
+  config: MadaAdmConfig | null;
 };
 
 export default function ViewConfigModalConfigStoreSetter(
@@ -13,6 +13,7 @@ export default function ViewConfigModalConfigStoreSetter(
 
   useEffect(() => {
     apiStore.config.value = config;
+    apiStore.configIsLoaded.value = true;
   }, []);
 
   return null;

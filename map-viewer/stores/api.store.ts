@@ -9,6 +9,7 @@ import {
 } from "@scope/types/models";
 
 export class ApiStore {
+  readonly configIsLoaded = signal(false);
   readonly config = signal<MadaAdmConfig | null>(null);
 
   readonly initialAdmEntitiesAreLoaded = signal(false);

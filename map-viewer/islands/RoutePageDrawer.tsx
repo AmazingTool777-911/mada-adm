@@ -88,12 +88,12 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
         }}
       >
         <div
-          class={`absolute top-4 right-0 sm:ml-4 ${
+          class={`absolute top-4 right-0 min-[532px]:ml-4 ${
             appLayoutStore.sidebarIsOpen.value
-              ? "translate-x-0 mr-4 sm:translate-x-[calc(100%+0.75rem)] sm:mr-0"
+              ? "translate-x-0 mr-4 min-[532px]:translate-x-[calc(100%+0.75rem)] min-[532px]:mr-0"
               : "translate-x-[calc(100%+0.75rem)] mr-0"
           }`}
-          style={{ zIndex: "calc(var(--base-z-index) + 30);" }}
+          style={{ zIndex: "calc(var(--base-z-index) + 30)" }}
         >
           <div
             className={`tooltip ${

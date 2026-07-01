@@ -1,5 +1,6 @@
 import {
   AdmEntity,
+  AdmEntityDiscriminated,
   Commune,
   District,
   Fokontany,
@@ -43,7 +44,7 @@ export interface CommuneIdentifiers {
 }
 
 export function getCommuneNameEncoding(commune: CommuneIdentifiers) {
-  return `${commune.district}:${commune.commune}`;
+  return `${commune.district} - ${commune.commune}`;
 }
 
 export interface FokontanyIdentifiers {
@@ -53,5 +54,77 @@ export interface FokontanyIdentifiers {
 }
 
 export function getFokontanyNameEncoding(fokontany: FokontanyIdentifiers) {
-  return `${fokontany.district}:${fokontany.commune}:${fokontany.fokontany}`;
+  return `${fokontany.district} - ${fokontany.commune} - ${fokontany.fokontany}`;
+}
+
+export function getAdmEntityDiscriminatedValue(
+  admEntityDiscriminated: AdmEntityDiscriminated,
+  fieldAdmLevelCode?: AdmLevelCode,
+): string {
+  const admLevelCode = admEntityDiscriminated.admLevelCode;
+  if (!fieldAdmLevelCode || fieldAdmLevelCode === admLevelCode) {
+    return getAdmEntityValue(admEntityDiscriminated.entity, admLevelCode);
+  }
+  switch (admLevelCode) {
+    case AdmLevelCode.PROVINCE:
+      break;
+    case AdmLevelCode.REGION: {
+      if (fieldAdmLevelCode === AdmLevelCode.PROVINCE) {
+        return admEntityDiscriminated.entity.province;
+      }
+      break;
+    }
+    case AdmLevelCode.DISTRICT: {
+      if (fieldAdmLevelCode === AdmLevelCode.REGION) {
+        return admEntityDiscriminated.entity.region;
+      } else if (fieldAdmLevelCode === AdmLevelCode.PROVINCE) {
+        if (admEntityDiscriminated.entity.province) {
+          return admEntityDiscriminated.entity.province;
+        }
+        throw new Error(
+          `province not available for district: ${admEntityDiscriminated.entity.district}`,
+        );
+      }
+      break;
+    }
+    case AdmLevelCode.COMMUNE: {
+      if (fieldAdmLevelCode === AdmLevelCode.DISTRICT) {
+        return admEntityDiscriminated.entity.district;
+      } else if (fieldAdmLevelCode === AdmLevelCode.REGION) {
+        return admEntityDiscriminated.entity.region;
+      } else if (fieldAdmLevelCode === AdmLevelCode.PROVINCE) {
+        if (admEntityDiscriminated.entity.province) {
+          return admEntityDiscriminated.entity.province;
+        }
+        throw new Error(
+          `province not available for commune: ${admEntityDiscriminated.entity.commune}`,
+        );
+      }
+      break;
+    }
+    case AdmLevelCode.FOKONTANY: {
+      if (fieldAdmLevelCode === AdmLevelCode.COMMUNE) {
+        return admEntityDiscriminated.entity.commune;
+      } else if (fieldAdmLevelCode === AdmLevelCode.DISTRICT) {
+        return admEntityDiscriminated.entity.district;
+      } else if (fieldAdmLevelCode === AdmLevelCode.REGION) {
+        return admEntityDiscriminated.entity.region;
+      } else if (fieldAdmLevelCode === AdmLevelCode.PROVINCE) {
+        if (admEntityDiscriminated.entity.province) {
+          return admEntityDiscriminated.entity.province;
+        }
+        throw new Error(
+          `province not available for commune: ${admEntityDiscriminated.entity.commune}`,
+        );
+      }
+      break;
+    }
+    default:
+      throw new Error(
+        `Unsupported admLevelCode ${admLevelCode} for getAdmEntityDiscriminatedValue`,
+      );
+  }
+  throw new Error(
+    `Unsupported fieldAdmLevelCode ${fieldAdmLevelCode} for getAdmEntityDiscriminatedValue`,
+  );
 }

@@ -61,17 +61,41 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
     }
   }, [overlayIsOpen.value]);
 
+  // @ts-ignore - SimpleBar typings are wrong
+  const simpleBarInstance = useRef<SimpleBar>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollableRef.current) {
       scrollableRef.current.classList.remove("overflow-y-hidden");
       // @ts-ignore - SimpleBar typings are wrong
-      new SimpleBar(scrollableRef.current);
+      simpleBarInstance.current = new SimpleBar(scrollableRef.current);
     }
   }, []);
 
   useScrollToDataSourcesDownload();
+
+  const prevPathname = useRef<string | null>(null);
+
+  useEffect(() => {
+    function handleNavigate(e: NavigateEvent) {
+      const url = new URL(e.destination.url);
+      if (url.pathname !== prevPathname.current) {
+        // @ts-ignore - SimpleBar typings are wrong
+        simpleBarInstance.current?.getScrollElement().scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+      prevPathname.current = url.pathname;
+    }
+
+    navigation.addEventListener("navigate", handleNavigate);
+
+    return () => {
+      navigation.removeEventListener("navigate", handleNavigate);
+    };
+  }, []);
 
   return (
     <div

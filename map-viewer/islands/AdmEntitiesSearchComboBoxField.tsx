@@ -26,6 +26,8 @@ export type AdmEntitiesSearchComboBoxFieldProps = {
   inputValue: string;
   selectedAdmEntityValue?: SelectedAdmEntityValue | null;
   selectedWithParents?: boolean;
+  disabled?: boolean;
+  inputTooltipText?: string | null;
   onSelected?: (value: SelectedAdmEntityValue) => void;
   onSelectedClose?: () => void;
   onScrollEnd?: () => void;
@@ -41,6 +43,8 @@ export default function AdmEntitiesSearchComboBoxField({
   inputValue,
   selectedAdmEntityValue,
   selectedWithParents = false,
+  disabled = false,
+  inputTooltipText = null,
   onSelected,
   onSelectedClose,
   onScrollEnd,
@@ -339,23 +343,31 @@ export default function AdmEntitiesSearchComboBoxField({
     <fieldset class="fieldset bg-white" style="display: block; min-width: 0">
       <legend id={idRef.current} class="fieldset-legend">{legend}</legend>
       <div ref={wrapperRef} class="relative">
-        <input
-          ref={inputRef}
-          type="search"
-          name={menuNameRef.current}
-          role="combobox"
-          aria-autocomplete="list"
-          aria-expanded={showMenu.value ? "true" : "false"}
-          aria-controls={listIdRef.current}
-          aria-haspopup="listbox"
-          aria-labelledby={idRef.current}
-          aria-activedescendant={inputActiveDescendent.value}
-          class="input w-full"
-          placeholder={placeholder}
-          value={inputDirectValue.value}
-          onFocus={handleInputFocus}
-          onInput={handleInputChange}
-        />
+        <div
+          class={`${inputTooltipText ? "tooltip tooltip-top" : ""} w-full`}
+        >
+          <div class="tooltip-content z-20">
+            {inputTooltipText}
+          </div>
+          <input
+            ref={inputRef}
+            type="search"
+            name={menuNameRef.current}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showMenu.value ? "true" : "false"}
+            aria-controls={listIdRef.current}
+            aria-haspopup="listbox"
+            aria-labelledby={idRef.current}
+            aria-activedescendant={inputActiveDescendent.value}
+            disabled={disabled}
+            placeholder={placeholder}
+            value={inputDirectValue.value}
+            class="input w-full"
+            onFocus={handleInputFocus}
+            onInput={handleInputChange}
+          />
+        </div>
         {showMenu.value && (
           <div
             ref={menuRef}

@@ -7,16 +7,20 @@ export default function useScrollToDataSourcesDownload() {
   const admGeoJsonStore = injectAdmGeojsonStore();
 
   useEffect(() => {
-    navigation.addEventListener("navigate", (e) => {
-      if (
-        admGeoJsonStore.cachedMetadataIsLoaded.value
-      ) {
+    function handleNavigate(e: NavigateEvent) {
+      if (admGeoJsonStore.cachedMetadataIsLoaded.value) {
         const url = new URL(e.destination.url);
         if (url.pathname.startsWith("/data-sources")) {
           scrollToDataSourcesDownloadFromURL(url);
         }
       }
-    });
+    }
+
+    navigation.addEventListener("navigate", handleNavigate);
+
+    return () => {
+      navigation.removeEventListener("navigate", handleNavigate);
+    };
   }, []);
 
   useSignalEffect(() => {

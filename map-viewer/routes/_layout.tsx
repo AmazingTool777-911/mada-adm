@@ -63,24 +63,27 @@ export default define.layout(async ({ Component, url }) => {
         style="width: var(--sidebar-width); z-index: calc(var(--base-z-index) + 40)"
       >
         <header class="h-full flex flex-col justify-between gap-y-12">
-          <AppLogoLink />
-          <nav>
-            <ul class="flex flex-col list-none p-0 m-0 gap-x-0">
-              <li>
-                <SidebarAdmBoundariesLink
-                  isActive={isActive("/adm-explorer")}
-                />
-              </li>
-              <li>
-                <SidebarPinsLink isActive={isActive("/pins")} />
-              </li>
-              <li>
-                <SidebarDataSourcesLink
-                  isActive={isActive("/data-sources")}
-                />
-              </li>
-            </ul>
-          </nav>
+          <div class="flex flex-col gap-y-5 items-center">
+            <AppLogoLink />
+            <hr class="text-base-content/20 w-2/3" />
+            <nav>
+              <ul class="flex flex-col list-none p-0 m-0 gap-x-0">
+                <li>
+                  <SidebarAdmBoundariesLink
+                    isActive={isActive("/adm-explorer")}
+                  />
+                </li>
+                <li>
+                  <SidebarPinsLink isActive={isActive("/pins")} />
+                </li>
+                <li>
+                  <SidebarDataSourcesLink
+                    isActive={isActive("/data-sources")}
+                  />
+                </li>
+              </ul>
+            </nav>
+          </div>
           <div>
             <ViewConfigModal
               config={madaAdmConfig}

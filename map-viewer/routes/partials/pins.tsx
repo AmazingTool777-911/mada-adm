@@ -1,4 +1,4 @@
-import { Partial } from "fresh/runtime";
+import { Head, Partial } from "fresh/runtime";
 import { RouteConfig } from "fresh";
 import PinsPage from "@/components/PinsPage.tsx";
 import { define } from "../../utils.ts";
@@ -14,6 +14,9 @@ export const config: RouteConfig = {
 export default define.page(function PinnedLocations(_ctx) {
   return (
     <Partial name="route-page">
+      <Head>
+        <title>Pinned locations | Map Viewer | Mada ADM</title>
+      </Head>
       <PinsPage />
     </Partial>
   );

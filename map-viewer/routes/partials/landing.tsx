@@ -1,4 +1,4 @@
-import { Partial } from "fresh/runtime";
+import { Head, Partial } from "fresh/runtime";
 import { RouteConfig } from "fresh";
 import LandingPage from "@/components/LandingPage.tsx";
 import { define } from "../../utils.ts";
@@ -14,6 +14,9 @@ export const config: RouteConfig = {
 export default define.page(function Landing(_ctx) {
   return (
     <Partial name="route-page">
+      <Head>
+        <title>Map Viewer | Mada ADM</title>
+      </Head>
       <LandingPage />
     </Partial>
   );

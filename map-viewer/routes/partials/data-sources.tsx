@@ -1,4 +1,4 @@
-import { Partial } from "fresh/runtime";
+import { Head, Partial } from "fresh/runtime";
 import { RouteConfig } from "fresh";
 import { define } from "../../utils.ts";
 import DataSourcesPage from "@/components/DataSourcesPage.tsx";
@@ -14,6 +14,9 @@ export const config: RouteConfig = {
 export default define.page(function DataSources(_ctx) {
   return (
     <Partial name="route-page">
+      <Head>
+        <title>Data Sources | Map Viewer | Mada ADM</title>
+      </Head>
       <DataSourcesPage />
     </Partial>
   );

@@ -1,4 +1,4 @@
-import { Partial } from "fresh/runtime";
+import { Head, Partial } from "fresh/runtime";
 import { RouteConfig } from "fresh";
 import AdmExplorerPage from "@/components/AdmExplorerPage.tsx";
 import { define } from "../../utils.ts";
@@ -14,6 +14,11 @@ export const config: RouteConfig = {
 export default define.page(function AdministrativeBoundaries(_ctx) {
   return (
     <Partial name="route-page">
+      <Head>
+        <title>
+          Administrative Boundaries Explorer | Map Viewer | Mada ADM
+        </title>
+      </Head>
       <AdmExplorerPage />
     </Partial>
   );

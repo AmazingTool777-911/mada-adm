@@ -3,6 +3,7 @@ import { ArrowDownFromLine, ArrowDownWideNarrow } from "lucide-preact";
 import AdmExplorerPageGlobalFiltering from "@/islands/AdmExplorerPageGlobalFiltering.tsx";
 import { injectApiStore } from "@/stores/api.store.ts";
 import AdmExplorerPageMissingConfigError from "@/islands/AdmExplorerPageMissingConfigError.tsx";
+import AdmExplorerPageCascadeFiltering from "@/islands/AdmExplorerPageCascadeFiltering.tsx";
 
 export default function AdmExplorerPageSearchModeTabs() {
   const apiStore = injectApiStore();
@@ -61,9 +62,9 @@ export default function AdmExplorerPageSearchModeTabs() {
               </label>
             </div>
             <div class="pt-5 h-dvh">
-              {activeTab.value === "global" && (
-                <AdmExplorerPageGlobalFiltering />
-              )}
+              {activeTab.value === "global"
+                ? <AdmExplorerPageGlobalFiltering />
+                : <AdmExplorerPageCascadeFiltering />}
             </div>
           </>
         )

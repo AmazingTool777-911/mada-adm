@@ -102,6 +102,8 @@ export function addGeoJsonLayerToMap(
   let activePopup: maplibregl.Popup | null = null;
   function handleMapClick(event: MapClickEvent) {
     if (event.originalEvent.defaultPrevented) return;
+    const features = map.queryRenderedFeatures(event.point);
+    if (features.length > 0 && features[0].layer.id !== layerId) return;
     event.originalEvent.preventDefault();
     if (activePopup) {
       activePopup.remove();

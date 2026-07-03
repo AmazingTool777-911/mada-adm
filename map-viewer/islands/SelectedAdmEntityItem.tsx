@@ -116,15 +116,15 @@ export default function SelectedAdmEntityItem(
   useEffect(
     () => {
       const _geojsonEntry = geojsonEntry;
-      if (_geojsonEntry && _geojsonEntry.admEntityDiscriminated) {
+      if (_geojsonEntry) {
         appMapStore.referenceAdmEntityGeoJsonEntryByName(
-          _geojsonEntry.admEntityDiscriminated.admLevelCode,
+          value.admLevelCode,
           _geojsonEntry.name,
         );
         return () => {
           const updatedGeoJsonEntry = appMapStore
             .referenceAdmEntityGeoJsonEntryByName(
-              _geojsonEntry.admEntityDiscriminated?.admLevelCode!,
+              value.admLevelCode,
               _geojsonEntry.name,
               false,
             );

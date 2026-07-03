@@ -64,29 +64,27 @@ export default function SelectedAdmEntityItemParentItem(
         const geojsonEntry = appMapStore.getAdmEntityEntryByNameMapByLevel(
           _parentValue.admLevelCode,
         ).get(_parentValue.name) ?? null;
-        if (geojsonEntry?.admEntityDiscriminated) {
+        if (geojsonEntry) {
           appMapStore.referenceAdmEntityGeoJsonEntryByName(
-            geojsonEntry.admEntityDiscriminated.admLevelCode,
+            parentValue.admLevelCode,
             geojsonEntry.name,
           );
           return () => {
-            if (geojsonEntry?.admEntityDiscriminated) {
-              const updatedGeojsonEntry = appMapStore
-                .referenceAdmEntityGeoJsonEntryByName(
-                  geojsonEntry.admEntityDiscriminated.admLevelCode,
-                  geojsonEntry.name,
-                  false,
-                );
-              if (
-                updatedGeojsonEntry?.refsCount === 0 &&
-                updatedGeojsonEntry.admEntityDiscriminated
-              ) {
-                appMapStore.renderAdmEntityGeoJsonEntryByName(
-                  updatedGeojsonEntry.admEntityDiscriminated.admLevelCode,
-                  updatedGeojsonEntry.name,
-                  false,
-                );
-              }
+            const updatedGeojsonEntry = appMapStore
+              .referenceAdmEntityGeoJsonEntryByName(
+                parentValue.admLevelCode,
+                geojsonEntry.name,
+                false,
+              );
+            if (
+              updatedGeojsonEntry?.refsCount === 0 &&
+              updatedGeojsonEntry.admEntityDiscriminated
+            ) {
+              appMapStore.renderAdmEntityGeoJsonEntryByName(
+                updatedGeojsonEntry.admEntityDiscriminated.admLevelCode,
+                updatedGeojsonEntry.name,
+                false,
+              );
             }
           };
         }

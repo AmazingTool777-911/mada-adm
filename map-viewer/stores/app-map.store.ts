@@ -227,7 +227,14 @@ export class AppMapStore {
     admLevelCode: AdmLevelCode,
   ) {
     const entries = this.getAdmLevelEntries(admLevelCode);
-    entries.value = entries.value.filter((entry) => entry.refsCount > 0);
+    const hasToBeRemoved = entries.value.some((entry) =>
+      entry.isLoading || (!entry.isLoading && entry.refsCount === 0)
+    );
+    if (hasToBeRemoved) {
+      entries.value = entries.value.filter((entry) =>
+        entry.isLoading || (!entry.isLoading && entry.refsCount > 0)
+      );
+    }
   }
 
   private resolveProvinceIdFromAdmEntityDiscriminated(

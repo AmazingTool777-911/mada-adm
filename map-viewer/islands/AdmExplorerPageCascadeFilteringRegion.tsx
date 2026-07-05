@@ -17,6 +17,7 @@ export default function AdmExplorerPageCascadeFilteringRegion({
   onSelectedChange,
 }: AdmExplorerPageCascadeFilteringRegionProps) {
   const search = useSignal("");
+  const directSearch = useSignal("");
 
   const apiStore = injectApiStore();
 
@@ -47,8 +48,10 @@ export default function AdmExplorerPageCascadeFilteringRegion({
   }
 
   useEffect(() => {
-    if (!selectedProvince) {
+    if (selectedProvince) {
       onSelectedChange?.(null);
+      search.value = "";
+      directSearch.value = "";
     }
   }, [selectedProvince]);
 
@@ -75,6 +78,7 @@ export default function AdmExplorerPageCascadeFilteringRegion({
       admLevelCode={AdmLevelCode.REGION}
       entities={regions}
       inputValue={search.value}
+      inputDirectValue={directSearch}
       legend="Search for regions"
       placeholder={placeholder}
       selectedAdmEntityValue={selectedRegionDiscriminated}

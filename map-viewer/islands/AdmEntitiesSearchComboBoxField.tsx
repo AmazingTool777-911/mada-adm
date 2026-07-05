@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "preact/hooks";
-import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
+import {
+  Signal,
+  useComputed,
+  useSignal,
+  useSignalEffect,
+} from "@preact/signals";
 import { autoUpdate, computePosition, flip, offset } from "@floating-ui/dom";
 import SimpleBar from "simplebar";
 import type {
@@ -24,6 +29,7 @@ export type AdmEntitiesSearchComboBoxFieldProps = {
   entities: AdmEntity[];
   isLoadingMore?: boolean;
   inputValue: string;
+  inputDirectValue?: Signal<string>;
   selectedAdmEntityValue?: SelectedAdmEntityValue | null;
   selectedWithParents?: boolean;
   disabled?: boolean;
@@ -41,6 +47,7 @@ export default function AdmEntitiesSearchComboBoxField({
   entities,
   isLoadingMore,
   inputValue,
+  inputDirectValue = useSignal(""),
   selectedAdmEntityValue,
   selectedWithParents = false,
   disabled = false,
@@ -69,8 +76,6 @@ export default function AdmEntitiesSearchComboBoxField({
       return getListItemId(entityAdmLevelCode, entity);
     } else return undefined;
   });
-
-  const inputDirectValue = useSignal("");
 
   const inputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);

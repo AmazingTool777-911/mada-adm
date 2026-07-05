@@ -199,6 +199,12 @@ export default function AdmEntitiesSearchComboBoxField({
     !showMenu.value && (showMenu.value = true);
   }
 
+  function handleClose() {
+    inputDirectValue.value = "";
+    onInputChange?.("");
+    onSelectedClose?.();
+  }
+
   function handleItemMouseEnter(index: number) {
     selectedItemIndex.value = index;
   }
@@ -437,7 +443,7 @@ export default function AdmEntitiesSearchComboBoxField({
           <SelectedAdmEntityItem
             value={selectedAdmEntityValue}
             withParents={selectedWithParents}
-            onClose={onSelectedClose}
+            onClose={handleClose}
           />
         </div>
       )}

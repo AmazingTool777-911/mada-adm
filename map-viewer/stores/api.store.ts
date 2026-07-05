@@ -33,15 +33,15 @@ export class ApiStore {
   });
 
   readonly districtsAreLoaded = signal(false);
-  readonly districtsCursor = signal<string | null>(null);
+  readonly districtsNextCursor = signal<string | null>(null);
   readonly districts = signal<District[]>([]);
 
   readonly communesAreLoaded = signal(false);
-  readonly communesCursor = signal<string | null>(null);
+  readonly communesNextCursor = signal<string | null>(null);
   readonly communes = signal<Commune[]>([]);
 
   readonly fokontanysAreLoaded = signal(false);
-  readonly fokontanysCursor = signal<string | null>(null);
+  readonly fokontanysNextCursor = signal<string | null>(null);
   readonly fokontanys = signal<Fokontany[]>([]);
 }
 

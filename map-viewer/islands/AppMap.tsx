@@ -245,10 +245,16 @@ export default function AppMap(props: AppMapProps) {
         apiStore.regions.value = adm1.regions;
         apiStore.districtsAreLoaded.value = true;
         apiStore.districts.value = adm2.paginatedDistricts.records;
+        apiStore.districtsNextCursor.value =
+          adm2.paginatedDistricts.nextEncoded ?? null;
         apiStore.communesAreLoaded.value = true;
         apiStore.communes.value = adm3.paginatedCommunes.records;
+        apiStore.communesNextCursor.value =
+          adm3.paginatedCommunes.nextEncoded ?? null;
         apiStore.fokontanysAreLoaded.value = true;
         apiStore.fokontanys.value = adm4.paginatedFokontanys.records;
+        apiStore.fokontanysNextCursor.value =
+          adm4.paginatedFokontanys.nextEncoded ?? null;
         apiStore.initialAdmEntitiesAreLoaded.value = true;
       })
       .catch((e) => console.error(e));

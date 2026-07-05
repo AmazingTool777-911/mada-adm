@@ -65,6 +65,10 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
 
   const apiCallAbortControllerRef = useRef<AbortController | null>(null);
 
+  function shouldUseLocalApiDistricts(search?: string): boolean {
+    return !!search || (!search && (!!selectedRegion || !!selectedProvince));
+  }
+
   const fetchDistrictsDebouncedCb = useDebouncedCallback<
     [
       ApiCallPaginationParams,
@@ -74,7 +78,10 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
   >(
     async (paginationParams, queryParams, isFirstLoad) => {
       try {
-        if (isFirstLoad && queryParams.search) {
+        const _shouldUseLocalApiDistricts = shouldUseLocalApiDistricts(
+          queryParams.search,
+        );
+        if (isFirstLoad && _shouldUseLocalApiDistricts) {
           apiDistrictsAreLoaded.value = false;
         }
         apiDistrictsAreLoading.value = true;
@@ -85,7 +92,7 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
           queryParams,
           { signal: apiCallAbortControllerRef.current.signal },
         );
-        if (queryParams.search) {
+        if (_shouldUseLocalApiDistricts) {
           apiDistricts.value = isFirstLoad
             ? paginatedDistricts.records
             : [...apiDistricts.value, ...paginatedDistricts.records];
@@ -118,33 +125,46 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
     return null;
   }, [apiStore.config.value, selectedProvince]);
 
-  useEffect(() => {
-    if (disabledReason || !search.value) return;
-    fetchDistrictsDebouncedCb(
-      { limit: ADM_ENTITIES_COUNT.CASCADE_MODE },
-      {
-        search: search.value,
-        provinceId: selectedProvince?.id,
-        regionId: selectedRegion?.id,
-      },
-      true,
-    );
-  }, [disabledReason, search.value]);
+  function buildApiCallRequestParams(
+    search: string,
+  ): GetDistrictsPaginatedRequestParams {
+    const reqParams: GetDistrictsPaginatedRequestParams = {
+      search: search,
+    };
+    if (selectedRegion?.id) {
+      reqParams.regionId = selectedRegion.id;
+    } else if (selectedProvince?.id) {
+      reqParams.provinceId = selectedProvince.id;
+    }
+    return reqParams;
+  }
+
+  useEffect(
+    () => {
+      if (disabledReason || !shouldUseLocalApiDistricts(search.value)) return;
+      fetchDistrictsDebouncedCb(
+        { limit: ADM_ENTITIES_COUNT.CASCADE_MODE },
+        buildApiCallRequestParams(search.value),
+        true,
+      );
+    },
+    [disabledReason, search.value, selectedRegion, selectedProvince],
+  );
 
   async function handleScrollEnd() {
     if (disabledReason) return;
-    if (
-      search.value && apiDistrictsAreLoaded.value &&
-      !apiDistrictsNextCursor.value
-    ) return;
-    if (
-      !search.value && apiStore.districtsAreLoaded.value &&
-      !apiStore.districtsNextCursor.value
+    const _shouldUseLocalApiDistricts = shouldUseLocalApiDistricts(
+      search.value,
+    );
+    if (_shouldUseLocalApiDistricts) {
+      if (apiDistrictsAreLoaded.value && !apiDistrictsNextCursor.value) return;
+    } else if (
+      apiStore.districtsAreLoaded.value && !apiStore.districtsNextCursor.value
     ) return;
     const paginationParams: ApiCallPaginationParams = {
       limit: ADM_ENTITIES_COUNT.CASCADE_MODE,
     };
-    const nextCursor = search.value
+    const nextCursor = _shouldUseLocalApiDistricts
       ? apiDistrictsNextCursor.value
       : apiStore.districtsNextCursor.value;
     if (nextCursor) {
@@ -152,11 +172,7 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
     }
     await fetchDistrictsDebouncedCb(
       paginationParams,
-      {
-        search: search.value,
-        provinceId: selectedProvince?.id,
-        regionId: selectedRegion?.id,
-      },
+      buildApiCallRequestParams(search.value),
       false,
     );
   }
@@ -170,7 +186,7 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
 
   const districts = useMemo(
     () => {
-      if (search.value) {
+      if (shouldUseLocalApiDistricts(search.value)) {
         return apiDistricts.value;
       }
       if (selectedRegion) {
@@ -193,21 +209,23 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
     ],
   );
 
-  function clearSearch() {
+  function clearField() {
     onSelectedChange?.(null);
     search.value = "";
     directSearch.value = "";
   }
 
   useEffect(() => {
-    if (selectedProvince) {
-      clearSearch();
+    if (selectedRegion || selectedProvince) {
+      clearField();
     }
-  }, [selectedProvince]);
+  }, [selectedRegion]);
 
   useEffect(() => {
-    clearSearch();
-  }, [selectedRegion]);
+    if (selectedProvince) {
+      clearField();
+    }
+  }, [selectedProvince]);
 
   let placeholder = "Any district";
   if (selectedRegion) {

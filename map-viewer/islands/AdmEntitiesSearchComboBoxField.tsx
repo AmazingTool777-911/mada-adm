@@ -273,7 +273,6 @@ export default function AdmEntitiesSearchComboBoxField({
         if (index === -1) {
           inputRef.current?.focus();
         } else {
-          // console.log("entities", entities, "index", index);
           const entity = entities[index];
           const entityAdmLevelCode = admLevelCode ??
             ADM_LEVEL_CODES_INDEXED[entity.admLevel!];

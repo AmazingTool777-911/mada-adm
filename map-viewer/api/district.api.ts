@@ -1,7 +1,18 @@
 import { parseResponse } from "@hono/hono/client";
 import { District, EntityId } from "@scope/types/models";
 import { WithRequiredFields } from "@scope/types/utils";
+import {
+  CursorPaginatedResult,
+  GetManyDistrictsPaginationCursor,
+} from "@scope/queries/types";
 import { BaseApi } from "@/api/base.api.ts";
+import { ApiCallPaginationParams, ApiRequestOptions } from "@/types/api.d.ts";
+
+export type GetDistrictsPaginatedRequestParams = {
+  search?: string;
+  regionId?: EntityId;
+  provinceId?: EntityId;
+};
 
 export class DistrictApi extends BaseApi {
   async getWithGeoJsonById(
@@ -24,6 +35,29 @@ export class DistrictApi extends BaseApi {
       }),
     );
     return district as WithRequiredFields<District, "geojson">;
+  }
+
+  getManyPaginated(
+    paginationParams: ApiCallPaginationParams,
+    queryParams: GetDistrictsPaginatedRequestParams,
+    options?: ApiRequestOptions,
+  ): Promise<
+    CursorPaginatedResult<GetManyDistrictsPaginationCursor, District>
+  > {
+    return parseResponse(
+      this.client.api.districts.$get(
+        {
+          query: {
+            limit: `${paginationParams.limit}`,
+            cursor: paginationParams.cursor,
+            search: queryParams.search,
+            region_id: queryParams.regionId?.toString(),
+            province_id: queryParams.provinceId?.toString(),
+          },
+        },
+        { init: { signal: options?.signal } },
+      ),
+    );
   }
 }
 

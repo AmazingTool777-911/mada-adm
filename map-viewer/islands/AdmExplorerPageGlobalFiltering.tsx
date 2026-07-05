@@ -11,7 +11,6 @@ import AdmEntitiesSearchComboBoxField, {
 } from "@/islands/AdmEntitiesSearchComboBoxField.tsx";
 import { AdmEntity } from "@scope/types/models";
 import { injectApiStore } from "@/stores/api.store.ts";
-import { getAdmEntityValue } from "@/helpers/adm-entity.helper.ts";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback.ts";
 import {
   ADM_ENTITIES_SEARCH_DEBOUNCE_DELAY,
@@ -35,40 +34,6 @@ export default function AdmExplorerPageGlobalFiltering() {
   }
 
   const apiStore = injectApiStore();
-
-  const initialAdmEntities = useComputed(() => {
-    if (!apiStore.config.value || !apiStore.initialAdmEntitiesAreLoaded.value) {
-      return [];
-    }
-    const entities: AdmEntity[] = [];
-    for (const province of apiStore.provinces.value) {
-      if (!apiStore.config.value.hasGeojson) {
-        province.admLevel = ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.PROVINCE)!;
-      }
-      entities.push(province);
-    }
-    for (const region of apiStore.regions.value) {
-      if (!apiStore.config.value.hasGeojson) {
-        region.admLevel = ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.REGION)!;
-      }
-      entities.push(region);
-    }
-    for (const commune of apiStore.communes.value) {
-      if (!apiStore.config.value.hasGeojson) {
-        commune.admLevel = ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.COMMUNE)!;
-      }
-      entities.push(commune);
-    }
-    for (const fokontany of apiStore.fokontanys.value) {
-      if (!apiStore.config.value.hasGeojson) {
-        fokontany.admLevel = ADM_LEVEL_INDEX_BY_CODE.get(
-          AdmLevelCode.FOKONTANY,
-        )!;
-      }
-      entities.push(fokontany);
-    }
-    return entities;
-  });
 
   const searchValue = useSignal("");
   const selectedAdmEntityValue = useSignal<SelectedAdmEntityValue | null>(null);
@@ -121,22 +86,72 @@ export default function AdmExplorerPageGlobalFiltering() {
   );
 
   const admEntities = useComputed<AdmEntity[]>(() => {
-    if (searchValue.value.length < ADM_ENTITIES_SEARCH_MIN_LENGTH) {
-      return initialAdmEntities.value
-        .filter((entity) => {
-          if (
-            entity.admLevel! <
-              ADM_LEVEL_INDEX_BY_CODE.get(startingAdmLevelCode.value)!
-          ) {
-            return false;
-          }
-          const value = getAdmEntityValue(entity);
-          return value.toLocaleLowerCase("fr").startsWith(
-            searchValue.value.toLocaleLowerCase("fr"),
-          );
-        });
+    if (searchValue.value.length >= ADM_ENTITIES_SEARCH_MIN_LENGTH) {
+      return apiAdmEntities.value;
     }
-    return apiAdmEntities.value;
+    const entities: AdmEntity[] = [];
+    const lowerCaseSearchValue = searchValue.value.toLocaleLowerCase("fr");
+    if (startingAdmLevelCode.value === AdmLevelCode.PROVINCE) {
+      const provinces = lowerCaseSearchValue
+        ? apiStore.provinces.value.filter((p) => {
+          return p.province.toLocaleLowerCase("fr").startsWith(
+            lowerCaseSearchValue,
+          );
+        })
+        : apiStore.provinces.value;
+      entities.push(...provinces.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+    }
+    const startingAdmLevelCodeIndex = ADM_LEVEL_INDEX_BY_CODE.get(
+      startingAdmLevelCode.value,
+    )!;
+    if (
+      startingAdmLevelCodeIndex <=
+        ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.REGION)!
+    ) {
+      const regions = lowerCaseSearchValue
+        ? apiStore.regions.value.filter((r) => {
+          return r.region.toLocaleLowerCase("fr").startsWith(
+            lowerCaseSearchValue,
+          );
+        })
+        : apiStore.regions.value;
+      entities.push(...regions.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+    }
+    if (
+      startingAdmLevelCodeIndex <=
+        ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.DISTRICT)!
+    ) {
+      const districts = lowerCaseSearchValue
+        ? apiStore.districts.value.filter((c) => {
+          return c.district.toLocaleLowerCase("fr").startsWith(
+            lowerCaseSearchValue,
+          );
+        })
+        : apiStore.districts.value;
+      entities.push(...districts.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+    }
+    if (
+      startingAdmLevelCodeIndex <=
+        ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.COMMUNE)!
+    ) {
+      const communes = lowerCaseSearchValue
+        ? apiStore.communes.value.filter((c) => {
+          return c.commune.toLocaleLowerCase("fr").startsWith(
+            lowerCaseSearchValue,
+          );
+        })
+        : apiStore.communes.value;
+      entities.push(...communes.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+    }
+    const fokontanys = lowerCaseSearchValue
+      ? apiStore.fokontanys.value.filter((f) => {
+        return f.fokontany.toLocaleLowerCase("fr").startsWith(
+          lowerCaseSearchValue,
+        );
+      })
+      : apiStore.fokontanys.value;
+    entities.push(...fokontanys.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+    return entities;
   });
 
   useSignalEffect(() => {

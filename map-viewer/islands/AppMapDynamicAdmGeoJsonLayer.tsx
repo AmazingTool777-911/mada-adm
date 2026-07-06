@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "preact/hooks";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import {
+  AdmEntityDivisionWithEntry,
   type AppMapAdmEntityGeoJsonEntry,
   injectAppMapStore,
 } from "@/stores/app-map.store.ts";
@@ -21,6 +22,7 @@ import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
 import { injectAdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.ts";
 import { injectClientCacheIndexdDbConnection } from "@/client-cache/client-cache.indexeddb.ts";
+import AppMapDynamicAdmGeoJsonLayerDivision from "@/islands/AppMapDynamicAdmGeoJsonLayerDivision.tsx";
 
 export type AppMapDynamicAdmGeoJsonLayerProps = {
   map: maplibregl.Map;
@@ -50,7 +52,7 @@ export default function AppMapDynamicAdmGeoJsonLayer(
     fokontanyApi,
   );
 
-  const divisions = useMemo(
+  const divisions = useMemo<AdmEntityDivisionWithEntry[]>(
     () => {
       return appMapStore
         .breakAdmAttributesDiscriminatedDivisionsWithEntry(
@@ -66,6 +68,10 @@ export default function AppMapDynamicAdmGeoJsonLayer(
       appMapStore.fokontanyGeoJsonEntryByName.value,
     ],
   );
+
+  const renderedDivisions = useMemo<AdmEntityDivisionWithEntry[]>(() => {
+    return divisions.filter((division) => division.isRendered);
+  }, [divisions]);
 
   const popupRef = useRef<maplibregl.Popup>(null);
 
@@ -229,5 +235,21 @@ export default function AppMapDynamicAdmGeoJsonLayer(
     };
   }, []);
 
-  return null;
+  return (
+    <>
+      {renderedDivisions.map((division) => {
+        const key = `${division.admLevelCode}-${division.name}`;
+        const isRootEntry =
+          division.admLevelCode ===
+            admGeoJsonEntry.admEntityDiscriminated!.admLevelCode;
+        return (
+          <AppMapDynamicAdmGeoJsonLayerDivision
+            key={key}
+            isRootEntry={isRootEntry}
+            division={division}
+          />
+        );
+      })}
+    </>
+  );
 }

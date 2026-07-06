@@ -52,6 +52,7 @@ export default function AppMapDynamicAdmGeoJsonLayer(
     fokontanyApi,
   );
 
+  const prevDivisionsRef = useRef<AdmEntityDivisionWithEntry[]>([]);
   const divisions = useMemo<AdmEntityDivisionWithEntry[]>(
     () => {
       return appMapStore
@@ -121,6 +122,7 @@ export default function AppMapDynamicAdmGeoJsonLayer(
         }
       }
     }
+    prevDivisionsRef.current = divisions;
   }, [divisions]);
 
   useEffect(() => {
@@ -167,6 +169,7 @@ export default function AppMapDynamicAdmGeoJsonLayer(
             </div>
           </h3>
         `;
+        const divisions = prevDivisionsRef.current;
         const divisionsRowsHTML = divisions.map((division, i) => {
           const admLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
             division.admLevelCode,
@@ -226,12 +229,12 @@ export default function AppMapDynamicAdmGeoJsonLayer(
     });
 
     return () => {
+      popupCleanup();
       if (map.getLayer(layerId)) {
         map.removeLayer(layerId);
         map.removeLayer(outlineLayerId);
         map.removeSource(source);
       }
-      popupCleanup();
     };
   }, []);
 
@@ -239,9 +242,8 @@ export default function AppMapDynamicAdmGeoJsonLayer(
     <>
       {renderedDivisions.map((division) => {
         const key = `${division.admLevelCode}-${division.name}`;
-        const isRootEntry =
-          division.admLevelCode ===
-            admGeoJsonEntry.admEntityDiscriminated!.admLevelCode;
+        const isRootEntry = division.admLevelCode ===
+          admGeoJsonEntry.admEntityDiscriminated!.admLevelCode;
         return (
           <AppMapDynamicAdmGeoJsonLayerDivision
             key={key}

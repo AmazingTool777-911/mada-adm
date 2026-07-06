@@ -6,7 +6,7 @@ import type {
 } from "@/islands/workers/geometry-bbox-calculator.worker.ts";
 import { AdmLevelCode } from "@scope/consts/models";
 
-type MapClickEvent =
+type MapMouseEvent =
   & maplibregl.MapMouseEvent
   & {
     features?: maplibregl.MapGeoJSONFeature[];
@@ -62,33 +62,48 @@ export function addGeoJsonLayerToMap(
   }, sentinelLayerId);
 
   let hoveredId: number | null = null;
+  let hoveredLayerId: string | null = null;
   let isGrabbing = false;
-  map.on("mousedown", () => {
+
+  function handleMouseDown() {
     isGrabbing = true;
     map.getCanvas().style.cursor = "grabbing";
-  });
-  map.on("mouseup", () => {
+  }
+  map.on("mousedown", handleMouseDown);
+
+  function handleMouseUp() {
     isGrabbing = false;
     map.getCanvas().style.cursor = hoveredId ? "pointer" : "grab";
-  });
-  map.on("mousemove", layerId, (e) => {
-    if (e.features!.length > 0) {
-      if (hoveredId !== null) {
-        map.setFeatureState({ source, id: hoveredId }, {
-          hover: false,
-        });
-      }
-      hoveredId = e.features![0].id as number;
+  }
+  map.on("mouseup", handleMouseUp);
+
+  function handleMouseMove(e: MapMouseEvent) {
+    hoveredLayerId = e.features![0].layer.id;
+    const canvas = map.getCanvas();
+    if (canvas.computedStyleMap().get("cursor") !== "pointer") {
+      canvas.style.cursor = "pointer";
+    }
+    if (hoveredId !== null) {
+      map.setFeatureState({ source, id: hoveredId }, {
+        hover: false,
+      });
+    }
+    hoveredId = e.features![0].id as number;
+    if (hoveredLayerId === layerId) {
       map.setFeatureState({ source, id: hoveredId }, {
         hover: true,
       });
     }
-  });
-  map.on("mouseenter", layerId, () => {
+  }
+  map.on("mousemove", layerId, handleMouseMove);
+
+  function handleMouseEnter() {
     if (isGrabbing) return;
     map.getCanvas().style.cursor = "pointer";
-  });
-  map.on("mouseleave", layerId, () => {
+  }
+  map.on("mouseenter", layerId, handleMouseEnter);
+
+  function handleMouseLeave() {
     if (hoveredId !== null) {
       map.setFeatureState({ source, id: hoveredId }, {
         hover: false,
@@ -97,10 +112,11 @@ export function addGeoJsonLayerToMap(
     hoveredId = null;
     if (isGrabbing) return;
     map.getCanvas().style.cursor = "grab";
-  });
+  }
+  map.on("mouseleave", layerId, handleMouseLeave);
 
   let activePopup: maplibregl.Popup | null = null;
-  function handleMapClick(event: MapClickEvent) {
+  function handleMapClick(event: MapMouseEvent) {
     if (event.originalEvent.defaultPrevented) return;
     const features = map.queryRenderedFeatures(event.point);
     if (features.length > 0 && features[0].layer.id !== layerId) return;
@@ -131,6 +147,11 @@ export function addGeoJsonLayerToMap(
   }, layerId);
 
   return () => {
+    map.off("mousedown", handleMouseDown);
+    map.off("mouseup", handleMouseUp);
+    map.off("mousemove", handleMouseMove);
+    map.off("mouseenter", handleMouseEnter);
+    map.off("mouseleave", handleMouseLeave);
     map.off("click", layerId, handleMapClick);
     activePopup?.remove();
   };

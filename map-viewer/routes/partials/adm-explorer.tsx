@@ -16,7 +16,7 @@ export default define.page(function AdministrativeBoundaries(_ctx) {
     <Partial name="route-page">
       <Head>
         <title>
-          Administrative Boundaries Explorer | Map Viewer | Mada ADM
+          Administrative boundaries explorer | Map Viewer | Mada ADM
         </title>
       </Head>
       <AdmExplorerPage />

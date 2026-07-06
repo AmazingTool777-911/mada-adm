@@ -77,7 +77,8 @@ export default function SelectedAdmEntityItemParentItem(
                 false,
               );
             if (
-              updatedGeojsonEntry?.refsCount === 0 &&
+              updatedGeojsonEntry?.isRendered &&
+              updatedGeojsonEntry?.refsCount <= 1 &&
               updatedGeojsonEntry.admEntityDiscriminated
             ) {
               appMapStore.renderAdmEntityGeoJsonEntryByName(

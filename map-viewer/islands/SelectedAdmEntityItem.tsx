@@ -128,7 +128,10 @@ export default function SelectedAdmEntityItem(
               _geojsonEntry.name,
               false,
             );
-          if (updatedGeoJsonEntry?.refsCount === 0) {
+          if (
+            updatedGeoJsonEntry?.isRendered &&
+            updatedGeoJsonEntry?.refsCount <= 1
+          ) {
             appMapStore.renderAdmEntityGeoJsonEntryByName(
               updatedGeoJsonEntry.admEntityDiscriminated!.admLevelCode,
               updatedGeoJsonEntry.name,

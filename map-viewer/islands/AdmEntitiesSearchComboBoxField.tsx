@@ -7,20 +7,14 @@ import {
 } from "@preact/signals";
 import { autoUpdate, computePosition, flip, offset } from "@floating-ui/dom";
 import SimpleBar from "simplebar";
-import type {
-  AdmEntity,
-  Commune,
-  District,
-  Fokontany,
-  Province,
-  Region,
-} from "@scope/types/models";
+import type { AdmEntity } from "@scope/types/models";
 import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 import AdmEntitiesSearchComboBoxFieldListItem, {
   SelectedAdmEntityValue,
 } from "@/islands/AdmEntitiesSearchComboBoxFieldListItem.tsx";
 import SelectedAdmEntityItem from "@/islands/SelectedAdmEntityItem.tsx";
 export type { SelectedAdmEntityValue } from "@/islands/AdmEntitiesSearchComboBoxFieldListItem.tsx";
+import { getAdmEntityValue } from "@/helpers/adm-entity.helper.ts";
 
 export type AdmEntitiesSearchComboBoxFieldProps = {
   legend: string;
@@ -210,7 +204,7 @@ export default function AdmEntitiesSearchComboBoxField({
   }
 
   function handleItemClick(value: SelectedAdmEntityValue) {
-    const admEntityValue = getAdmEntityValue(value.admLevelCode, value.entity);
+    const admEntityValue = getAdmEntityValue(value.entity, value.admLevelCode);
     inputDirectValue.value = admEntityValue;
     onInputChange?.(admEntityValue);
     onSelected?.(value);
@@ -231,33 +225,6 @@ export default function AdmEntitiesSearchComboBoxField({
     ) {
       showMenu.value = false;
     }
-  }
-
-  function getAdmEntityValue(
-    admLevelCode: AdmLevelCode,
-    entity: AdmEntity,
-  ): string {
-    let value!: string;
-    switch (admLevelCode) {
-      case AdmLevelCode.PROVINCE:
-        value = (entity as Province).province;
-        break;
-      case AdmLevelCode.REGION:
-        value = (entity as Region).region;
-        break;
-      case AdmLevelCode.DISTRICT:
-        value = (entity as District).district;
-        break;
-      case AdmLevelCode.COMMUNE:
-        value = (entity as Commune).commune;
-        break;
-      case AdmLevelCode.FOKONTANY:
-        value = (entity as Fokontany).fokontany;
-        break;
-      default:
-        break;
-    }
-    return value;
   }
 
   function getListItemId(admLevelCode: AdmLevelCode, entity: AdmEntity) {
@@ -287,7 +254,7 @@ export default function AdmEntitiesSearchComboBoxField({
           const entity = entities[index];
           const entityAdmLevelCode = admLevelCode ??
             ADM_LEVEL_CODES_INDEXED[entity.admLevel!];
-          const value = getAdmEntityValue(entityAdmLevelCode, entity);
+          const value = getAdmEntityValue(entity, entityAdmLevelCode);
           inputDirectValue.value = value;
         }
 
@@ -300,7 +267,7 @@ export default function AdmEntitiesSearchComboBoxField({
           const entity = entities[selectedItemIndex.value];
           const entityAdmLevelCode = admLevelCode ??
             ADM_LEVEL_CODES_INDEXED[entity.admLevel!];
-          const value = getAdmEntityValue(entityAdmLevelCode, entity);
+          const value = getAdmEntityValue(entity, entityAdmLevelCode);
           inputDirectValue.value = value;
           onInputChange?.(value);
           onSelected?.(
@@ -329,7 +296,7 @@ export default function AdmEntitiesSearchComboBoxField({
         const entity = entities[index];
         const entityAdmLevelCode = admLevelCode ??
           ADM_LEVEL_CODES_INDEXED[entity.admLevel!];
-        const value = getAdmEntityValue(entityAdmLevelCode, entity);
+        const value = getAdmEntityValue(entity, entityAdmLevelCode);
         inputDirectValue.value = value;
         break;
       }

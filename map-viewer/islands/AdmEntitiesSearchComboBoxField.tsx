@@ -356,7 +356,7 @@ export default function AdmEntitiesSearchComboBoxField({
         <div
           class={`${inputTooltipText ? "tooltip tooltip-top" : ""} w-full`}
         >
-          <div class="tooltip-content z-20">
+          <div class="tooltip-content z-30">
             {inputTooltipText}
           </div>
           <input

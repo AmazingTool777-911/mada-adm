@@ -27,7 +27,7 @@ export default function AdmExplorerPageSearchModeTabs() {
           <>
             <div
               role="tablist"
-              class="tabs tabs-border border-b border-b-solid border-b-base-content/30 sticky top-0 pt-1 bg-white z-10"
+              class="tabs tabs-border border-b border-b-solid border-b-base-content/30 sticky top-0 pt-1 bg-white z-20"
             >
               <label
                 class={`tab ${

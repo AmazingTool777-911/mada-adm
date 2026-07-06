@@ -136,9 +136,6 @@ export default function AdmEntitiesSearchComboBoxFieldListItem(
       const _entity = entity as Fokontany;
       territory = _entity.fokontany;
       parentTerritory = _entity.commune;
-      if (_entity.commune) {
-        parentTerritory += `, ${_entity.commune}`;
-      }
       if (_entity.district) {
         parentTerritory += `, ${_entity.district}`;
       }

@@ -198,7 +198,7 @@ export default function AdmExplorerPageCascadeFilteringCommune({
     };
   }, []);
 
-  const districts = useMemo(
+  const communes = useMemo(
     () => {
       if (shouldUseLocalApiCommunes(search.value)) {
         return apiCommunes.value;
@@ -262,13 +262,15 @@ export default function AdmExplorerPageCascadeFilteringCommune({
     placeholder += ` in "${selectedProvince.province}" province`;
   }
 
-  const isLoadingMore = apiCommunesAreLoaded.value &&
-    apiCommunesAreLoading.value;
+  const isLoadingMore =
+    (shouldUseLocalApiCommunes(search.value)
+      ? apiCommunesAreLoaded.value
+      : apiStore.communesAreLoaded.value) && apiCommunesAreLoading.value;
 
   return (
     <AdmEntitiesSearchComboBoxField
       admLevelCode={AdmLevelCode.COMMUNE}
-      entities={districts}
+      entities={communes}
       inputValue={search.value}
       inputDirectValue={directSearch}
       legend="Search for communes"

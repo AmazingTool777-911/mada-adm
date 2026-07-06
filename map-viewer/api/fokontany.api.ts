@@ -2,6 +2,19 @@ import { parseResponse } from "@hono/hono/client";
 import { EntityId, Fokontany } from "@scope/types/models";
 import { WithRequiredFields } from "@scope/types/utils";
 import { BaseApi } from "@/api/base.api.ts";
+import { ApiCallPaginationParams, ApiRequestOptions } from "@/types/api.d.ts";
+import {
+  CursorPaginatedResult,
+  GetManyFokontanysPaginationCursor,
+} from "@scope/queries/types";
+
+export type GetFokontanysPaginatedRequestParams = {
+  search?: string;
+  provinceId?: EntityId;
+  regionId?: EntityId;
+  districtId?: EntityId;
+  communeId?: EntityId;
+};
 
 export class FokontanyApi extends BaseApi {
   async getWithGeoJsonById(
@@ -14,6 +27,34 @@ export class FokontanyApi extends BaseApi {
       }),
     );
     return fokontany as WithRequiredFields<Fokontany, "geojson">;
+  }
+
+  getManyPaginated(
+    paginationParams: ApiCallPaginationParams,
+    queryParams: GetFokontanysPaginatedRequestParams,
+    options?: ApiRequestOptions,
+  ): Promise<
+    CursorPaginatedResult<
+      GetManyFokontanysPaginationCursor,
+      Fokontany
+    >
+  > {
+    return parseResponse(
+      this.client.api.fokontanys.$get(
+        {
+          query: {
+            limit: `${paginationParams.limit}`,
+            cursor: paginationParams.cursor,
+            search: queryParams.search,
+            province_id: queryParams.provinceId?.toString(),
+            region_id: queryParams.regionId?.toString(),
+            district_id: queryParams.districtId?.toString(),
+            commune_id: queryParams.communeId?.toString(),
+          },
+        },
+        { init: { signal: options?.signal } },
+      ),
+    );
   }
 }
 

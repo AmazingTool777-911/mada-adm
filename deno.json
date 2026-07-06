@@ -57,7 +57,8 @@
       "esnext"
     ]
   },
+  "exclude": ["bin/"],
   "test": {
-    "exclude": ["**/*.integration.test.ts"]
+    "exclude": ["**/*.integration.test.ts", "bin/*"]
   }
 }

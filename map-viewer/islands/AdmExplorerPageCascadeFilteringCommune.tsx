@@ -226,6 +226,9 @@ export default function AdmExplorerPageCascadeFilteringCommune({
       search.value,
       apiCommunes.value,
       apiStore.communes.value,
+      selectedDistrict,
+      selectedRegion,
+      selectedProvince,
     ],
   );
 

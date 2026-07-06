@@ -251,6 +251,10 @@ export default function AdmExplorerPageCascadeFilteringFokontany({
       search.value,
       apiFokontanys.value,
       apiStore.fokontanys.value,
+      selectedCommune,
+      selectedDistrict,
+      selectedRegion,
+      selectedProvince,
     ],
   );
 

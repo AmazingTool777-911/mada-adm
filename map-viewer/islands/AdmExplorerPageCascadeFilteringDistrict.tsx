@@ -206,6 +206,8 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
       search.value,
       apiDistricts.value,
       apiStore.districts.value,
+      selectedRegion,
+      selectedProvince,
     ],
   );
 

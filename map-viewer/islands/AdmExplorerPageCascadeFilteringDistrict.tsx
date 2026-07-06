@@ -234,7 +234,10 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
     placeholder += ` in "${selectedProvince.province}" province`;
   }
 
-  const isLoadingMore = apiDistrictsAreLoaded.value &&
+  const isLoadingMore =
+    (shouldUseLocalApiDistricts(search.value)
+      ? apiDistrictsAreLoaded.value
+      : apiStore.districtsAreLoaded.value) &&
     apiDistrictsAreLoading.value;
 
   return (

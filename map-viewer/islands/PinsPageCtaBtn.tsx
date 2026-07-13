@@ -1,8 +1,10 @@
 import { PinIcon } from "lucide-preact";
-import { injectPinLocationPanelStore } from "@/stores/pin-location-panel.store.ts";
+import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
+import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 
 export default function PinsPageCtaBtn() {
-  const { showPanel } = injectPinLocationPanelStore();
+  const fokontanyApi = injectFokontanyApi();
+  const { showPanel } = injectPinnedLocationsStore(fokontanyApi);
 
   return (
     <>

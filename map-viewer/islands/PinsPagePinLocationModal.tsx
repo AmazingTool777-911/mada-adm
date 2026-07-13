@@ -1,13 +1,20 @@
 import { useEffect, useRef } from "preact/hooks";
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { MapPinPlusIcon, PinIcon } from "lucide-preact";
-import { injectPinLocationPanelStore } from "@/stores/pin-location-panel.store.ts";
+import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
 import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
 import CompassIcon from "@/islands/icons/CompassIcon.tsx";
 import PinsPagePinLocationModalPinTypeOption from "@/islands/PinsPagePinLocationModalPinTypeOption.tsx";
+import PinsPagePinLocationModalCurrentLocationTrackingForm from "@/islands/PinsPagePinLocationModalCurrentLocationTrackingForm.tsx";
+import { injectFokontanyApi } from "@/api/fokontany.api.ts";
+
+type SelectedPinType = "live" | "marker" | "coordinates";
 
 export default function PinsPagePinLocationModal() {
-  const { showPanel } = injectPinLocationPanelStore();
+  const fokontanyApi = injectFokontanyApi();
+  const { showPanel } = injectPinnedLocationsStore(fokontanyApi);
+
+  const selectedPinType = useSignal<SelectedPinType | null>(null);
 
   const dialogEltRef = useRef<HTMLDialogElement>(null);
 
@@ -25,12 +32,9 @@ export default function PinsPagePinLocationModal() {
   useEffect(() => {
     dialogEltRef.current?.addEventListener("close", () => {
       showPanel.value = false;
+      selectedPinType.value = null;
     });
   }, []);
-
-  const selectedPinType = useSignal<"live" | "marker" | "coordinates" | null>(
-    null,
-  );
 
   return (
     <dialog
@@ -41,15 +45,17 @@ export default function PinsPagePinLocationModal() {
         <h3 class="text-lg font-bold flex items-center gap-x-3 mb-4">
           <PinIcon /> <span>Pin a location to the map</span>
         </h3>
-        <div class="space-y-4">
+        <div class="space-y-5">
           <PinsPagePinLocationModalPinTypeOption
             pinType="live"
             title="Current Location Tracker"
-            description="Place a marker tied directly to your device's physical location."
+            description="Track your device's physical location through a beacon on the map."
             icon={<LocationTargetIcon size={22} color="currentColor" />}
             selectedPinType={selectedPinType.value}
             onSelectedPinChange={(v) => selectedPinType.value = v}
-          />
+          >
+            <PinsPagePinLocationModalCurrentLocationTrackingForm />
+          </PinsPagePinLocationModalPinTypeOption>
           <PinsPagePinLocationModalPinTypeOption
             pinType="marker"
             title="Custom Map Pin"

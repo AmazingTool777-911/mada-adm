@@ -63,6 +63,7 @@
     "jsr:@std/text@^1.0.17": "1.0.18",
     "jsr:@std/uuid@^1.0.9": "1.1.1",
     "jsr:@zod/zod@^4.4.3": "4.4.3",
+    "npm:@accelint/geo@~0.6.1": "0.6.1",
     "npm:@babel/core@^7.28.0": "7.29.0",
     "npm:@babel/preset-react@^7.27.1": "7.28.5_@babel+core@7.29.0",
     "npm:@floating-ui/dom@^1.7.6": "1.7.6",
@@ -81,6 +82,7 @@
     "npm:esbuild@0.25.7": "0.25.7",
     "npm:esbuild@~0.25.5": "0.25.7",
     "npm:floating-ui@^5.2.8": "5.2.8",
+    "npm:geo-coordinates-parser@^1.7.4": "1.7.4",
     "npm:http-status-codes@^2.3.0": "2.3.0",
     "npm:lucide-preact@^1.14.0": "1.16.0_preact@10.29.2",
     "npm:maplibre-gl@^5.24.0": "5.24.0",
@@ -354,6 +356,13 @@
     }
   },
   "npm": {
+    "@accelint/geo@0.6.1": {
+      "integrity": "sha512-WFdoi0Jpq7tQMu8iae3kCJbQUSBdHRMoXc44OzOsZdKd4Cpt5b8RyiAk8UzHKHtFZENhDqyRk/TjY7Ap6FKi+Q==",
+      "dependencies": [
+        "@types/geodesy",
+        "geodesy"
+      ]
+    },
     "@babel/code-frame@7.29.0": {
       "integrity": "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==",
       "dependencies": [
@@ -1231,6 +1240,9 @@
     "@types/estree@1.0.8": {
       "integrity": "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="
     },
+    "@types/geodesy@2.2.8": {
+      "integrity": "sha512-nGnmuwiLr7gou7SnjMK803yVrVUV47aguHsPQ0IdLL8W3IkP8jQs+vrV43HZ7pW3sdwKJzuPszfHY9xCu04K2w=="
+    },
     "@types/geojson@7946.0.16": {
       "integrity": "sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg=="
     },
@@ -1420,6 +1432,12 @@
     },
     "gensync@1.0.0-beta.2": {
       "integrity": "sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg=="
+    },
+    "geo-coordinates-parser@1.7.4": {
+      "integrity": "sha512-gVGxBW+s1csexXVMf5bIwz3TH9n4sCEglOOOqmrPk8YazUI5f79jCowKjTw05m/0h1//3+Z2m/nv8IIozgZyUw=="
+    },
+    "geodesy@2.4.0": {
+      "integrity": "sha512-tHjQ1sXq8UAIEg1V0Pa6mznUxGU0R+3H5PIF6NULr0yPCAVLKqJro93Bbr19jSE18BMfyjN4osWDI4sm92m0kw=="
     },
     "gl-matrix@3.4.4": {
       "integrity": "sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ=="
@@ -1862,6 +1880,7 @@
         "dependencies": [
           "jsr:@fresh/core@^2.3.3",
           "jsr:@fresh/plugin-vite@^1.1.2",
+          "npm:@accelint/geo@~0.6.1",
           "npm:@preact/signals@^2.9.0",
           "npm:@tailwindcss/vite@^4.1.12",
           "npm:@turf/bbox@^7.3.5",
@@ -1870,6 +1889,7 @@
           "npm:culori@^4.0.2",
           "npm:daisyui@^5.5.19",
           "npm:floating-ui@^5.2.8",
+          "npm:geo-coordinates-parser@^1.7.4",
           "npm:lucide-preact@^1.14.0",
           "npm:maplibre-gl@^5.24.0",
           "npm:preact@^10.29.1",

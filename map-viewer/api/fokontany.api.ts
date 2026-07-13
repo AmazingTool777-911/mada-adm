@@ -56,6 +56,15 @@ export class FokontanyApi extends BaseApi {
       ),
     );
   }
+
+  getByCoordinates(lat: number, lng: number): Promise<Fokontany> {
+    return parseResponse(
+      this.client.api.locations[":lat"][":lng"].fokontany.$get({
+        param: { lat: lat.toString(), lng: lng.toString() },
+        query: {},
+      }),
+    );
+  }
 }
 
 let _instance: FokontanyApi | null = null;

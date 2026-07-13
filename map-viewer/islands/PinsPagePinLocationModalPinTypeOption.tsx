@@ -25,7 +25,7 @@ export default function PinsPagePinLocationModalPinTypeOption(
 
   return (
     <article
-      class={`p-3 rounded-lg border-t border-l border-b border-r ${
+      class={`px-3 pt-3 pb-4 rounded-lg border-t border-l border-b border-r ${
         isSelected ? "border-primary" : "border-base-content/20"
       }`}
     >

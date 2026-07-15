@@ -99,3 +99,27 @@ export const GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS: {
 
 export const UNSUPPORTED_GEOLOCATION_ERROR_MESSAGE =
   "Geolocation is not supported by this browser.";
+
+export enum PinnedLocationErrorCause {
+  UnavailableConfig = "UnavailableConfig",
+  NotFound = "NotFound",
+  Unexpected = "Unexpected",
+}
+
+export const PINNED_LOCATION_ADM_TERRITORY_ERROR_MESSAGE_BY_CAUSE = new Map<
+  PinnedLocationErrorCause,
+  string
+>([
+  [
+    PinnedLocationErrorCause.UnavailableConfig,
+    "The database configuration is not available.",
+  ],
+  [
+    PinnedLocationErrorCause.NotFound,
+    "Could not resolve the ADM territory at the pinned location. Make sure the location is inside Madagascar's territory boundaries.",
+  ],
+  [
+    PinnedLocationErrorCause.Unexpected,
+    "An unexpected error occurred while resolving the ADM territory at the pinned location.",
+  ],
+]);

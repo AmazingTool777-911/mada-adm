@@ -7,12 +7,14 @@ import CompassIcon from "@/islands/icons/CompassIcon.tsx";
 import PinsPagePinLocationModalPinTypeOption from "@/islands/PinsPagePinLocationModalPinTypeOption.tsx";
 import PinsPagePinLocationModalCurrentLocationTrackingForm from "@/islands/PinsPagePinLocationModalCurrentLocationTrackingForm.tsx";
 import { injectFokontanyApi } from "@/api/fokontany.api.ts";
+import { injectApiStore } from "@/stores/api.store.ts";
 
 type SelectedPinType = "live" | "marker" | "coordinates";
 
 export default function PinsPagePinLocationModal() {
   const fokontanyApi = injectFokontanyApi();
-  const { showPanel } = injectPinnedLocationsStore(fokontanyApi);
+  const apiStore = injectApiStore();
+  const { showPanel } = injectPinnedLocationsStore(fokontanyApi, apiStore);
 
   const selectedPinType = useSignal<SelectedPinType | null>(null);
 

@@ -22,10 +22,15 @@ import CopyToClipboardBtn from "@/islands/CopyToClipboardBtn.tsx";
 import useDynamicDateTime from "@/hooks/useDynamicDateTime.ts";
 import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
 import { injectFokontanyApi } from "@/api/fokontany.api.ts";
+import { injectApiStore } from "@/stores/api.store.ts";
 
 export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
   const fokontanyApi = injectFokontanyApi();
-  const pinnedLocationsStore = injectPinnedLocationsStore(fokontanyApi);
+  const apiStore = injectApiStore();
+  const pinnedLocationsStore = injectPinnedLocationsStore(
+    fokontanyApi,
+    apiStore,
+  );
   const {
     trackingProfileFrequency,
     highAccuracyGeolocationEnabled,
@@ -55,7 +60,11 @@ export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
     geolocationIsSupported.value = "geolocation" in navigator;
     if (!geolocationIsSupported.value) return;
 
-    await pinnedLocationsStore.trackCurrentLocation();
+    const isSuccess = await pinnedLocationsStore.trackCurrentLocation();
+
+    if (isSuccess) {
+      pinnedLocationsStore.showPanel.value = false;
+    }
   }
 
   function handleReset(e: TargetedEvent<HTMLFormElement>) {

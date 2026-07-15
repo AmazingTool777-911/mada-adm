@@ -4,15 +4,12 @@ import { Fokontany } from "@scope/types/models";
 import {
   CURRENT_LOCATION_TRACKING_DURATION_BY_PROFILE,
   CurrentLocationTrackingProfile,
+  PinnedLocationErrorCause,
 } from "@/consts/pinned-locations.consts.ts";
 import { GEOLOCATION_TIMEOUT } from "@/config/pinned-locations.config.ts";
 import { FokontanyApi } from "@/api/fokontany.api.ts";
 import { compareGeographicCoordinates } from "@/helpers/pinned-locations.helper.ts";
-
-export enum PinnedLocationErrorCause {
-  NotFound = "NotFound",
-  Unexpected = "Unexpected",
-}
+import { ApiStore } from "@/stores/api.store.ts";
 
 export type PinnedLocationEntry = {
   id: number;
@@ -27,7 +24,7 @@ export type PinnedLocationEntry = {
 };
 
 export class PinnedLocationsStore {
-  constructor(private fokontanyApi: FokontanyApi) {}
+  constructor(private fokontanyApi: FokontanyApi, private apiStore: ApiStore) {}
 
   readonly showPanel = signal(false);
 
@@ -75,6 +72,15 @@ export class PinnedLocationsStore {
 
   private async loadCurrentLocationFokontany() {
     if (!this.currentLocationEntry.value) return;
+    if (this.apiStore.configIsLoaded.value && !this.apiStore.config.value) {
+      this.currentLocationEntry.value = {
+        ...this.currentLocationEntry.value,
+        fokontany: null,
+        isLoadingFokontany: false,
+        fokontanyErrorCause: PinnedLocationErrorCause.UnavailableConfig,
+      };
+      return;
+    }
     try {
       const fokontany = await this.fokontanyApi
         .getByCoordinates(
@@ -94,6 +100,7 @@ export class PinnedLocationsStore {
       if (this.currentLocationEntry.value) {
         this.currentLocationEntry.value = {
           ...this.currentLocationEntry.value,
+          fokontany: null,
           isLoadingFokontany: false,
           fokontanyErrorCause:
             (error instanceof DetailedError && error.statusCode === 404)
@@ -104,13 +111,15 @@ export class PinnedLocationsStore {
     }
   }
 
-  async trackCurrentLocation() {
+  async trackCurrentLocation(): Promise<boolean> {
     if (this.currentLocationTrackingInterval) {
       clearInterval(this.currentLocationTrackingInterval);
       this.currentLocationTrackingInterval = null;
     }
 
     this.geolocationIsLoading.value = true;
+
+    let isSuccess = true;
 
     const id = Date.now();
 
@@ -133,6 +142,7 @@ export class PinnedLocationsStore {
     } catch (error) {
       console.error(error);
       this.geolocationError.value = error as GeolocationPositionError;
+      isSuccess = false;
     } finally {
       this.geolocationIsLoading.value = false;
     }
@@ -177,6 +187,8 @@ export class PinnedLocationsStore {
         }
       }, duration);
     }
+
+    return isSuccess;
   }
 
   clearCurrentLocationTracking() {
@@ -197,6 +209,7 @@ let _instance: PinnedLocationsStore | null = null;
 
 export function injectPinnedLocationsStore(
   fokontanyApi: FokontanyApi,
+  apiStore: ApiStore,
 ): PinnedLocationsStore {
-  return _instance ??= new PinnedLocationsStore(fokontanyApi);
+  return _instance ??= new PinnedLocationsStore(fokontanyApi, apiStore);
 }

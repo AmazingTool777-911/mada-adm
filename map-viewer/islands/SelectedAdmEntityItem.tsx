@@ -28,6 +28,8 @@ export type SelectedAdmEntityItemProps = {
   value: SelectedAdmEntityValue;
   withParents?: boolean;
   unNestParents?: boolean;
+  closable?: boolean;
+  size?: "sm" | "md";
   onClose?: (value: SelectedAdmEntityValue) => void;
 };
 
@@ -36,6 +38,8 @@ export default function SelectedAdmEntityItem(
     value,
     withParents = false,
     unNestParents = false,
+    closable = true,
+    size = "md",
     onClose,
   }: SelectedAdmEntityItemProps,
 ) {
@@ -61,7 +65,8 @@ export default function SelectedAdmEntityItem(
   }
 
   const toggleClassName = useMemo<string>(() => {
-    return getToggleClassName(value.admLevelCode);
+    return getToggleClassName(value.admLevelCode) +
+      (size === "md" ? " toggle-md" : " toggle-sm");
   }, [value.admLevelCode]);
 
   const provinceApi = injectProvinceApi();
@@ -221,8 +226,9 @@ export default function SelectedAdmEntityItem(
             <AdmPill
               admLevelCode={value.admLevelCode}
               text={getAdmEntityValue(value.entity, value.admLevelCode)}
-              closable
+              closable={closable}
               value={value}
+              size={size}
               onClick={() => handlePillClick()}
               onClose={() => onClose?.(value)}
             />
@@ -267,6 +273,7 @@ export default function SelectedAdmEntityItem(
                     toggleClassName={toggleClassName}
                     parentValue={parentValue}
                     toggleIsDisabled={toggleIsDisabled}
+                    size={size}
                     onClick={handlePillClick}
                     onToggleChange={toggleShowOnMap}
                   />

@@ -8,6 +8,7 @@ export type AdmPillProps<TValue = unknown> = {
   value?: TValue;
   badge?: string;
   closable?: boolean;
+  size?: "md" | "sm";
   onClick?: (admLevelCode: AdmLevelCode, value?: TValue) => void;
   onClose?: (admLevelCode: AdmLevelCode, value?: TValue) => void;
 };
@@ -20,6 +21,7 @@ export default function AdmPill<TValue = unknown>(
     badge,
     closable = false,
     value,
+    size = "md",
     onClick,
     onClose,
   }: AdmPillProps<
@@ -49,6 +51,8 @@ export default function AdmPill<TValue = unknown>(
       );
   }
 
+  const sizeClassName = size === "sm" ? "btn-sm" : "";
+
   function handleClose(e: TargetedMouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     onClose?.(admLevelCode, value);
@@ -58,7 +62,7 @@ export default function AdmPill<TValue = unknown>(
     <div
       tabIndex={0}
       title={title ?? text}
-      class={`btn ${colorClassName} flex items-center gap-x-2 w-fit max-w-full`}
+      class={`btn ${sizeClassName} ${colorClassName} flex items-center gap-x-2 w-fit max-w-full`}
       style="border-radius: 1.25rem"
       onClick={() => onClick?.(admLevelCode, value)}
     >

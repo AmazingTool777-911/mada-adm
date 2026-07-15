@@ -23,6 +23,7 @@ export type SelectedAdmEntityItemParentItemProps = {
   toggleClassName: string;
   parentValue: AdmEntityDivisionWithEntry;
   toggleIsDisabled: boolean;
+  size?: "md" | "sm";
   onClick?: (admLevelCode: AdmLevelCode) => void | Promise<void>;
   onToggleChange?: (admLevelCode: AdmLevelCode, toggle: boolean) => void;
 };
@@ -33,6 +34,7 @@ export default function SelectedAdmEntityItemParentItem(
     parentValue,
     toggleClassName,
     toggleIsDisabled,
+    size,
     onClick,
     onToggleChange,
   }: SelectedAdmEntityItemParentItemProps,
@@ -118,6 +120,9 @@ export default function SelectedAdmEntityItemParentItem(
     }
   }
 
+  const _toggleClassName = toggleClassName +
+    (size === "md" ? " toggle-md" : " toggle-sm");
+
   return (
     <div class="py-1 pl-1 bg-white relative z-10">
       <em class="not-italic text-xs text-base-content/70 capitalize inline-block mb-1">
@@ -128,6 +133,7 @@ export default function SelectedAdmEntityItemParentItem(
           <AdmPill
             admLevelCode={parentValue.admLevelCode}
             text={parentValue.text}
+            size={size}
             value={parentValue}
             onClick={() => onClick?.(parentValue.admLevelCode)}
           />
@@ -145,7 +151,7 @@ export default function SelectedAdmEntityItemParentItem(
                 type="checkbox"
                 checked={parentValue.isRendered}
                 disabled={toggleIsDisabled}
-                class={`toggle ${toggleClassName}`}
+                class={`toggle ${_toggleClassName}`}
                 onClick={handleToggleChange}
               />
             </div>

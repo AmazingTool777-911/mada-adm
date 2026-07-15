@@ -1,0 +1,219 @@
+import { useRef } from "preact/hooks";
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
+import { CircleStopIcon, ClockIcon, MapPinnedIcon } from "lucide-preact";
+import { coordinateSystems, createCoordinate } from "@accelint/geo";
+import {
+  CurrentLocationTrackingProfile,
+  GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS,
+  GeographicCoordinateOutputFormat,
+  TRACKING_PROFILE_FREQUENCY_OPTIONS,
+} from "@/consts/pinned-locations.consts.ts";
+import { injectFokontanyApi } from "@/api/fokontany.api.ts";
+import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
+import CopyToClipboardBtn from "@/islands/CopyToClipboardBtn.tsx";
+import useDynamicDateTime from "@/hooks/useDynamicDateTime.ts";
+import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
+import PinsPagePinnedLocationCardFokontany from "@/islands/PinsPagePinnedLocationCardFokontany.tsx";
+import { injectApiStore } from "@/stores/api.store.ts";
+import { showPinnedLocationOnMapEventHub } from "@/helpers/pinned-locations.helper.ts";
+
+export default function PinsPageCurrentLocationCard() {
+  const outputFormat = useSignal<GeographicCoordinateOutputFormat>(
+    GeographicCoordinateOutputFormat.DecimalDegrees,
+  );
+
+  function handleOutputFormatChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    outputFormat.value = target.value as GeographicCoordinateOutputFormat;
+  }
+
+  const fokontanyApi = injectFokontanyApi();
+  const apiStore = injectApiStore();
+  const pinnedLocationsStore = injectPinnedLocationsStore(
+    fokontanyApi,
+    apiStore,
+  );
+  const {
+    currentLocationEntry,
+    trackingProfileFrequency,
+    highAccuracyGeolocationEnabled,
+  } = pinnedLocationsStore;
+
+  const coordinatesFormatted = useComputed<string | null>(() => {
+    const entryCoordinates = currentLocationEntry.value?.coordinates;
+    if (!entryCoordinates) return null;
+    const create = createCoordinate(coordinateSystems.dd, "LATLON");
+    const coord = create([entryCoordinates.lat, entryCoordinates.lng]);
+    switch (outputFormat.value) {
+      case GeographicCoordinateOutputFormat.DecimalDegrees:
+        return coord.dd();
+      case GeographicCoordinateOutputFormat.DegreesDecimalMinutes:
+        return coord.ddm();
+      case GeographicCoordinateOutputFormat.DegreesMinutesSeconds:
+        return coord.dms();
+      case GeographicCoordinateOutputFormat.MilitaryGridReferenceSystem:
+        return coord.mgrs();
+      case GeographicCoordinateOutputFormat.UniversalTransverseMercator:
+        return coord.utm();
+      default:
+        throw new Error(
+          `Unsupported outputFormat ${outputFormat.value} in currentLocationCoordinatesFormatted`,
+        );
+    }
+  });
+
+  function handleTrackingModeChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    trackingProfileFrequency.value = target
+      .value as CurrentLocationTrackingProfile;
+  }
+
+  function handleHighAccuracyGeolocationChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    highAccuracyGeolocationEnabled.value = target.checked;
+  }
+
+  const lastUpdatedAtDynamic = useDynamicDateTime(
+    currentLocationEntry.value?.updatedAt,
+  );
+
+  useSignalEffect(() => {
+    if (currentLocationEntry.value) {
+      lastUpdatedAtDynamic.start(currentLocationEntry.value.updatedAt);
+    } else {
+      lastUpdatedAtDynamic.clear();
+    }
+  });
+
+  const lastUpdatedAtIntlFormatterRef = useRef<Intl.DateTimeFormat>(
+    new Intl.DateTimeFormat("en-US", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }),
+  );
+
+  const fullLastUpdateAtFormatted = useComputed<string | null>(() => {
+    const date = currentLocationEntry.value?.updatedAt;
+    if (!date) return null;
+    return lastUpdatedAtIntlFormatterRef.current.format(date);
+  });
+
+  function handleShowOnMapClick() {
+    currentLocationEntry.value?.id &&
+      showPinnedLocationOnMapEventHub.dispatch(currentLocationEntry.value.id);
+  }
+
+  return !!currentLocationEntry.value && (
+    <article class="shadow shadow-base-content/30 rounded-sm p-3">
+      <h3 class="font-bold flex items-center gap-x-1.5 text-sm">
+        <LocationTargetIcon size={16} />
+        <span>Current location</span>
+      </h3>
+      <div class="space-y-1.5 mt-1">
+        <fieldset class="fieldset">
+          <label for="current-location-card-output-format" class="label">
+            Output format
+          </label>
+          <div>
+            <select
+              id="current-location-card-output-format"
+              name="outputName"
+              value={outputFormat}
+              class="select select-xs w-fit"
+              onChange={handleOutputFormatChange}
+            >
+              {GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </fieldset>
+        <section aria-labelledby="current-location-card-title">
+          <div class="flex items-center gap-x-2">
+            <div>
+              <h5
+                id="current-location-card-title"
+                class="text-xs text-base-content/60 mb-1"
+              >
+                Coordinates
+              </h5>
+              <p class="text-xs text-base-content/90">
+                {coordinatesFormatted.value}
+              </p>
+            </div>
+            <CopyToClipboardBtn text={coordinatesFormatted.value!} />
+          </div>
+        </section>
+        <fieldset class="fieldset">
+          <label for="current-location-card-tracking-mode" class="label">
+            Tracking mode
+          </label>
+          <div>
+            <select
+              id="current-location-card-tracking-mode"
+              name="outputName"
+              value={trackingProfileFrequency}
+              class="select select-xs w-fit"
+              onChange={handleTrackingModeChange}
+            >
+              {TRACKING_PROFILE_FREQUENCY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </fieldset>
+        <fieldset class="fieldset">
+          <label class="label text-base-content/90">
+            High-accuracy GPS
+            <input
+              type="checkbox"
+              class="toggle toggle-sm toggle-primary"
+              checked={highAccuracyGeolocationEnabled}
+              onChange={handleHighAccuracyGeolocationChange}
+            />
+          </label>
+        </fieldset>
+      </div>
+      <div class="flex items-start gap-x-1 mt-2">
+        <ClockIcon size={12} class="text-base-content/70 mt-0.5" />
+        <p class="text-xs text-base-content/70">
+          Last updated at{" "}
+          <strong
+            title={fullLastUpdateAtFormatted.value!}
+            class="text-base-content text-xs font-normal"
+          >
+            {lastUpdatedAtDynamic.dateTime.value}
+          </strong>
+        </p>
+      </div>
+      <PinsPagePinnedLocationCardFokontany
+        className="mt-3"
+        fokontany={currentLocationEntry.value.fokontany}
+        isLoading={currentLocationEntry.value.isLoadingFokontany ?? false}
+        errorCause={currentLocationEntry.value.fokontanyErrorCause}
+      />
+      <div class="mt-3 flex gap-x-2.5">
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          onClick={handleShowOnMapClick}
+        >
+          <MapPinnedIcon size={14} />
+          Show on map
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-error"
+          onClick={() => pinnedLocationsStore.clearCurrentLocationTracking()}
+        >
+          <CircleStopIcon size={14} />
+          <span>Stop tracking</span>
+        </button>
+      </div>
+    </article>
+  );
+}

@@ -123,3 +123,5 @@ export const PINNED_LOCATION_ADM_TERRITORY_ERROR_MESSAGE_BY_CAUSE = new Map<
     "An unexpected error occurred while resolving the ADM territory at the pinned location.",
   ],
 ]);
+
+export const PINNED_LOCATION_FOCUS_ZOOM = 18;

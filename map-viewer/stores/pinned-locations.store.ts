@@ -13,11 +13,13 @@ import { ApiStore } from "@/stores/api.store.ts";
 
 export type PinnedLocationEntry = {
   id: number;
+  title: string;
   updatedAt: Date;
   coordinates: {
     lat: number;
     lng: number;
   };
+  isLocked: boolean;
   isLoadingFokontany: boolean;
   fokontanyErrorCause: PinnedLocationErrorCause | null;
   fokontany: Fokontany | null;
@@ -111,7 +113,7 @@ export class PinnedLocationsStore {
     }
   }
 
-  async trackCurrentLocation(): Promise<boolean> {
+  async loadInitialCurrentLocation(): Promise<boolean> {
     if (this.currentLocationTrackingInterval) {
       clearInterval(this.currentLocationTrackingInterval);
       this.currentLocationTrackingInterval = null;
@@ -121,20 +123,21 @@ export class PinnedLocationsStore {
 
     let isSuccess = true;
 
-    const id = Date.now();
-
     try {
       const position = await this.getCurrentPosition();
       this.currentLocationEntry.value = {
-        id,
+        id: this.currentLocationEntry.value?.id ?? Date.now(),
+        title: "Current location",
         updatedAt: new Date(),
         coordinates: {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         },
+        isLocked: this.currentLocationEntry.value?.isLocked ?? true,
         isLoadingFokontany: true,
-        fokontanyErrorCause: null,
-        fokontany: null,
+        fokontanyErrorCause:
+          this.currentLocationEntry.value?.fokontanyErrorCause ?? null,
+        fokontany: this.currentLocationEntry.value?.fokontany ?? null,
       };
       this.geolocationError.value = null;
 
@@ -147,10 +150,19 @@ export class PinnedLocationsStore {
       this.geolocationIsLoading.value = false;
     }
 
+    return isSuccess;
+  }
+
+  initCurrentLocationTracking() {
     if (
       this.trackingProfileFrequency.value !==
         CurrentLocationTrackingProfile.Snapshot
     ) {
+      if (this.currentLocationTrackingInterval) {
+        clearInterval(this.currentLocationTrackingInterval);
+        this.currentLocationTrackingInterval = null;
+      }
+
       const duration = CURRENT_LOCATION_TRACKING_DURATION_BY_PROFILE.get(
         this.trackingProfileFrequency.value,
       )!;
@@ -160,24 +172,24 @@ export class PinnedLocationsStore {
           if (this.currentLocationEntry.value) {
             const prevCoords = this.currentLocationEntry.value?.coordinates;
 
-            const hasMoved = compareGeographicCoordinates(
+            const isSamePosition = compareGeographicCoordinates(
               [position.coords.latitude, position.coords.longitude],
               [prevCoords.lat, prevCoords.lng],
             );
 
             this.currentLocationEntry.value = {
               ...this.currentLocationEntry.value,
-              id,
+              id: this.currentLocationEntry.value.id,
               updatedAt: new Date(),
               coordinates: {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
               },
-              isLoadingFokontany: hasMoved,
+              isLoadingFokontany: !isSamePosition,
             };
             this.geolocationError.value = null;
 
-            if (hasMoved) {
+            if (!isSamePosition) {
               await this.loadCurrentLocationFokontany();
             }
           }
@@ -187,8 +199,6 @@ export class PinnedLocationsStore {
         }
       }, duration);
     }
-
-    return isSuccess;
   }
 
   clearCurrentLocationTracking() {

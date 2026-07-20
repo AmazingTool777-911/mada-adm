@@ -27,6 +27,7 @@ import { injectCommuneApi } from "@/api/commune.api.ts";
 import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import AppMapDynamicAdmGeoJsonLayer from "@/islands/AppMapDynamicAdmGeoJsonLayer.tsx";
 import { UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL } from "@/config/adm-entities.config.ts";
+import AppMapCurrentLocationBeacon from "@/islands/AppMapCurrentLocationBeacon.tsx";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -350,6 +351,9 @@ export default function AppMap(props: AppMapProps) {
             );
           })}
         </>
+      )}
+      {mapIsLoaded.value && mapRef.current && (
+        <AppMapCurrentLocationBeacon map={mapRef.current} />
       )}
     </>
   );

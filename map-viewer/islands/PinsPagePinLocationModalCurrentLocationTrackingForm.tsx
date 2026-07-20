@@ -1,5 +1,5 @@
 import { TargetedEvent, TargetedSubmitEvent } from "preact";
-import { useEffect, useRef } from "preact/hooks";
+import { useRef } from "preact/hooks";
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 import {
   CircleStopIcon,
@@ -60,7 +60,7 @@ export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
     geolocationIsSupported.value = "geolocation" in navigator;
     if (!geolocationIsSupported.value) return;
 
-    const isSuccess = await pinnedLocationsStore.trackCurrentLocation();
+    const isSuccess = await pinnedLocationsStore.loadInitialCurrentLocation();
 
     if (isSuccess) {
       pinnedLocationsStore.showPanel.value = false;
@@ -71,18 +71,6 @@ export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
     e.preventDefault();
     pinnedLocationsStore.clearCurrentLocationTracking();
   }
-
-  useEffect(
-    () => {
-      if (currentLocationEntry.value) {
-        pinnedLocationsStore.trackCurrentLocation();
-      }
-    },
-    [
-      trackingProfileFrequency.value,
-      highAccuracyGeolocationEnabled.value,
-    ],
-  );
 
   const outputFormat = useSignal<GeographicCoordinateOutputFormat>(
     GeographicCoordinateOutputFormat.DecimalDegrees,
@@ -157,19 +145,21 @@ export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
           >
             Tracking Mode
           </label>
-          <select
-            id="tracking-profile-frequency"
-            name="tracking-profile-frequency"
-            value={trackingProfileFrequency.value}
-            class="select select-sm"
-            onChange={handleTrackingModeChange}
-          >
-            {TRACKING_PROFILE_FREQUENCY_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <select
+              id="tracking-profile-frequency"
+              name="tracking-profile-frequency"
+              value={trackingProfileFrequency.value}
+              class="select select-sm w-fit"
+              onChange={handleTrackingModeChange}
+            >
+              {TRACKING_PROFILE_FREQUENCY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <div class="flex items-start gap-x-1.5 text-base-content/70">
             <InfoIcon size={14} class="shrink-0 relative top-0.5" />
             <p class="text-xs">
@@ -206,19 +196,21 @@ export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
               >
                 Output Format:
               </label>
-              <select
-                id="current-location-output-format-select"
-                name="current-location-output-format-select"
-                value={outputFormat.value}
-                class="select select-sm"
-                onChange={handleOutputFormatChange}
-              >
-                {GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <select
+                  id="current-location-output-format-select"
+                  name="current-location-output-format-select"
+                  value={outputFormat.value}
+                  class="select select-sm w-fit"
+                  onChange={handleOutputFormatChange}
+                >
+                  {GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </fieldset>
             <section
               aria-describedby="modal-current-location-coordinates-title"

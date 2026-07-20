@@ -1,7 +1,6 @@
 import { useRef } from "preact/hooks";
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 import { CircleStopIcon, ClockIcon, MapPinnedIcon } from "lucide-preact";
-import { coordinateSystems, createCoordinate } from "@accelint/geo";
 import {
   CurrentLocationTrackingProfile,
   GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS,
@@ -15,7 +14,10 @@ import useDynamicDateTime from "@/hooks/useDynamicDateTime.ts";
 import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
 import PinsPagePinnedLocationCardFokontany from "@/islands/PinsPagePinnedLocationCardFokontany.tsx";
 import { injectApiStore } from "@/stores/api.store.ts";
-import { showPinnedLocationOnMapEventHub } from "@/helpers/pinned-locations.helper.ts";
+import {
+  formatGeographicCoordinates,
+  showPinnedLocationOnMapEventHub,
+} from "@/helpers/pinned-locations.helper.ts";
 
 export default function PinsPageCurrentLocationCard() {
   const outputFormat = useSignal<GeographicCoordinateOutputFormat>(
@@ -40,26 +42,12 @@ export default function PinsPageCurrentLocationCard() {
   } = pinnedLocationsStore;
 
   const coordinatesFormatted = useComputed<string | null>(() => {
-    const entryCoordinates = currentLocationEntry.value?.coordinates;
-    if (!entryCoordinates) return null;
-    const create = createCoordinate(coordinateSystems.dd, "LATLON");
-    const coord = create([entryCoordinates.lat, entryCoordinates.lng]);
-    switch (outputFormat.value) {
-      case GeographicCoordinateOutputFormat.DecimalDegrees:
-        return coord.dd();
-      case GeographicCoordinateOutputFormat.DegreesDecimalMinutes:
-        return coord.ddm();
-      case GeographicCoordinateOutputFormat.DegreesMinutesSeconds:
-        return coord.dms();
-      case GeographicCoordinateOutputFormat.MilitaryGridReferenceSystem:
-        return coord.mgrs();
-      case GeographicCoordinateOutputFormat.UniversalTransverseMercator:
-        return coord.utm();
-      default:
-        throw new Error(
-          `Unsupported outputFormat ${outputFormat.value} in currentLocationCoordinatesFormatted`,
-        );
-    }
+    return currentLocationEntry.value
+      ? formatGeographicCoordinates(
+        currentLocationEntry.value.coordinates,
+        outputFormat.value,
+      )
+      : null;
   });
 
   function handleTrackingModeChange(event: Event) {
@@ -135,7 +123,7 @@ export default function PinsPageCurrentLocationCard() {
             <div>
               <h5
                 id="current-location-card-title"
-                class="text-xs text-base-content/60 mb-1"
+                class="text-xs text-base-content/60 mb-1.25"
               >
                 Coordinates
               </h5>

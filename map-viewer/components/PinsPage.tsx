@@ -14,8 +14,9 @@ export default function PinsPage() {
             with a real-time tracking <strong>beacon</strong>, drop{" "}
             <strong>custom markers</strong> anywhere, or manually enter{" "}
             <strong>geographic coordinates</strong>{" "}
-            to dynamically resolve and explore their full administrative
-            hierarchy from province down to fokontany.
+            to dynamically resolve and explore their{" "}
+            <strong>full administrative hierarchy</strong>{" "}
+            from province down to fokontany.
           </p>
           <div class="mt-5">
             <PinsPageCtaBtn />

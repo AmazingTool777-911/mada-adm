@@ -114,6 +114,12 @@ export default function AppMap(props: AppMapProps) {
     appMapStore.mapLayerSwitcherControl.value = layerSwitcher;
     map.addControl(layerSwitcher, "bottom-left");
 
+    const zoomControl = new maplibregl.NavigationControl({
+      showZoom: true,
+      showCompass: true,
+    });
+    map.addControl(zoomControl, "bottom-right");
+
     mapRef.current = map;
     map.on("load", () => {
       mapIsLoaded.value = true;

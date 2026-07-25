@@ -9,6 +9,7 @@ import PinsPagePinLocationModalCurrentLocationTrackingForm from "@/islands/PinsP
 import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import { injectApiStore } from "@/stores/api.store.ts";
 import PinsPagePinLocationModalPointOnMapForm from "@/islands/PinsPagePinLocationModalPointOnMapForm.tsx";
+import PinsPagePinLocationModalManualCoordinatesEntryForm from "@/islands/PinsPagePinLocationModalManualCoordinatesEntryForm.tsx";
 
 type SelectedPinType = "live" | "marker" | "coordinates";
 
@@ -76,7 +77,9 @@ export default function PinsPagePinLocationModal() {
             icon={<CompassIcon size={22} color="currentColor" />}
             selectedPinType={selectedPinType.value}
             onSelectedPinChange={(v) => selectedPinType.value = v}
-          />
+          >
+            <PinsPagePinLocationModalManualCoordinatesEntryForm />
+          </PinsPagePinLocationModalPinTypeOption>
         </div>
         <div class="modal-action">
           <button

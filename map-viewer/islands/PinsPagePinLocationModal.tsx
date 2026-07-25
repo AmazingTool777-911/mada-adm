@@ -73,7 +73,7 @@ export default function PinsPagePinLocationModal() {
           <PinsPagePinLocationModalPinTypeOption
             pinType="coordinates"
             title="Manual Coordinates Entry"
-            description="Enter any arbitrary geographic coordinates of the pin's location."
+            description="Enter the geographic coordinates of the pin's location."
             icon={<CompassIcon size={22} color="currentColor" />}
             selectedPinType={selectedPinType.value}
             onSelectedPinChange={(v) => selectedPinType.value = v}

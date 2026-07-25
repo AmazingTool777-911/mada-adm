@@ -29,6 +29,7 @@ import AppMapDynamicAdmGeoJsonLayer from "@/islands/AppMapDynamicAdmGeoJsonLayer
 import { UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL } from "@/config/adm-entities.config.ts";
 import AppMapCurrentLocationBeacon from "@/islands/AppMapCurrentLocationBeacon.tsx";
 import AppMapPinnedLocations from "@/islands/AppMapPinnedLocations.tsx";
+import AppMapPinLocationActions from "@/islands/AppMapPinLocationActions.tsx";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -377,12 +378,15 @@ export default function AppMap(props: AppMapProps) {
           })}
         </>
       )}
+      {/* Pinned locations markers */}
       {mapIsLoaded.value && mapRef.current && (
         <>
           <AppMapCurrentLocationBeacon map={mapRef.current} />
           <AppMapPinnedLocations map={mapRef.current} />
         </>
       )}
+      {/* Pin location actions FABs */}
+      <AppMapPinLocationActions />
     </>
   );
 }

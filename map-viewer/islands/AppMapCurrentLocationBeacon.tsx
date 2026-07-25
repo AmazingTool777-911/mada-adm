@@ -246,13 +246,20 @@ export default function AppMapCurrentLocationBeacon(
         appLayoutStore.toggleSidebar(false);
       }
 
-      map.flyTo({
-        center: [
+      if (map.getZoom() < PINNED_LOCATION_FOCUS_ZOOM) {
+        map.flyTo({
+          center: [
+            currentLocationEntry.value.coordinates.lng,
+            currentLocationEntry.value.coordinates.lat,
+          ],
+          zoom: PINNED_LOCATION_FOCUS_ZOOM,
+        });
+      } else {
+        map.panTo([
           currentLocationEntry.value.coordinates.lng,
           currentLocationEntry.value.coordinates.lat,
-        ],
-        zoom: PINNED_LOCATION_FOCUS_ZOOM,
-      });
+        ]);
+      }
 
       showPinnedLocationOnMapEventHub.subscribe(handleCurrentLocationMapFocus);
 

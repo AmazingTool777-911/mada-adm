@@ -144,6 +144,8 @@ export default function AppMapPinnedLocationsPin(
           center: marker.getLngLat(),
           zoom: PINNED_LOCATION_FOCUS_ZOOM,
         });
+      } else {
+        map.panTo(marker.getLngLat());
       }
 
       pinMarker.value = marker;

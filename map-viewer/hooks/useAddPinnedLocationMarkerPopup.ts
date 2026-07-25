@@ -473,7 +473,7 @@ export default function useAddPinnedLocationMarkerPopup(
               </strong>
             </p>
           </div>
-          <div class="pt-0.5">
+          <div class="pt-0.5 flex justify-end">
             ${deleteMarkerBtnHTML}
           </div>
         </article>

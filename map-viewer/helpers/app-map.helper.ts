@@ -73,15 +73,21 @@ export function addGeoJsonLayerToMap(
 
   function handleMouseUp() {
     isGrabbing = false;
-    map.getCanvas().style.cursor = hoveredId ? "pointer" : "grab";
+    const canvas = map.getCanvas();
+    canvas.style.cursor = canvas.dataset.cursorMarkerActive === "true"
+      ? "crosshair"
+      : (hoveredId ? "pointer" : "grab");
   }
   map.on("mouseup", handleMouseUp);
 
   function handleMouseMove(e: MapMouseEvent) {
     hoveredLayerId = e.features![0].layer.id;
     const canvas = map.getCanvas();
-    if (canvas.computedStyleMap().get("cursor") !== "pointer") {
-      canvas.style.cursor = "pointer";
+    const hoverCursor = canvas.dataset.cursorMarkerActive === "true"
+      ? "crosshair"
+      : "pointer";
+    if (canvas.computedStyleMap().get("cursor") !== hoverCursor) {
+      canvas.style.cursor = hoverCursor;
     }
     if (hoveredId !== null) {
       map.setFeatureState({ source, id: hoveredId }, {
@@ -99,7 +105,10 @@ export function addGeoJsonLayerToMap(
 
   function handleMouseEnter() {
     if (isGrabbing) return;
-    map.getCanvas().style.cursor = "pointer";
+    const canvas = map.getCanvas();
+    canvas.style.cursor = canvas.dataset.cursorMarkerActive === "true"
+      ? "crosshair"
+      : "pointer";
   }
   map.on("mouseenter", layerId, handleMouseEnter);
 
@@ -111,13 +120,19 @@ export function addGeoJsonLayerToMap(
     }
     hoveredId = null;
     if (isGrabbing) return;
-    map.getCanvas().style.cursor = "grab";
+    const canvas = map.getCanvas();
+    canvas.style.cursor = canvas.dataset.cursorMarkerActive === "true"
+      ? "crosshair"
+      : "grab";
   }
   map.on("mouseleave", layerId, handleMouseLeave);
 
   let activePopup: maplibregl.Popup | null = null;
   function handleMapClick(event: MapMouseEvent) {
-    if (event.originalEvent.defaultPrevented) return;
+    if (
+      event.originalEvent.defaultPrevented ||
+      map.getCanvas().dataset.cursorMarkerActive === "true"
+    ) return;
     const features = map.queryRenderedFeatures(event.point);
     if (features.length > 0 && features[0].layer.id !== layerId) return;
     event.originalEvent.preventDefault();

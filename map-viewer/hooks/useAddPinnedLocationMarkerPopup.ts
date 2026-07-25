@@ -5,6 +5,7 @@ import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { AdmEntityDiscriminated } from "@scope/types/models";
 import { PinnedLocationEntry } from "@/stores/pinned-locations.store.ts";
 import { formatGeographicCoordinates } from "@/helpers/pinned-locations.helper.ts";
+import { convert } from "geo-coordinates-parser";
 import {
   GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS,
   GeographicCoordinateOutputFormat,
@@ -12,6 +13,7 @@ import {
   PinnedLocationErrorCause,
 } from "@/consts/pinned-locations.consts.ts";
 import { injectClientCacheIndexdDbConnection } from "@/client-cache/client-cache.indexeddb.ts";
+import useDynamicDateTime from "@/hooks/useDynamicDateTime.ts";
 import { injectAdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.ts";
 import { injectApiStore } from "@/stores/api.store.ts";
 import { injectProvinceApi } from "@/api/province.api.ts";
@@ -27,6 +29,12 @@ import { injectDistrictApi } from "@/api/district.api.ts";
 
 export type UseAddPinnedLocationMarkerPopupOptions = {
   isCurrentLocation?: boolean;
+  onTitleEdited?: (newTitle: string) => void | Promise<void>;
+  onCoordinatesEdited?: (
+    coordinates: { lat: number; lng: number },
+  ) => void | Promise<void>;
+  onLockMarkerToggled?: (isLocked: boolean) => void | Promise<void>;
+  onDelete?: (pinnedLocationId: number) => void | Promise<void>;
 };
 
 export type UseAddPinnedLocationMarkerPopupAdmTerritoryParams = {
@@ -105,12 +113,46 @@ function getFokontanyDivisionsHTML(
   }).join("");
 }
 
+const LOCK_MARKER_DRAGGABLE_BADGE_HTML = `
+  <div class="badge badge-sm badge-primary">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-icon lucide-move"><path d="M12 2v20"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="m5 9-3 3 3 3"/><path d="m9 5 3-3 3 3"/></svg>
+    Draggable
+  </div>
+`;
+
 export default function useAddPinnedLocationMarkerPopup(
   pinnedLocationEntry: Signal<PinnedLocationEntry | null>,
   admTerritory: UseAddPinnedLocationMarkerPopupAdmTerritoryParams,
   options: UseAddPinnedLocationMarkerPopupOptions = {},
 ): UseAddPinnedLocationMarkerPopupResult {
   const { isCurrentLocation = false } = options;
+  const onTitleEditedRef = useRef(options.onTitleEdited);
+  onTitleEditedRef.current = options.onTitleEdited;
+  const onCoordinatesEditedRef = useRef(options.onCoordinatesEdited);
+  onCoordinatesEditedRef.current = options.onCoordinatesEdited;
+  const onLockMarkerToggledRef = useRef(options.onLockMarkerToggled);
+  onLockMarkerToggledRef.current = options.onLockMarkerToggled;
+  const onDeleteRef = useRef(options.onDelete);
+  onDeleteRef.current = options.onDelete;
+
+  const lastUpdatedAtDynamic = useDynamicDateTime(
+    pinnedLocationEntry.value?.updatedAt,
+  );
+  const lastUpdatedAtIntlFormatterRef = useRef<Intl.DateTimeFormat>(
+    new Intl.DateTimeFormat("en-US", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }),
+  );
+
+  useEffect(() => {
+    if (pinnedLocationEntry.value?.updatedAt) {
+      lastUpdatedAtDynamic.start(pinnedLocationEntry.value.updatedAt);
+    } else {
+      lastUpdatedAtDynamic.clear();
+    }
+  }, [pinnedLocationEntry.value?.updatedAt]);
+
   const { fokontanyDiscriminated, fokontanyDivisions } = admTerritory;
 
   const indexedDbConn = injectClientCacheIndexdDbConnection();
@@ -147,6 +189,8 @@ export default function useAddPinnedLocationMarkerPopup(
     null,
   );
   const outputFormatSelectRef = useRef<HTMLSelectElement | null>(null);
+  const lockMarkerToggleRef = useRef<HTMLInputElement | null>(null);
+  const draggableMarkerBadgeSectionRef = useRef<HTMLDivElement | null>(null);
 
   const copyToClipboardTextResetterTimeoutRef = useRef<
     ReturnType<typeof setTimeout> | null
@@ -164,12 +208,84 @@ export default function useAddPinnedLocationMarkerPopup(
         <svg class="shrink-0 relative top-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" fill="currentColor" /><path fill-rule="evenodd" clip-rule="evenodd" d="M2.08296 7C2.50448 4.48749 4.48749 2.50448 7 2.08296V0H9V2.08296C11.5125 2.50448 13.4955 4.48749 13.917 7H16V9H13.917C13.4955 11.5125 11.5125 13.4955 9 13.917V16H7V13.917C4.48749 13.4955 2.50448 11.5125 2.08296 9H0V7H2.08296ZM4 8C4 5.79086 5.79086 4 8 4C10.2091 4 12 5.79086 12 8C12 10.2091 10.2091 12 8 12C5.79086 12 4 10.2091 4 8Z" fill="currentColor"/></svg>
       `;
       const markerIconSVG = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin-icon lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin-icon lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
       `;
       const popupTitleIconSVG = isCurrentLocation
         ? targetLocationIconSVG
         : markerIconSVG;
       const popupTitle = isCurrentLocation ? "Current location" : entry.title;
+
+      const editTitleFormHTML = !isCurrentLocation
+        ? `
+        <form data-title-edit-form class="mt-3">
+          <div data-title-edit-inactive-view>
+            <button type="button" data-title-edit-toggle class="btn btn-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-icon lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+              Edit title
+            </button>
+          </div>
+          <div data-title-edit-active-view class="hidden px-3 py-2 rounded-sm shadow-md shadow-primary/20 bg-base-100 border border-base-content/10">
+            <fieldset class="fieldset">
+              <label for="edit-title-${entry.id}" class="label p-0 text-xs">Title</label>
+              <input type="text" id="edit-title-${entry.id}" data-title-edit-input class="input input-xs w-full" value="${popupTitle}" />
+              <span data-title-edit-error class="text-error text-[0.65rem] leading-tight hidden">The pinned location title must not be empty</span>
+              <div class="flex items-center gap-x-2 mt-1.5">
+                <button type="submit" data-title-edit-save class="btn btn-xs btn-primary">Save</button>
+                <button type="button" data-title-edit-cancel class="btn btn-xs">Cancel</button>
+              </div>
+            </fieldset>
+          </div>
+        </form>
+      `
+        : "";
+
+      const editCoordinatesFormHTML = !isCurrentLocation
+        ? `
+        <form data-coordinates-edit-form>
+          <div data-coordinates-edit-inactive-view class="mt-1.5">
+            <button type="button" data-coordinates-edit-toggle class="btn btn-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-icon lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+              Edit coordinates
+            </button>
+          </div>
+          <div data-coordinates-edit-active-view class="hidden px-3 py-2 rounded-sm shadow-md shadow-primary/20 bg-base-100 border border-base-content/10 mt-2">
+            <fieldset class="fieldset">
+              <label for="edit-coordinates-${entry.id}" class="label p-0 text-xs">Coordinates</label>
+              <input type="text" id="edit-coordinates-${entry.id}" data-coordinates-edit-input class="input input-xs w-full" placeholder="Geographic coordinates in any correct format" />
+              <span data-coordinates-edit-error class="text-error text-[0.65rem] leading-tight hidden">Could not parse the coordinates being entered</span>
+              <div class="flex items-center gap-x-2 mt-1.5">
+                <button type="submit" data-coordinates-edit-save class="btn btn-xs btn-primary">Save</button>
+                <button type="button" data-coordinates-edit-cancel class="btn btn-xs">Cancel</button>
+              </div>
+            </fieldset>
+          </div>
+        </form>
+      `
+        : "";
+
+      const lockMarkerDraggableBadgeHTML =
+        !isCurrentLocation && !pinnedLocationEntry.value?.isLocked
+          ? LOCK_MARKER_DRAGGABLE_BADGE_HTML
+          : "";
+
+      const lockMarkerSectionHTML = !isCurrentLocation
+        ? `
+          <div data-lock-marker-container class="flex items-center gap-x-3">
+            <fieldset class="fieldset">
+              <label class="label text-xs text-base-content/90">
+                Lock marker
+                <input
+                  type="checkbox"
+                  class="toggle toggle-xs toggle-primary"
+                />
+              </label>
+            </fieldset>
+            <div data-draggable-badge class="flex items-center">
+              ${lockMarkerDraggableBadgeHTML}
+            </div>
+          </div>
+        `
+        : "";
 
       const markerPopupOutputFormatSelectOptionsHTML =
         GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS
@@ -240,6 +356,20 @@ export default function useAddPinnedLocationMarkerPopup(
         initialDivisionsClass = "";
       }
 
+      const deleteMarkerBtnHTML = isCurrentLocation
+        ? `
+          <button type="button" data-pinned-location-delete class="btn btn-sm btn-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-locate-off-icon lucide-locate-off"><path d="M12 19v3"/><path d="M12 2v3"/><path d="M18.89 13.24a7 7 0 0 0-8.13-8.13"/><path d="M19 12h3"/><path d="M2 12h3"/><path d="m2 2 20 20"/><path d="M7.05 7.05a7 7 0 0 0 9.9 9.9"/></svg>
+            Stop tracking
+          </button>
+        `
+        : `
+          <button type="button" data-pinned-location-delete class="btn btn-sm btn-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-off-icon lucide-pin-off"><path d="M12 17v5"/><path d="M15 9.34V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H7.89"/><path d="m2 2 20 20"/><path d="M9 9v1.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h11"/></svg>
+            Unpin location
+          </button>
+        `;
+
       const markerPopupHTML = `
         <article class="w-[20rem] space-y-3.5">
           <div>
@@ -247,6 +377,7 @@ export default function useAddPinnedLocationMarkerPopup(
               ${popupTitleIconSVG}
               <span data-pinned-location-popup-title="${popupTitle}">${popupTitle}</span>
             </h5>
+            ${editTitleFormHTML}
           </div>
           <div class="space-y-2">
             <fieldset class="fieldset">
@@ -264,8 +395,8 @@ export default function useAddPinnedLocationMarkerPopup(
                 </select>
               </div>
             </fieldset>
-            <section aria-label="Coordinates">
-              <div class="flex items-center gap-x-2 py-1">
+            <section aria-label="Coordinates" data-coordinates-container>
+              <div data-coordinates-view class="flex items-center gap-x-2 py-1">
                 <div>
                   <h5
                     data-current-location-card-title
@@ -288,8 +419,10 @@ export default function useAddPinnedLocationMarkerPopup(
                   </button>
                 </div>
               </div>
+              ${editCoordinatesFormHTML}
             </section>
           </div>
+          ${lockMarkerSectionHTML}
           <div data-collapse data-open="false" class="rounded-lg border border-base-content/20 bg-white">
             <button type="button" data-collapse-trigger aria-expanded="false"
                     class="cursor-pointer flex w-full items-center justify-between gap-4 px-3 py-3 text-left font-medium text-base-content transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-lg">
@@ -331,11 +464,23 @@ export default function useAddPinnedLocationMarkerPopup(
               </div>
             </div>
           </div>
+          <div data-pinned-location-last-updated-container class="flex items-start gap-x-1 mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-base-content/70 mt-0.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <p class="text-xs text-base-content/70">
+              Last updated at
+              <strong data-pinned-location-last-updated-at class="text-base-content text-xs font-normal">
+                ${lastUpdatedAtDynamic.dateTime.value ?? ""}
+              </strong>
+            </p>
+          </div>
+          <div class="pt-0.5">
+            ${deleteMarkerBtnHTML}
+          </div>
         </article>
       `;
       const _markerPopup = new maplibregl.Popup({
         maxWidth: "none",
-        offset: 15,
+        offset: isCurrentLocation ? 15 : 36,
       })
         .setHTML(markerPopupHTML);
       markerPopup.value = _markerPopup;
@@ -452,6 +597,227 @@ export default function useAddPinnedLocationMarkerPopup(
 
         setOpen(collapseRoot.dataset.open === "true");
       }
+
+      const titleEditForm = _markerPopup._content.querySelector(
+        "[data-title-edit-form]",
+      ) as HTMLFormElement | null;
+      let isFormActive = false;
+      let updateFormState: (() => void) | null = null;
+      if (titleEditForm) {
+        const inactiveView = titleEditForm.querySelector(
+          "[data-title-edit-inactive-view]",
+        ) as HTMLDivElement;
+        const activeView = titleEditForm.querySelector(
+          "[data-title-edit-active-view]",
+        ) as HTMLDivElement;
+        const toggleBtn = titleEditForm.querySelector(
+          "[data-title-edit-toggle]",
+        ) as HTMLButtonElement;
+        const cancelBtn = titleEditForm.querySelector(
+          "[data-title-edit-cancel]",
+        ) as HTMLButtonElement;
+        const saveBtn = titleEditForm.querySelector(
+          "[data-title-edit-save]",
+        ) as HTMLButtonElement;
+        const inputElt = titleEditForm.querySelector(
+          "[data-title-edit-input]",
+        ) as HTMLInputElement;
+        const errorElt = titleEditForm.querySelector(
+          "[data-title-edit-error]",
+        ) as HTMLSpanElement;
+
+        updateFormState = () => {
+          if (isFormActive) {
+            inactiveView.classList.add("hidden");
+            activeView.classList.remove("hidden");
+            inputElt.value =
+              titleContainerRef.current?.dataset["pinnedLocationPopupTitle"] ||
+              "";
+            inputElt.dispatchEvent(new Event("input"));
+            inputElt.focus();
+          } else {
+            activeView.classList.add("hidden");
+            inactiveView.classList.remove("hidden");
+            inputElt.classList.remove("input-error");
+            errorElt.classList.add("hidden");
+          }
+        };
+
+        toggleBtn.addEventListener("click", () => {
+          isFormActive = true;
+          updateFormState?.();
+        });
+
+        cancelBtn.addEventListener("click", () => {
+          isFormActive = false;
+          updateFormState?.();
+        });
+
+        inputElt.addEventListener("input", () => {
+          const isEmpty = inputElt.value.trim() === "";
+          saveBtn.disabled = isEmpty;
+          if (isEmpty) {
+            inputElt.classList.add("input-error");
+            errorElt.classList.remove("hidden");
+          } else {
+            inputElt.classList.remove("input-error");
+            errorElt.classList.add("hidden");
+          }
+        });
+
+        titleEditForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const newTitle = inputElt.value.trim();
+          if (!newTitle) return;
+
+          if (onTitleEditedRef.current) {
+            await onTitleEditedRef.current(newTitle);
+          }
+
+          isFormActive = false;
+          updateFormState?.();
+        });
+      }
+
+      const coordsEditForm = _markerPopup._content.querySelector(
+        "[data-coordinates-edit-form]",
+      ) as HTMLFormElement | null;
+      const coordinatesView = _markerPopup._content.querySelector(
+        "[data-coordinates-view]",
+      ) as HTMLDivElement | null;
+      let isCoordsFormActive = false;
+      let updateCoordsFormState: (() => void) | null = null;
+      if (coordsEditForm) {
+        const inactiveCoordsView = coordsEditForm.querySelector(
+          "[data-coordinates-edit-inactive-view]",
+        ) as HTMLDivElement;
+        const activeCoordsView = coordsEditForm.querySelector(
+          "[data-coordinates-edit-active-view]",
+        ) as HTMLDivElement;
+        const toggleCoordsBtn = coordsEditForm.querySelector(
+          "[data-coordinates-edit-toggle]",
+        ) as HTMLButtonElement;
+        const cancelCoordsBtn = coordsEditForm.querySelector(
+          "[data-coordinates-edit-cancel]",
+        ) as HTMLButtonElement;
+        const inputCoordsElt = coordsEditForm.querySelector(
+          "[data-coordinates-edit-input]",
+        ) as HTMLInputElement;
+        const errorCoordsElt = coordsEditForm.querySelector(
+          "[data-coordinates-edit-error]",
+        ) as HTMLSpanElement;
+
+        updateCoordsFormState = () => {
+          if (isCoordsFormActive) {
+            inactiveCoordsView.classList.add("hidden");
+            activeCoordsView.classList.remove("hidden");
+            coordinatesView?.classList.add("hidden");
+
+            const outputFormatSelectElt = outputFormatSelectRef.current;
+            const format = outputFormatSelectElt
+              ? (outputFormatSelectElt
+                .value as GeographicCoordinateOutputFormat)
+              : GeographicCoordinateOutputFormat.DecimalDegrees;
+
+            const coordinatesFormattedElt =
+              coordinatesFormattedContainerRef.current;
+            const coordinatesEncoded = coordinatesFormattedElt
+              ?.dataset["coordinatesFormatted"] as string | undefined;
+            if (coordinatesEncoded) {
+              const [lng, lat] = coordinatesEncoded.split(",").map(Number) as [
+                number,
+                number,
+              ];
+              inputCoordsElt.value =
+                formatGeographicCoordinates({ lng, lat }, format) || "";
+            } else {
+              inputCoordsElt.value = "";
+            }
+
+            inputCoordsElt.dispatchEvent(new Event("input"));
+            inputCoordsElt.focus();
+          } else {
+            activeCoordsView.classList.add("hidden");
+            inactiveCoordsView.classList.remove("hidden");
+            coordinatesView?.classList.remove("hidden");
+            inputCoordsElt.classList.remove("input-error");
+            errorCoordsElt.classList.add("hidden");
+          }
+        };
+
+        toggleCoordsBtn.addEventListener("click", () => {
+          isCoordsFormActive = true;
+          updateCoordsFormState?.();
+        });
+
+        cancelCoordsBtn.addEventListener("click", () => {
+          isCoordsFormActive = false;
+          updateCoordsFormState?.();
+        });
+
+        inputCoordsElt.addEventListener("input", () => {
+          inputCoordsElt.classList.remove("input-error");
+          errorCoordsElt.classList.add("hidden");
+        });
+
+        coordsEditForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const newVal = inputCoordsElt.value.trim();
+          if (!newVal) return;
+
+          try {
+            const parsed = convert(newVal, 15);
+            if (onCoordinatesEditedRef.current) {
+              await onCoordinatesEditedRef.current({
+                lat: parsed.decimalLatitude,
+                lng: parsed.decimalLongitude,
+              });
+            }
+            isCoordsFormActive = false;
+            updateCoordsFormState?.();
+          } catch (_err) {
+            inputCoordsElt.classList.add("input-error");
+            errorCoordsElt.classList.remove("hidden");
+          }
+        });
+      }
+
+      _markerPopup.on("close", () => {
+        if (isFormActive) {
+          isFormActive = false;
+          updateFormState?.();
+        }
+        if (isCoordsFormActive) {
+          isCoordsFormActive = false;
+          updateCoordsFormState?.();
+        }
+      });
+
+      if (!isCurrentLocation) {
+        const lockMarkerToggleElt = _markerPopup._content.querySelector(
+          "[data-lock-marker-container] input",
+        ) as HTMLInputElement;
+        lockMarkerToggleRef.current = lockMarkerToggleElt;
+
+        lockMarkerToggleElt.addEventListener("change", (e) => {
+          e.preventDefault();
+          const isChecked = (e.target as HTMLInputElement).checked;
+          onLockMarkerToggledRef.current?.(isChecked);
+        });
+
+        const draggableMarkerBadgeSectionElt = _markerPopup._content
+          .querySelector(
+            "[data-lock-marker-container] [data-draggable-badge]",
+          ) as HTMLDivElement;
+        draggableMarkerBadgeSectionRef.current = draggableMarkerBadgeSectionElt;
+      }
+
+      const deletePinnedLocationBtnElt = _markerPopup._content.querySelector(
+        "button[data-pinned-location-delete]",
+      );
+      deletePinnedLocationBtnElt?.addEventListener("click", () => {
+        onDeleteRef.current?.(pinnedLocationEntry.value!.id);
+      });
     },
     [pinnedLocationEntry.value],
   );
@@ -466,12 +832,36 @@ export default function useAddPinnedLocationMarkerPopup(
   }
 
   useEffect(() => {
-    if (!pinnedLocationEntry.value) {
-      popupCleanup();
+    if (pinnedLocationEntry.value) {
+      return () => {
+        popupCleanup();
+      };
     }
   }, [pinnedLocationEntry.value?.id]);
 
-  useEffect(() => popupCleanup, []);
+  useEffect(() => {
+    const popup = markerPopup.value;
+    if (!popup || !popup.isOpen()) return;
+
+    const timeElt = popup.getElement()?.querySelector(
+      "[data-pinned-location-last-updated-at]",
+    );
+    if (timeElt) {
+      timeElt.textContent = lastUpdatedAtDynamic.dateTime.value;
+      if (pinnedLocationEntry.value?.updatedAt) {
+        timeElt.setAttribute(
+          "title",
+          lastUpdatedAtIntlFormatterRef.current.format(
+            pinnedLocationEntry.value.updatedAt,
+          ),
+        );
+      }
+    }
+  }, [
+    markerPopup.value,
+    lastUpdatedAtDynamic.dateTime.value,
+    pinnedLocationEntry.value?.updatedAt,
+  ]);
 
   useEffect(() => {
     if (!markerPopup.value) return;
@@ -638,6 +1028,25 @@ export default function useAddPinnedLocationMarkerPopup(
       }
     }
   }, [fokontanyDivisions, markerPopup.value]);
+
+  useEffect(
+    () => {
+      if (
+        isCurrentLocation || !markerPopup.value || !pinnedLocationEntry.value
+      ) return;
+      if (lockMarkerToggleRef.current) {
+        lockMarkerToggleRef.current.checked =
+          pinnedLocationEntry.value.isLocked;
+      }
+      if (draggableMarkerBadgeSectionRef.current) {
+        draggableMarkerBadgeSectionRef.current.innerHTML =
+          !pinnedLocationEntry.value.isLocked
+            ? LOCK_MARKER_DRAGGABLE_BADGE_HTML
+            : "";
+      }
+    },
+    [pinnedLocationEntry.value?.isLocked, markerPopup.value],
+  );
 
   return {
     markerPopup,

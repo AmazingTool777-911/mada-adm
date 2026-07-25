@@ -28,6 +28,7 @@ import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import AppMapDynamicAdmGeoJsonLayer from "@/islands/AppMapDynamicAdmGeoJsonLayer.tsx";
 import { UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL } from "@/config/adm-entities.config.ts";
 import AppMapCurrentLocationBeacon from "@/islands/AppMapCurrentLocationBeacon.tsx";
+import AppMapPinnedLocations from "@/islands/AppMapPinnedLocations.tsx";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -92,6 +93,8 @@ export default function AppMap(props: AppMapProps) {
   const mapLayerSwitcherControlRef = useRef<LayerSwitcherControl>();
   const mapIsLoaded = useSignal(false);
 
+  const prevCursorRef = useRef<string>("grab");
+
   useEffect(() => {
     const map = new maplibregl.Map({
       style: OFM_TILE_LAYER_STYLE_URL,
@@ -116,7 +119,23 @@ export default function AppMap(props: AppMapProps) {
       mapIsLoaded.value = true;
     });
 
+    function handleMapMouseDown() {
+      const cursor = map.getCanvas().computedStyleMap().get("cursor")!
+        .toString();
+      if (cursor !== "grabbing") prevCursorRef.current = cursor;
+      map.getCanvas().style.cursor = "grabbing";
+    }
+    map.on("mousedown", handleMapMouseDown);
+
+    function handleMapMouseUp() {
+      map.getCanvas().style.cursor = prevCursorRef.current;
+    }
+    map.on("mouseup", handleMapMouseUp);
+
     return () => {
+      map.off("mousedown", handleMapMouseDown);
+      map.off("mouseup", handleMapMouseUp);
+
       layerSwitcher.onRemove();
       map.remove();
     };
@@ -353,7 +372,10 @@ export default function AppMap(props: AppMapProps) {
         </>
       )}
       {mapIsLoaded.value && mapRef.current && (
-        <AppMapCurrentLocationBeacon map={mapRef.current} />
+        <>
+          <AppMapCurrentLocationBeacon map={mapRef.current} />
+          <AppMapPinnedLocations map={mapRef.current} />
+        </>
       )}
     </>
   );

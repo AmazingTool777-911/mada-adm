@@ -8,6 +8,7 @@ import PinsPagePinLocationModalPinTypeOption from "@/islands/PinsPagePinLocation
 import PinsPagePinLocationModalCurrentLocationTrackingForm from "@/islands/PinsPagePinLocationModalCurrentLocationTrackingForm.tsx";
 import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import { injectApiStore } from "@/stores/api.store.ts";
+import PinsPagePinLocationModalPointOnMapForm from "@/islands/PinsPagePinLocationModalPointOnMapForm.tsx";
 
 type SelectedPinType = "live" | "marker" | "coordinates";
 
@@ -60,16 +61,18 @@ export default function PinsPagePinLocationModal() {
           </PinsPagePinLocationModalPinTypeOption>
           <PinsPagePinLocationModalPinTypeOption
             pinType="marker"
-            title="Custom Map Pin"
-            description="Interactively choose a spot on the map interface. Drops a static marker with fixed coordinates once placed."
+            title="Point on Map"
+            description="Drop a marker onto the map at the exact location of the pin."
             icon={<MapPinPlusIcon size={24} stroke-width={2.5} />}
             selectedPinType={selectedPinType.value}
             onSelectedPinChange={(v) => selectedPinType.value = v}
-          />
+          >
+            <PinsPagePinLocationModalPointOnMapForm />
+          </PinsPagePinLocationModalPinTypeOption>
           <PinsPagePinLocationModalPinTypeOption
             pinType="coordinates"
-            title="Manual Coordinate Entry"
-            description="Specify exact geographical metrics to place a precise static marker on the map grid."
+            title="Manual Coordinates Entry"
+            description="Enter any arbitrary geographic coordinates of the pin's location."
             icon={<CompassIcon size={22} color="currentColor" />}
             selectedPinType={selectedPinType.value}
             onSelectedPinChange={(v) => selectedPinType.value = v}

@@ -17,7 +17,7 @@ import {
 } from "@/stores/app-map.store.ts";
 import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
 import { injectDistrictApi } from "@/api/district.api.ts";
-import AppMapPinnedLocationBeaconAdmTerritoryDivision from "@/islands/AppMapPinnedLocationBeaconAdmTerritoryDivision.tsx";
+import AppMapPinnedLocationAdmTerritoryDivision from "@/islands/AppMapPinnedLocationAdmTerritoryDivision.tsx";
 import { PINNED_LOCATION_FOCUS_ZOOM } from "@/consts/pinned-locations.consts.ts";
 import {
   ShowPinnedLocationEvent,
@@ -74,7 +74,7 @@ export default function AppMapCurrentLocationBeacon(
     if (entry) {
       const labelPopupHTML = document.createElement("div");
       labelPopupHTML.innerHTML = "You are here";
-      labelPopupHTML.className = "text-xs px-2 py-1 text-primary";
+      labelPopupHTML.className = "text-xs px-2 py-1 text-primary font-bold";
       const labelPopup = new maplibregl.Popup({
         closeButton: false,
         closeOnClick: false,
@@ -89,8 +89,6 @@ export default function AppMapCurrentLocationBeacon(
       if (labelPopupHTML.parentElement) {
         labelPopupHTML.parentElement.style.padding = "0";
       }
-
-      labelPopup.addTo(map);
 
       return () => {
         labelPopup.remove();
@@ -141,7 +139,12 @@ export default function AppMapCurrentLocationBeacon(
   const { markerPopup } = useAddPinnedLocationMarkerPopup(
     currentLocationEntry,
     { fokontanyDiscriminated, fokontanyDivisions },
-    { isCurrentLocation: true },
+    {
+      isCurrentLocation: true,
+      onDelete() {
+        pinnedLocationsStore.clearCurrentLocationTracking();
+      },
+    },
   );
 
   useEffect(() => {
@@ -154,11 +157,15 @@ export default function AppMapCurrentLocationBeacon(
       ) as HTMLDivElement;
       beaconElement.classList.remove("hidden");
 
-      popup.on("open", () => {
+      beaconElement.addEventListener("mouseenter", () => {
+        !popup.isOpen() && labelPopupRef.current?.addTo(map);
+      });
+      beaconElement.addEventListener("mouseleave", () => {
         labelPopupRef.current?.remove();
       });
-      popup.on("close", () => {
-        labelPopupRef.current?.addTo(map);
+
+      popup.on("open", () => {
+        labelPopupRef.current?.remove();
       });
 
       const marker = new maplibregl.Marker({
@@ -172,6 +179,10 @@ export default function AppMapCurrentLocationBeacon(
         e.stopPropagation();
         marker.togglePopup();
       });
+
+      if (!marker?._popup?.isOpen()) {
+        marker?.togglePopup();
+      }
 
       markerRef.current = marker;
 
@@ -189,6 +200,7 @@ export default function AppMapCurrentLocationBeacon(
       if (!currentLocationEntry.value) return;
       if (isTrackingParamsFirstUpdate.current) {
         isTrackingParamsFirstUpdate.current = false;
+        pinnedLocationsStore.initCurrentLocationTracking();
         return;
       }
       pinnedLocationsStore.loadInitialCurrentLocation()
@@ -268,7 +280,7 @@ export default function AppMapCurrentLocationBeacon(
         </div>
       </div>
       {fokontanyDivisions?.map((d) => (
-        <AppMapPinnedLocationBeaconAdmTerritoryDivision
+        <AppMapPinnedLocationAdmTerritoryDivision
           key={d.name}
           division={d}
         />

@@ -25,6 +25,17 @@ export type PinnedLocationEntry = {
   fokontany: Fokontany | null;
 };
 
+export type PinnedLocationPointOnMapPayload = {
+  title: string;
+};
+
+export type AddPinnedLocationEntryPayload = {
+  title: string;
+  coordinates: Record<"lng" | "lat", number>;
+};
+
+export type PinnedLocationMoveType = "top" | "up" | "down" | "bottom";
+
 export class PinnedLocationsStore {
   constructor(private fokontanyApi: FokontanyApi, private apiStore: ApiStore) {}
 
@@ -212,6 +223,165 @@ export class PinnedLocationsStore {
     this.trackingProfileFrequency.value =
       CurrentLocationTrackingProfile.Snapshot;
     this.highAccuracyGeolocationEnabled.value = false;
+  }
+
+  readonly pointOnMapPayload = signal<PinnedLocationPointOnMapPayload | null>(
+    null,
+  );
+
+  readonly pinnedLocations = signal<PinnedLocationEntry[]>([]);
+
+  async loadPinnedLocationFokontany(pinnedLocationId: number) {
+    const pinnedLocationIndex = this.pinnedLocations.value.findIndex(
+      (p) => p.id === pinnedLocationId,
+    );
+    if (pinnedLocationIndex === -1) return;
+
+    const pinnedLocation = {
+      ...this.pinnedLocations.value[pinnedLocationIndex],
+    };
+
+    if (!this.apiStore.config.value) {
+      pinnedLocation.isLoadingFokontany = false;
+      pinnedLocation.fokontanyErrorCause =
+        PinnedLocationErrorCause.UnavailableConfig;
+      this.pinnedLocations.value[pinnedLocationIndex] = pinnedLocation;
+      return;
+    }
+
+    pinnedLocation.isLoadingFokontany = true;
+    this.pinnedLocations.value[pinnedLocationIndex] = pinnedLocation;
+
+    try {
+      const fokontany = await this.fokontanyApi.getByCoordinates(
+        pinnedLocation.coordinates.lat,
+        pinnedLocation.coordinates.lng,
+      );
+      const pinnedLocationIndex = this.pinnedLocations.value.findIndex((pl) => {
+        return pl.id === pinnedLocationId;
+      });
+      if (pinnedLocationIndex >= 0) {
+        const pinnedLocations = [...this.pinnedLocations.value];
+        pinnedLocations[pinnedLocationIndex] = {
+          ...this.pinnedLocations.value[pinnedLocationIndex],
+          fokontany: fokontany,
+          isLoadingFokontany: false,
+          fokontanyErrorCause: null,
+        };
+        this.pinnedLocations.value = pinnedLocations;
+      }
+    } catch (e) {
+      console.error(e);
+      const pinnedLocationIndex = this.pinnedLocations.value.findIndex((pl) => {
+        return pl.id === pinnedLocationId;
+      });
+      if (pinnedLocationIndex >= 0) {
+        const pinnedLocations = [...this.pinnedLocations.value];
+        pinnedLocations[pinnedLocationIndex] = {
+          ...this.pinnedLocations.value[pinnedLocationIndex],
+          fokontany: null,
+          isLoadingFokontany: false,
+          fokontanyErrorCause:
+            (e instanceof DetailedError && e.statusCode === 404)
+              ? PinnedLocationErrorCause.NotFound
+              : PinnedLocationErrorCause.Unexpected,
+        };
+        this.pinnedLocations.value = pinnedLocations;
+      }
+    }
+  }
+
+  addPinnedLocationEntry(payload: AddPinnedLocationEntryPayload) {
+    const entry: PinnedLocationEntry = {
+      id: Date.now(),
+      title: payload.title,
+      updatedAt: new Date(),
+      coordinates: {
+        lat: payload.coordinates.lat,
+        lng: payload.coordinates.lng,
+      },
+      isLocked: true,
+      isLoadingFokontany: true,
+      fokontanyErrorCause: null,
+      fokontany: null,
+    };
+    this.pinnedLocations.value = [entry, ...this.pinnedLocations.value];
+  }
+
+  updatePinnedLocationEntryTitle(entryId: number, title: string) {
+    const pinnedLocationIndex = this.pinnedLocations.value.findIndex(
+      (p) => p.id === entryId,
+    );
+    if (pinnedLocationIndex === -1) return;
+    const pinnedLocations = [...this.pinnedLocations.value];
+    pinnedLocations[pinnedLocationIndex] = {
+      ...this.pinnedLocations.value[pinnedLocationIndex],
+      title,
+    };
+    this.pinnedLocations.value = pinnedLocations;
+  }
+
+  updatePinnedLocationCoordinates(
+    entryId: number,
+    coordinates: { lat: number; lng: number },
+  ) {
+    const pinnedLocationIndex = this.pinnedLocations.value.findIndex(
+      (p) => p.id === entryId,
+    );
+    if (pinnedLocationIndex === -1) return;
+    const pinnedLocations = [...this.pinnedLocations.value];
+    pinnedLocations[pinnedLocationIndex] = {
+      ...this.pinnedLocations.value[pinnedLocationIndex],
+      coordinates,
+      updatedAt: new Date(),
+    };
+    this.pinnedLocations.value = pinnedLocations;
+  }
+
+  updatePinnedLocationIsLocked(entryId: number, isLocked: boolean) {
+    const pinnedLocationIndex = this.pinnedLocations.value.findIndex(
+      (p) => p.id === entryId,
+    );
+    if (pinnedLocationIndex === -1) return;
+    const pinnedLocations = [...this.pinnedLocations.value];
+    pinnedLocations[pinnedLocationIndex] = {
+      ...this.pinnedLocations.value[pinnedLocationIndex],
+      isLocked,
+    };
+    this.pinnedLocations.value = pinnedLocations;
+  }
+
+  deletePinnedLocation(entryId: number) {
+    this.pinnedLocations.value = this.pinnedLocations.value.filter(
+      (p) => p.id !== entryId,
+    );
+  }
+
+  movePinnedLocationListItem(
+    entryId: number,
+    moveTypeOrIndex: PinnedLocationMoveType | number,
+  ) {
+    const pinnedLocations = [...this.pinnedLocations.value];
+    const index = pinnedLocations.findIndex((p) => p.id === entryId);
+    if (index === -1) return;
+
+    const [item] = pinnedLocations.splice(index, 1);
+
+    if (typeof moveTypeOrIndex === "number") {
+      pinnedLocations.splice(moveTypeOrIndex, 0, item);
+    } else if (moveTypeOrIndex === "top") {
+      pinnedLocations.unshift(item);
+    } else if (moveTypeOrIndex === "up") {
+      const newIndex = Math.max(0, index - 1);
+      pinnedLocations.splice(newIndex, 0, item);
+    } else if (moveTypeOrIndex === "down") {
+      const newIndex = Math.min(pinnedLocations.length, index + 1);
+      pinnedLocations.splice(newIndex, 0, item);
+    } else if (moveTypeOrIndex === "bottom") {
+      pinnedLocations.push(item);
+    }
+
+    this.pinnedLocations.value = pinnedLocations;
   }
 }
 

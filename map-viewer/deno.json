@@ -23,6 +23,7 @@
   "imports": {
     "@/": "./",
     "@accelint/geo": "npm:@accelint/geo@^0.6.1",
+    "@atlaskit/pragmatic-drag-and-drop": "npm:@atlaskit/pragmatic-drag-and-drop@^2.0.1",
     "@turf/bbox": "npm:@turf/bbox@^7.3.5",
     "@types/leaflet": "npm:@types/leaflet@^1.9.21",
     "culori": "npm:culori@^4.0.2",

@@ -122,6 +122,11 @@ export class LayerSwitcherControl implements maplibregl.IControl {
     return this.map.getSource(source) !== undefined;
   }
 
+  private readonly staticAdmGeoJsonLayerCleanupByCode = new Map<
+    AdmLevelCode,
+    () => void
+  >();
+
   async addStaticAdmGeoJsonLayer(
     admLevelCode: AdmLevelCode,
     geojson: GeoJSONFeatureCollection<Record<string, unknown>>,
@@ -129,7 +134,7 @@ export class LayerSwitcherControl implements maplibregl.IControl {
   ) {
     const { fitBbox = true } = options ?? {};
 
-    addGeoJsonLayerToMap(this.map, geojson, {
+    const cleanup = addGeoJsonLayerToMap(this.map, geojson, {
       source: STATIC_ADM_GEOJSON_SOURCE_BY_CODE.get(admLevelCode)!,
       sentinelLayerId: STATIC_ADM_GEOJSON_SENTINEL_LAYER_ID_BY_CODE.get(
         admLevelCode,
@@ -176,6 +181,8 @@ export class LayerSwitcherControl implements maplibregl.IControl {
       },
     });
 
+    this.staticAdmGeoJsonLayerCleanupByCode.set(admLevelCode, cleanup);
+
     if (fitBbox) {
       await fitGeoJsonBboxIntoMap(this.map, geojson);
     }
@@ -190,6 +197,9 @@ export class LayerSwitcherControl implements maplibregl.IControl {
     this.map.removeLayer(outlineLayerId);
     const source = STATIC_ADM_GEOJSON_SOURCE_BY_CODE.get(admLevelCode)!;
     this.map.removeSource(source);
+    const cleanup = this.staticAdmGeoJsonLayerCleanupByCode.get(admLevelCode);
+    cleanup?.();
+    this.staticAdmGeoJsonLayerCleanupByCode.delete(admLevelCode);
   }
 
   onAdd(map: maplibregl.Map) {

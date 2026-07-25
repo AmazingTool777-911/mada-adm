@@ -64,6 +64,7 @@
     "jsr:@std/uuid@^1.0.9": "1.1.1",
     "jsr:@zod/zod@^4.4.3": "4.4.3",
     "npm:@accelint/geo@~0.6.1": "0.6.1",
+    "npm:@atlaskit/pragmatic-drag-and-drop@^2.0.1": "2.0.1",
     "npm:@babel/core@^7.28.0": "7.29.0",
     "npm:@babel/preset-react@^7.27.1": "7.28.5_@babel+core@7.29.0",
     "npm:@floating-ui/dom@^1.7.6": "1.7.6",
@@ -363,6 +364,14 @@
         "geodesy"
       ]
     },
+    "@atlaskit/pragmatic-drag-and-drop@2.0.1": {
+      "integrity": "sha512-5iSbCveKuWYh0HijDxfSsYKD2VE0UPObI9jO1pqq+RBk9LzaoOYeKyW0Fobv/6db8HAPcyT3vhRy8bmk5TMcMw==",
+      "dependencies": [
+        "@babel/runtime",
+        "bind-event-listener",
+        "raf-schd"
+      ]
+    },
     "@babel/code-frame@7.29.0": {
       "integrity": "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==",
       "dependencies": [
@@ -516,6 +525,9 @@
         "@babel/plugin-transform-react-jsx-development",
         "@babel/plugin-transform-react-pure-annotations"
       ]
+    },
+    "@babel/runtime@7.29.7": {
+      "integrity": "sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw=="
     },
     "@babel/template@7.28.6": {
       "integrity": "sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==",
@@ -1280,6 +1292,9 @@
       "integrity": "sha512-MujYO3eP72uvmSE0i4wltsodRfIpZATP3jvzRNRGGxgzId7aVocVJJV3nf01qnzzKFGxQVC9bpWxl5cjxTr/7Q==",
       "bin": true
     },
+    "bind-event-listener@3.0.0": {
+      "integrity": "sha512-PJvH288AWQhKs2v9zyfYdPzlPqf5bXbGMmhmUIY9x4dAUGIWgomO771oBQNwJnMQSnUIXhKu6sgzpBRXTlvb8Q=="
+    },
     "browserslist@4.28.2": {
       "integrity": "sha512-48xSriZYYg+8qXna9kwqjIVzuQxi+KYWp2+5nCYnYKPTr0LvD89Jqk2Or5ogxz0NUMfIjhh2lIUX/LyX9B4oIg==",
       "dependencies": [
@@ -1705,6 +1720,9 @@
     "quickselect@3.0.0": {
       "integrity": "sha512-XdjUArbK4Bm5fLLvlm5KpTFOiOThgfWWI4axAZDWg4E/0mKdZyI9tNEfds27qCi1ze/vwTR16kvmmGhRra3c2g=="
     },
+    "raf-schd@4.0.3": {
+      "integrity": "sha512-tQkJl2GRWh83ui2DiPTJz9wEiMN20syf+5oKfB03yYP7ioZcJwsIK8FjrtLwH1m7C7e+Tt2yYBlrOpdT+dyeIQ=="
+    },
     "resolve-protobuf-schema@2.1.0": {
       "integrity": "sha512-kI5ffTiZWmJaS/huM8wZfEMer1eRd7oJQhDuxeCLe3t7N7mX3z94CN0xPxBQxFYQTSNz9T0i+v6inKqSdK8xrQ==",
       "dependencies": [
@@ -1881,6 +1899,7 @@
           "jsr:@fresh/core@^2.3.3",
           "jsr:@fresh/plugin-vite@^1.1.2",
           "npm:@accelint/geo@~0.6.1",
+          "npm:@atlaskit/pragmatic-drag-and-drop@^2.0.1",
           "npm:@preact/signals@^2.9.0",
           "npm:@tailwindcss/vite@^4.1.12",
           "npm:@turf/bbox@^7.3.5",

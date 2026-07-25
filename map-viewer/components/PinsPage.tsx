@@ -9,11 +9,11 @@ export default function PinsPage() {
         <header>
           <h1 class="font-bold text-lg mb-2">Pinned locations</h1>
           <p class="text-sm text-base-content/90">
-            Save, organize, and monitor custom geographical markers directly on
-            the map. You can capture your <strong>live coordinates</strong>{" "}
-            with a real-time tracking <strong>beacon</strong>, drop{" "}
-            <strong>custom markers</strong> anywhere, or manually enter{" "}
-            <strong>geographic coordinates</strong>{" "}
+            Save, organize, and monitor <strong>custom locations</strong>{" "}
+            directly on the map. You can capture your{" "}
+            <strong>live current location</strong> , drop{" "}
+            <strong>map markers</strong> anywhere, or manually enter{" "}
+            <strong>arbitrary geographic coordinates</strong>{" "}
             to dynamically resolve and explore their{" "}
             <strong>full administrative hierarchy</strong>{" "}
             from province down to fokontany.

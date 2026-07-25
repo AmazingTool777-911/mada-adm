@@ -1,6 +1,6 @@
 import { useRef } from "preact/hooks";
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
-import { CircleStopIcon, ClockIcon, MapPinnedIcon } from "lucide-preact";
+import { ClockIcon, LocateOffIcon, MapPinnedIcon } from "lucide-preact";
 import {
   CurrentLocationTrackingProfile,
   GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS,
@@ -92,9 +92,9 @@ export default function PinsPageCurrentLocationCard() {
   }
 
   return !!currentLocationEntry.value && (
-    <article class="shadow shadow-base-content/30 rounded-sm p-3">
+    <article class="shadow shadow-base-content/30 rounded-sm px-3 pt-3 pb-4">
       <h3 class="font-bold flex items-center gap-x-1.5 text-sm">
-        <LocationTargetIcon size={16} />
+        <LocationTargetIcon size={16} class="shrink-0" />
         <span>Current location</span>
       </h3>
       <div class="space-y-1.5 mt-1">
@@ -166,7 +166,13 @@ export default function PinsPageCurrentLocationCard() {
           </label>
         </fieldset>
       </div>
-      <div class="flex items-start gap-x-1 mt-2">
+      <PinsPagePinnedLocationCardFokontany
+        className="mt-3"
+        fokontany={currentLocationEntry.value.fokontany}
+        isLoading={currentLocationEntry.value.isLoadingFokontany ?? false}
+        errorCause={currentLocationEntry.value.fokontanyErrorCause}
+      />
+      <div class="flex items-start gap-x-1 mt-4">
         <ClockIcon size={12} class="text-base-content/70 mt-0.5" />
         <p class="text-xs text-base-content/70">
           Last updated at{" "}
@@ -178,13 +184,7 @@ export default function PinsPageCurrentLocationCard() {
           </strong>
         </p>
       </div>
-      <PinsPagePinnedLocationCardFokontany
-        className="mt-3"
-        fokontany={currentLocationEntry.value.fokontany}
-        isLoading={currentLocationEntry.value.isLoadingFokontany ?? false}
-        errorCause={currentLocationEntry.value.fokontanyErrorCause}
-      />
-      <div class="mt-3 flex gap-x-2.5">
+      <div class="mt-4 flex gap-x-2.5">
         <button
           type="button"
           class="btn btn-sm btn-primary"
@@ -198,7 +198,7 @@ export default function PinsPageCurrentLocationCard() {
           class="btn btn-sm btn-error"
           onClick={() => pinnedLocationsStore.clearCurrentLocationTracking()}
         >
-          <CircleStopIcon size={14} />
+          <LocateOffIcon size={14} />
           <span>Stop tracking</span>
         </button>
       </div>

@@ -281,6 +281,10 @@ export default function PinsPagePinnedLocationCard(
           element: dropTargetEltRef.current!,
           onDragEnter({ source }) {
             dragSourceIndex.value = source.data.index as number;
+            dropTargetEltRef.current!.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
           },
           onDragLeave() {
             dragSourceIndex.value = null;

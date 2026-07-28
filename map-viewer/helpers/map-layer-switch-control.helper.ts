@@ -230,7 +230,7 @@ export class LayerSwitcherControl implements maplibregl.IControl {
         <div class="tooltip tooltip-right" data-tip="Map layers">
           <div>
             <div class="dropdown dropdown-top dropdown-start">
-              <div tabindex="0" role="button" class="btn btn-square m-1 text-base-content/90 hover:text-base-content duration-300">
+              <div id="app-map-layers-switcher-control-btn" tabindex="0" role="button" class="btn btn-square m-1 text-base-content/90 hover:text-base-content duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers-icon lucide-layers"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
               </div>
               <div tabindex="-1" class="dropdown-content bg-base-100 rounded-box z-1 w-52 shadow-sm">

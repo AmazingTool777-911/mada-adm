@@ -79,6 +79,7 @@
     "npm:@types/leaflet@^1.9.21": "1.9.21",
     "npm:culori@^4.0.2": "4.0.2",
     "npm:daisyui@^5.5.19": "5.5.20",
+    "npm:driver.js@^1.8.0": "1.8.0",
     "npm:esbuild-wasm@~0.25.11": "0.25.12",
     "npm:esbuild@0.25.7": "0.25.7",
     "npm:esbuild@~0.25.5": "0.25.7",
@@ -1333,6 +1334,9 @@
     "detect-libc@2.1.2": {
       "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="
     },
+    "driver.js@1.8.0": {
+      "integrity": "sha512-+8/IO7h1v14IzWh2GP60N7T3PFZweXwdn5e5POuxRSBoCYUojsBxzqawPeXh3YZIibRy7EehYNEyxe7slwwtdg=="
+    },
     "earcut@3.0.2": {
       "integrity": "sha512-X7hshQbLyMJ/3RPhyObLARM2sNxxmRALLKx1+NVFFnQ9gKzmCrxm9+uLIAdBcvc8FNLpctqlQ2V6AE92Ol9UDQ=="
     },
@@ -1907,6 +1911,7 @@
           "npm:@types/leaflet@^1.9.21",
           "npm:culori@^4.0.2",
           "npm:daisyui@^5.5.19",
+          "npm:driver.js@^1.8.0",
           "npm:floating-ui@^5.2.8",
           "npm:geo-coordinates-parser@^1.7.4",
           "npm:lucide-preact@^1.14.0",

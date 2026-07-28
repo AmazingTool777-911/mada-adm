@@ -320,7 +320,12 @@ export default function AppMap(props: AppMapProps) {
   return (
     <>
       {/* Map container */}
-      <div ref={mapContainerRef} class="h-full w-full"></div>
+      <div
+        ref={mapContainerRef}
+        id="app-map-map-container"
+        class="h-full w-full"
+      >
+      </div>
       {/* Confirm ADM GeoJSON data download modal */}
       <AppMapAdmGeoJsonDownloadModal />
       {/* Dynamic ADM GeoJSON layers */}

@@ -112,6 +112,7 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
         }}
       >
         <div
+          id="router-pages-drawer"
           class={`absolute top-4 right-0 min-[532px]:ml-4 ${
             appLayoutStore.sidebarIsOpen.value
               ? "translate-x-0 mr-4 min-[532px]:translate-x-[calc(100%+0.75rem)] min-[532px]:mr-0"
@@ -129,6 +130,7 @@ export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
           >
             <button
               type="button"
+              id="router-drawer-toggle-btn"
               aria-label={toggleLabel}
               class="btn btn-square btn-lg shadow text-base-content/90 hover:text-base-content duration-300"
               onClick={() => (appLayoutStore.toggleSidebar())}

@@ -47,11 +47,13 @@ export default function DataSourcesPage() {
               id="layers-description"
               class="text-sm mb-1 text-base-content/90"
             >
-              These baseline files that we refer to as{" "}
-              <strong class="italic">layers</strong> have been organized into
+              <strong>Layers</strong> are the source{" "}
+              <strong>GeoJSON files</strong>{" "}
+              that powers the app's administrative boundaries database, and they
+              can also be toggled onto the map. These layers are organized into
               {" "}
               <strong>5 distinct tiers</strong>{" "}
-              in order to establish a complete hierarchy according to{" "}
+              that follows the complete hierarchy of{" "}
               <a
                 href="https://en.wikipedia.org/wiki/List_of_administrative_divisions_by_country"
                 target="_blank"
@@ -80,143 +82,145 @@ export default function DataSourcesPage() {
             </ol>
           </header>
           <DataSourcesPageCacheStatus />
-          {[
-            {
-              admLevelCode: AdmLevelCode.PROVINCE,
-              body: (
-                <>
-                  Represents the official{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Provinces_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    provinces boundaries of Madagascar
-                  </a>. Since the province tier is not present in the original
-                  {" "}
-                  <a
-                    href="https://data.humdata.org/dataset/geoboundaries-admin-boundaries-for-madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    geoBoundaries
-                  </a>{" "}
-                  dataset, its layer consists of custom generated data by the
-                  {" "}
-                  <a
-                    href="https://github.com/AmazingTool777-911/madagascar-administrative-boundaries"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    Mada ADM app
-                  </a>{" "}
-                  resulting from the grouping of the spatial features of their
-                  respective underlying regions.
-                </>
-              ),
-            },
-            {
-              admLevelCode: AdmLevelCode.REGION,
-              body: (
-                <>
-                  Represents the official{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    regional boundaries of Madagascar
-                  </a>{" "}
-                  as provided by the original{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    geoBoundaries
-                  </a>{" "}
-                  repository.
-                </>
-              ),
-            },
-            {
-              admLevelCode: AdmLevelCode.DISTRICT,
-              body: (
-                <>
-                  Represents the official{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Districts_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    district boundaries of Madagascar
-                  </a>{" "}
-                  as provided by the original{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    geoBoundaries
-                  </a>{" "}
-                  repository.
-                </>
-              ),
-            },
-            {
-              admLevelCode: AdmLevelCode.COMMUNE,
-              body: (
-                <>
-                  Represents the official{" "}
-                  <a
-                    href="https://fr.wikipedia.org/wiki/Commune_(Madagascar)"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    commune boundaries of Madagascar
-                  </a>{" "}
-                  as provided by the original{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    geoBoundaries
-                  </a>{" "}
-                  repository.
-                </>
-              ),
-            },
-            {
-              admLevelCode: AdmLevelCode.FOKONTANY,
-              body: (
-                <>
-                  Represents the official{"  "}
-                  <a
-                    href="https://fr.wikipedia.org/wiki/Fokontany"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    fokontany boundaries of Madagascar
-                  </a>{" "}
-                  as provided by the original{" "}
-                  <a
-                    href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
-                    target="_blank"
-                    class="link link-primary"
-                  >
-                    geoBoundaries
-                  </a>{" "}
-                  repository.
-                </>
-              ),
-            },
-          ].map(({ admLevelCode, body }) => (
-            <AdmLevelDataSourceCard
-              admLevelCode={admLevelCode}
-              body={body}
-            />
-          ))}
+          <div id="data-sources-adm-layers" class="space-y-6">
+            {[
+              {
+                admLevelCode: AdmLevelCode.PROVINCE,
+                body: (
+                  <>
+                    Represents the official{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Provinces_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      provinces boundaries of Madagascar
+                    </a>. Since the province tier is not present in the original
+                    {" "}
+                    <a
+                      href="https://data.humdata.org/dataset/geoboundaries-admin-boundaries-for-madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      geoBoundaries
+                    </a>{" "}
+                    dataset, its layer consists of custom generated data by the
+                    {" "}
+                    <a
+                      href="https://github.com/AmazingTool777-911/madagascar-administrative-boundaries"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      Mada ADM app
+                    </a>{" "}
+                    resulting from the grouping of the spatial features of their
+                    respective underlying regions.
+                  </>
+                ),
+              },
+              {
+                admLevelCode: AdmLevelCode.REGION,
+                body: (
+                  <>
+                    Represents the official{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      regional boundaries of Madagascar
+                    </a>{" "}
+                    as provided by the original{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      geoBoundaries
+                    </a>{" "}
+                    repository.
+                  </>
+                ),
+              },
+              {
+                admLevelCode: AdmLevelCode.DISTRICT,
+                body: (
+                  <>
+                    Represents the official{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Districts_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      district boundaries of Madagascar
+                    </a>{" "}
+                    as provided by the original{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      geoBoundaries
+                    </a>{" "}
+                    repository.
+                  </>
+                ),
+              },
+              {
+                admLevelCode: AdmLevelCode.COMMUNE,
+                body: (
+                  <>
+                    Represents the official{" "}
+                    <a
+                      href="https://fr.wikipedia.org/wiki/Commune_(Madagascar)"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      commune boundaries of Madagascar
+                    </a>{" "}
+                    as provided by the original{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      geoBoundaries
+                    </a>{" "}
+                    repository.
+                  </>
+                ),
+              },
+              {
+                admLevelCode: AdmLevelCode.FOKONTANY,
+                body: (
+                  <>
+                    Represents the official{"  "}
+                    <a
+                      href="https://fr.wikipedia.org/wiki/Fokontany"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      fokontany boundaries of Madagascar
+                    </a>{" "}
+                    as provided by the original{" "}
+                    <a
+                      href="https://en.wikipedia.org/wiki/Regions_of_Madagascar"
+                      target="_blank"
+                      class="link link-primary"
+                    >
+                      geoBoundaries
+                    </a>{" "}
+                    repository.
+                  </>
+                ),
+              },
+            ].map(({ admLevelCode, body }) => (
+              <AdmLevelDataSourceCard
+                admLevelCode={admLevelCode}
+                body={body}
+              />
+            ))}
+          </div>
         </section>
       </main>
     </div>

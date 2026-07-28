@@ -41,13 +41,21 @@ export default function DataSourcesPageCacheStatus() {
 
   return admGeoJsonStore.allLayersAreUpToDate.value
     ? (
-      <div role="alert" class="alert alert-success alert-soft">
+      <div
+        id="data-sources-pages-cache-status"
+        role="alert"
+        class="alert alert-success alert-soft"
+      >
         <CheckCircle size={18} />
         <span>All the layers' caches are up to date.</span>
       </div>
     )
     : (admGeoJsonStore.layersToDownload.value && (
-      <div role="alert" class="alert alert-vertical sm:alert-horizontal">
+      <div
+        id="data-sources-pages-cache-status"
+        role="alert"
+        class="alert alert-vertical sm:alert-horizontal"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

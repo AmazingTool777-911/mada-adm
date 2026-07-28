@@ -28,6 +28,7 @@
     "@types/leaflet": "npm:@types/leaflet@^1.9.21",
     "culori": "npm:culori@^4.0.2",
     "daisyui": "npm:daisyui@^5.5.19",
+    "driver.js": "npm:driver.js@^1.8.0",
     "floating-ui": "npm:floating-ui@^5.2.8",
     "fresh": "jsr:@fresh/core@^2.3.3",
     "geo-coordinates-parser": "npm:geo-coordinates-parser@^1.7.4",

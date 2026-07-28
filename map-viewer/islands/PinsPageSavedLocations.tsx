@@ -17,7 +17,10 @@ export default function PinsPageSavedLocations() {
     pinnedLocations.value.length > 0;
 
   return (
-    <section aria-labelledby="pins-page-saved-locations-title">
+    <section
+      id="pins-page-saved-locations"
+      aria-labelledby="pins-page-saved-locations-title"
+    >
       <h2 id="pins-page-saved-locations-title" class="font-bold">
         Saved locations
       </h2>

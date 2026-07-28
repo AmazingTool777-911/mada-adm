@@ -21,7 +21,7 @@ export default function AdmExplorerPageSearchModeTabs() {
   const activeClassName = "text-primary [--tab-border-color:primary]";
 
   return (
-    <>
+    <div id="adm-explorer-page-search-mode-section">
       {!hasMissingConfigError.value
         ? (
           <>
@@ -69,6 +69,6 @@ export default function AdmExplorerPageSearchModeTabs() {
           </>
         )
         : <AdmExplorerPageMissingConfigError />}
-    </>
+    </div>
   );
 }

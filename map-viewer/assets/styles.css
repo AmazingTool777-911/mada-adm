@@ -27,7 +27,7 @@
 
 @layer utilities {
   .maplibregl-popup-content {
-    @apply font-sans; /* or font-body, whatever your Tailwind config defines */
+    @apply font-sans;
   }
 
   .btn-province {

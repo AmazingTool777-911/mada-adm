@@ -45,6 +45,7 @@ export default function ViewConfigModal(
         <div className="tooltip tooltip-right" data-tip={label}>
           <button
             type="button"
+            id="sidebar-database-config-btn"
             command="show-modal"
             commandfor="config-modal"
             class="btn btn-circle btn-lg text-base-content/90 hover:text-base-content duration-300"

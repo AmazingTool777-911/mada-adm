@@ -46,9 +46,14 @@ export default function PinsPagePinLocationModal() {
       class="modal"
     >
       <div class="modal-box w-11/12 max-w-2xl">
-        <h3 class="text-lg font-bold flex items-center gap-x-3 mb-4">
-          <PinIcon /> <span>Pin a location to the map</span>
-        </h3>
+        <header class="mb-6">
+          <h3 class="text-lg font-bold flex items-center gap-x-3 mb-3">
+            <PinIcon /> <span>Pin a location to the map</span>
+          </h3>
+          <p class="text-base-content/70">
+            Choose the type and the method of pin.
+          </p>
+        </header>
         <div class="space-y-5">
           <PinsPagePinLocationModalPinTypeOption
             pinType="live"

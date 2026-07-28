@@ -12,6 +12,7 @@ export default function PinsPageCtaBtn() {
     <>
       <button
         type="button"
+        id="pins-page-cta-btn"
         class="btn btn-primary flex items-center"
         onClick={() => showPanel.value = true}
       >

@@ -42,6 +42,7 @@ export default function SidebarDataSourcesLink({
     <SidebarNavLink
       href="/data-sources"
       fPartial="/partials/data-sources"
+      id="sidebar-data-sources-link"
       Icon={Database}
       isActive={isActive}
       tooltip={tooltipText.value}

@@ -35,7 +35,9 @@ export default function AdmExplorerPage() {
           A high-level overview of the total recorded administrative divisions
           currently mapped across Madagascar.
         </p>
-        <AdmExplorerPageCountsPills />
+        <div id="adm-explorer-page-territory-distribution-summary">
+          <AdmExplorerPageCountsPills />
+        </div>
       </section>
       <section
         aria-labelledby="select-search-mode-title"

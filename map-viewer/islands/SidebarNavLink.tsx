@@ -7,6 +7,7 @@ import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
 export type SidebarNavLinkProps = {
   href: string;
   fPartial: string;
+  id?: string;
   Icon: FunctionComponent<LucideProps>;
   children: ComponentChildren;
   isActive?: boolean;
@@ -16,6 +17,7 @@ export type SidebarNavLinkProps = {
 export default function SidebarNavLink({
   href,
   fPartial,
+  id,
   Icon,
   children,
   isActive = false,
@@ -53,6 +55,7 @@ export default function SidebarNavLink({
         ref={aElRef}
         f-partial={fPartial}
         href={href}
+        id={id}
         class={`relative flex flex-col items-center gap-1 text-center border-l-4 pr-2 pl-1 py-3 border-transparent aria-[current=page]:border-primary aria-[current=page]:text-primary hover:bg-slate-300 text-base-content/90 hover:text-base-content duration-300`}
         onClick={() => appLayoutStore.toggleSidebar(true)}
       >

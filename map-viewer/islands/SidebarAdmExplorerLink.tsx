@@ -1,17 +1,18 @@
 import { Search } from "lucide-preact";
 import SidebarNavLink from "@/islands/SidebarNavLink.tsx";
 
-export type SidebarAdmBoundariesLinkProps = {
+export type SidebarAdmExplorerLinkProps = {
   isActive?: boolean;
 };
 
-export default function SidebarAdmBoundariesLink({
+export default function SidebarAdmExplorerLink({
   isActive = false,
-}: SidebarAdmBoundariesLinkProps) {
+}: SidebarAdmExplorerLinkProps) {
   return (
     <SidebarNavLink
       href="/adm-explorer"
       fPartial="/partials/adm-explorer"
+      id="sidebar-adm-explorer-link"
       Icon={Search}
       isActive={isActive}
       tooltip="Administrative explorer"

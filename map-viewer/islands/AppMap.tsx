@@ -2,6 +2,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "preact/hooks";
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
+import { useWalkthroughDriverContext } from "@/islands/contexts/walkthrough-driver/index.ts";
 
 import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 
@@ -30,6 +31,7 @@ import { UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL } from "@/config/adm-entities
 import AppMapCurrentLocationBeacon from "@/islands/AppMapCurrentLocationBeacon.tsx";
 import AppMapPinnedLocations from "@/islands/AppMapPinnedLocations.tsx";
 import AppMapPinLocationActions from "@/islands/AppMapPinLocationActions.tsx";
+import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -124,6 +126,7 @@ export default function AppMap(props: AppMapProps) {
     mapRef.current = map;
     map.on("load", () => {
       mapIsLoaded.value = true;
+      appMapStore.mapIsLoaded.value = true;
     });
 
     function handleMapMouseDown() {
@@ -316,6 +319,44 @@ export default function AppMap(props: AppMapProps) {
     }, UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const appLayoutStore = injectAppLayoutStore();
+
+  const { getLastWalkThroughStep, injectWalkThroughDriver } =
+    useWalkthroughDriverContext();
+
+  useEffect(() => {
+    if (!mapIsLoaded.value) return;
+
+    const lastStep = getLastWalkThroughStep();
+    if (
+      lastStep !== null && [0, 1, 2, 3, 6, 9, 10, 13, 14].includes(lastStep)
+    ) {
+      const driver = injectWalkThroughDriver();
+
+      if ([1, 13].includes(lastStep)) {
+        const drawerElt = document.getElementById(
+          "router-pages-drawer",
+        )!;
+
+        // deno-lint-ignore no-inner-declarations
+        function handleWaitDrawerToggled() {
+          if (!appLayoutStore.sidebarIsOpen.value) {
+            driver.drive(lastStep!);
+            drawerElt.removeEventListener(
+              "transitionend",
+              handleWaitDrawerToggled,
+            );
+          }
+        }
+
+        drawerElt.addEventListener("transitionend", handleWaitDrawerToggled);
+        appLayoutStore.toggleSidebar(false);
+      } else {
+        driver.drive(lastStep);
+      }
+    }
+  }, [mapIsLoaded.value]);
 
   return (
     <>

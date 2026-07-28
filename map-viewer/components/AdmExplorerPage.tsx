@@ -1,5 +1,6 @@
 import AdmExplorerPageCountsPills from "@/islands/AdmExplorerPageCountsPills.tsx";
 import AdmExplorerPageSearchModeTabs from "@/islands/AdmExplorerPageSearchModeTabs.tsx";
+import WalkthroughResumer from "@/islands/WalkthroughResumer.tsx";
 
 export default function AdmExplorerPage() {
   return (
@@ -35,7 +36,7 @@ export default function AdmExplorerPage() {
           A high-level overview of the total recorded administrative divisions
           currently mapped across Madagascar.
         </p>
-        <div id="adm-explorer-page-territory-distribution-summary">
+        <div>
           <AdmExplorerPageCountsPills />
         </div>
       </section>
@@ -65,6 +66,7 @@ export default function AdmExplorerPage() {
         </ul>
         <AdmExplorerPageSearchModeTabs />
       </section>
+      <WalkthroughResumer resumeSteps={[3, 4, 5]} />
     </main>
   );
 }

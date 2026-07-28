@@ -1,6 +1,7 @@
 import PinsPageCtaBtn from "@/islands/PinsPageCtaBtn.tsx";
 import PinsPagePinLocationModal from "@/islands/PinsPagePinLocationModal.tsx";
 import PinsPageSavedLocations from "@/islands/PinsPageSavedLocations.tsx";
+import WalkthroughResumer from "@/islands/WalkthroughResumer.tsx";
 
 export default function PinsPage() {
   return (
@@ -29,6 +30,7 @@ export default function PinsPage() {
           <PinsPagePinLocationModal />
         </aside>
       </main>
+      <WalkthroughResumer resumeSteps={[6, 7, 8]} />
     </div>
   );
 }

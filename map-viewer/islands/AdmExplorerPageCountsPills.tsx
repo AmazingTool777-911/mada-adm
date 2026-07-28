@@ -45,7 +45,10 @@ export default function AdmExplorerPageCountsPills() {
   }
 
   return (
-    <ul class="m-0 p-0 list-none flex gap-2 flex-wrap">
+    <ul
+      id="adm-explorer-page-territory-distribution-summary"
+      class="m-0 p-0 list-none flex gap-2 flex-wrap"
+    >
       {ADM_LEVEL_CODES_INDEXED.map((admLevelCode) => {
         const pluralTitle = `${ADM_LEVEL_TITLE_BY_CODE.get(admLevelCode)!}s`;
         const count = ADM_LEVEL_ENTRIES_COUNT_BY_CODE.get(admLevelCode)!

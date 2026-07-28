@@ -81,7 +81,11 @@ export function WalkthroughDriverProvider(
   ) {
     appLayoutStore.toggleSidebar(true);
     const linkElt = document.getElementById(linkId)!;
-    linkElt.click();
+    const linkHref = linkElt.getAttribute("href")!;
+    const currentPathname = new URL(location.href).pathname;
+    if (!currentPathname.startsWith(linkHref)) {
+      linkElt.click();
+    }
     nextOrPrevious ? driverObj.moveNext() : driverObj.movePrevious();
   }
 
@@ -313,7 +317,7 @@ export function WalkthroughDriverProvider(
             "btn-primary",
             "flex",
             "items-center",
-            "gap-x-2",
+            "gap-x-1",
           );
           btn.classList.remove("driver-popover-footer-btn");
           if (btn.classList.contains("driver-popover-next-btn")) {

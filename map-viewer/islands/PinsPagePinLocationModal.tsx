@@ -50,7 +50,7 @@ export default function PinsPagePinLocationModal() {
           <h3 class="text-lg font-bold flex items-center gap-x-3 mb-3">
             <PinIcon /> <span>Pin a location to the map</span>
           </h3>
-          <p class="text-base-content/70">
+          <p class="text-base-content/80">
             Choose the type and the method of pin.
           </p>
         </header>

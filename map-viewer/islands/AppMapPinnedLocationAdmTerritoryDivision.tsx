@@ -47,11 +47,18 @@ export default function AppMapPinnedLocationBeaconAdmTerritoryDivision(
       true,
     );
     return () => {
-      appMapStore.referenceAdmEntityGeoJsonEntryByName(
+      const updatedEntry = appMapStore.referenceAdmEntityGeoJsonEntryByName(
         division.admLevelCode,
         division.name,
         false,
       );
+      if (updatedEntry && updatedEntry.refsCount === 1) {
+        appMapStore.renderAdmEntityGeoJsonEntryByName(
+          updatedEntry.admEntityDiscriminated!.admLevelCode,
+          updatedEntry.name,
+          false,
+        );
+      }
     };
   }, []);
 

@@ -215,6 +215,10 @@ export default function AppMapPinnedLocationsPin(
       appMapStore.fokontanyGeoJsonEntryByName.value,
     ],
   );
+  const renderedFokontanyDivisions = useMemo<AdmEntityDivisionWithEntry[]>(
+    () => fokontanyDivisions?.filter((d) => d.isRendered) ?? [],
+    [fokontanyDivisions],
+  );
 
   const { markerPopup } = useAddPinnedLocationMarkerPopup(
     pinnedLocationEntrySignal,
@@ -323,7 +327,7 @@ export default function AppMapPinnedLocationsPin(
 
   return (
     <>
-      {fokontanyDivisions?.map((d) => (
+      {renderedFokontanyDivisions.map((d) => (
         <AppMapPinnedLocationBeaconAdmTerritoryDivision
           key={d.name}
           division={d}

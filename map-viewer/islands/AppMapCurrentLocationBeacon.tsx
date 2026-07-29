@@ -135,6 +135,10 @@ export default function AppMapCurrentLocationBeacon(
       appMapStore.fokontanyGeoJsonEntryByName.value,
     ],
   );
+  const renderedFokontanyDivisions = useMemo<AdmEntityDivisionWithEntry[]>(
+    () => fokontanyDivisions?.filter((d) => d.isRendered) ?? [],
+    [fokontanyDivisions],
+  );
 
   const { markerPopup } = useAddPinnedLocationMarkerPopup(
     currentLocationEntry,
@@ -286,7 +290,7 @@ export default function AppMapCurrentLocationBeacon(
           </div>
         </div>
       </div>
-      {fokontanyDivisions?.map((d) => (
+      {renderedFokontanyDivisions.map((d) => (
         <AppMapPinnedLocationAdmTerritoryDivision
           key={d.name}
           division={d}

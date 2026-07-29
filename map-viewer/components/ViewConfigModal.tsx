@@ -99,7 +99,7 @@ export default function ViewConfigModal(
                           )}
                       </td>
                       <td>
-                        <p class="text-sm text-base-content/80">
+                        <p class="text-sm text-base-content/90">
                           <strong>Prefixes</strong>{" "}
                           the ADM tables' names with the given{" "}
                           <span class="badge-sm badge badge-success badge-soft">
@@ -140,7 +140,7 @@ export default function ViewConfigModal(
                         </span>
                       </td>
                       <td>
-                        <p class="text-sm text-base-content/80">
+                        <p class="text-sm text-base-content/90">
                           If{" "}
                           <span class="badge-sm badge badge-error badge-soft">
                             false
@@ -180,7 +180,7 @@ export default function ViewConfigModal(
                         </span>
                       </td>
                       <td>
-                        <p class="text-sm text-base-content/80">
+                        <p class="text-sm text-base-content/90">
                           If{" "}
                           <span class="badge-sm badge badge-success badge-soft">
                             true
@@ -215,8 +215,8 @@ export default function ViewConfigModal(
                         </span>
                       </td>
                       <td>
-                        <p class="text-sm text-base-content/80">
-                          if{" "}
+                        <p class="text-sm text-base-content/90">
+                          If{" "}
                           <span class="badge-sm badge badge-success badge-soft">
                             true
                           </span>,{" "}
@@ -256,7 +256,7 @@ export default function ViewConfigModal(
                           )}
                       </td>
                       <td>
-                        <p class="text-sm text-base-content/80">
+                        <p class="text-sm text-base-content/90">
                           If{" "}
                           <span class="badge-sm badge badge-success badge-soft">
                             true
@@ -296,7 +296,7 @@ export default function ViewConfigModal(
                           )}
                       </td>
                       <td>
-                        <p class="text-sm text-base-content/80">
+                        <p class="text-sm text-base-content/90">
                           If{" "}
                           <span class="badge-sm badge badge-success badge-soft">
                             true

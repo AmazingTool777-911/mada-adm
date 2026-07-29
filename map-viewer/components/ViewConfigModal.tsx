@@ -1,4 +1,4 @@
-import { AlertTriangle, Settings } from "lucide-preact";
+import { Settings } from "lucide-preact";
 import { MadaAdmConfig } from "@scope/types/models";
 import {
   ADM_LEVEL_CODES_INDEXED,
@@ -10,6 +10,7 @@ import {
   prefixWithSnakeCase,
 } from "@scope/utils/string";
 import ViewConfigModalConfigStoreSetter from "@/islands/ViewConfigModalConfigStoreSetter.tsx";
+import dbErrorIconURL from "@/assets/error.png";
 
 export type ViewConfigModalProps = {
   config: MadaAdmConfig | null;
@@ -320,7 +321,11 @@ export default function ViewConfigModal(
               )}
               {!config && !!configLoadingError && (
                 <div class="py-16 flex flex-col items-center">
-                  <AlertTriangle size={64} class="text-error" />
+                  <img
+                    src={dbErrorIconURL}
+                    alt="Database error"
+                    class="w-[5.25rem]"
+                  />
                   <p class="mt-4 text-error">
                     Failed to load the database configuration.
                   </p>

@@ -92,3 +92,7 @@ export * from "./my-feature.context.ts";
 export * from "./useMyFeatureContext.ts";
 export * from "./MyFeatureProvider.tsx";
 ```
+
+## Consuming the Context
+
+When consuming the context in components or hooks, **always** use the custom wrapper hook exposed in the barrel (e.g., `useMyFeatureContext()`). **Do not** manually import Preact's native `useContext` and the raw context instance to consume it.

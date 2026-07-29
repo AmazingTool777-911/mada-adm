@@ -1,6 +1,6 @@
 import { useEffect } from "preact/hooks";
 import { MadaAdmConfig } from "@scope/types/models";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export type ViewConfigModalConfigStoreSetterProps = {
   config: MadaAdmConfig | null;
@@ -9,7 +9,7 @@ export type ViewConfigModalConfigStoreSetterProps = {
 export default function ViewConfigModalConfigStoreSetter(
   { config }: ViewConfigModalConfigStoreSetterProps,
 ) {
-  const apiStore = injectApiStore();
+  const apiStore = useStoresContext().injectApiStore();
 
   useEffect(() => {
     apiStore.config.value = config;

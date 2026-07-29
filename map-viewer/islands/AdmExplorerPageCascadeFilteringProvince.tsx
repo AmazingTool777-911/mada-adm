@@ -3,7 +3,7 @@ import { useComputed, useSignal } from "@preact/signals";
 import { AdmEntityDiscriminated, Province } from "@scope/types/models";
 import { AdmLevelCode } from "@scope/consts/models";
 import AdmEntitiesSearchComboBoxField from "@/islands/AdmEntitiesSearchComboBoxField.tsx";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export type AdmExplorerPageCascadeFilteringProvinceProps = {
   selectedProvince: Province | null;
@@ -14,7 +14,7 @@ export default function AdmExplorerPageCascadeFilteringProvince(
   { selectedProvince, onSelectedChange }:
     AdmExplorerPageCascadeFilteringProvinceProps,
 ) {
-  const apiStore = injectApiStore();
+  const apiStore = useStoresContext().injectApiStore();
 
   const search = useSignal("");
 

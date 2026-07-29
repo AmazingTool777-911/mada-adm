@@ -2,10 +2,7 @@ import { useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
 import { CompassIcon, MapPinPlusIcon } from "lucide-preact";
 import { convert } from "geo-coordinates-parser";
-
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 /**
  * Floating action button for manually entering geographic coordinates
@@ -15,12 +12,7 @@ import { injectApiStore } from "@/stores/api.store.ts";
  * submission the pinned location entry is added and the modal closes.
  */
 export default function AppMapManualCoordinatesEntryFAB() {
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
 
   const dialogEltRef = useRef<HTMLDialogElement>(null);
 

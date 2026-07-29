@@ -1,22 +1,19 @@
 import { useEffect, useRef } from "preact/hooks";
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { MapPinPlusIcon, PinIcon } from "lucide-preact";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
+
 import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
 import CompassIcon from "@/islands/icons/CompassIcon.tsx";
 import PinsPagePinLocationModalPinTypeOption from "@/islands/PinsPagePinLocationModalPinTypeOption.tsx";
 import PinsPagePinLocationModalCurrentLocationTrackingForm from "@/islands/PinsPagePinLocationModalCurrentLocationTrackingForm.tsx";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
 import PinsPagePinLocationModalPointOnMapForm from "@/islands/PinsPagePinLocationModalPointOnMapForm.tsx";
 import PinsPagePinLocationModalManualCoordinatesEntryForm from "@/islands/PinsPagePinLocationModalManualCoordinatesEntryForm.tsx";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 type SelectedPinType = "live" | "marker" | "coordinates";
 
 export default function PinsPagePinLocationModal() {
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const { showPanel } = injectPinnedLocationsStore(fokontanyApi, apiStore);
+  const { showPanel } = useStoresContext().injectPinnedLocationsStore();
 
   const selectedPinType = useSignal<SelectedPinType | null>(null);
 

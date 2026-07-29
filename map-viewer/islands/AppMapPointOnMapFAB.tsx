@@ -1,10 +1,7 @@
 import { useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
 import { MapPinPlusIcon } from "lucide-preact";
-
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 /**
  * Floating action button for pointing a pin on the map.
@@ -14,12 +11,7 @@ import { injectApiStore } from "@/stores/api.store.ts";
  * primary-colored and clicking it cancels the pin pointing.
  */
 export default function AppMapPointOnMapFAB() {
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const { pointOnMapPayload } = pinnedLocationsStore;
 
   const dialogEltRef = useRef<HTMLDialogElement>(null);

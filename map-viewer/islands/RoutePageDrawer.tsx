@@ -4,7 +4,8 @@ import { useEffect, useRef } from "preact/hooks";
 import { PanelRightClose, PanelRightOpen } from "lucide-preact";
 import { default as SimpleBar } from "simplebar";
 import "simplebar/dist/simplebar.css";
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
+
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import useScrollToDataSourcesDownload from "@/hooks/useScrollToDataSourcesDownload.ts";
 
 export type RoutePageDrawerProps = {
@@ -12,7 +13,7 @@ export type RoutePageDrawerProps = {
 };
 
 export default function RoutePageDrawer({ children }: RoutePageDrawerProps) {
-  const appLayoutStore = injectAppLayoutStore();
+  const appLayoutStore = useStoresContext().injectAppLayoutStore();
 
   const toggleLabel = computed(() => {
     return appLayoutStore.sidebarIsOpen.value

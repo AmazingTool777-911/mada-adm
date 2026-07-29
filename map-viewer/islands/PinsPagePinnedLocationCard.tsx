@@ -17,16 +17,14 @@ import {
   GEOGRAPHIC_COORDINATE_OUTPUT_FORMAT_OPTIONS,
   GeographicCoordinateOutputFormat,
 } from "@/consts/pinned-locations.consts.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import {
-  injectPinnedLocationsStore,
   PinnedLocationEntry,
   PinnedLocationMoveType,
 } from "@/stores/pinned-locations.store.ts";
 import CopyToClipboardBtn from "@/islands/CopyToClipboardBtn.tsx";
 import useDynamicDateTime from "@/hooks/useDynamicDateTime.ts";
 import PinsPagePinnedLocationCardFokontany from "@/islands/PinsPagePinnedLocationCardFokontany.tsx";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import {
   formatGeographicCoordinates,
   showPinnedLocationOnMapEventHub,
@@ -44,12 +42,7 @@ export default function PinsPagePinnedLocationCard(
   const indexRef = useRef(index);
   indexRef.current = index;
 
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const { pinnedLocations } = pinnedLocationsStore;
 
   const outputFormat = useSignal<GeographicCoordinateOutputFormat>(

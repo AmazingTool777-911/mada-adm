@@ -1,14 +1,10 @@
 import { useSignal } from "@preact/signals";
 import { MapPinPlusIcon, SaveIcon, XIcon } from "lucide-preact";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export default function PinsPagePinLocationModalPointOnMapForm() {
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    injectFokontanyApi(),
-    injectApiStore(),
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const { pointOnMapPayload } = pinnedLocationsStore;
 
   const titleInputValue = useSignal<string>(

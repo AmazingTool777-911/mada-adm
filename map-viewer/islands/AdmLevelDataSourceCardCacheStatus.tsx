@@ -2,11 +2,9 @@ import { Database, DatabaseZap, Download } from "lucide-preact";
 import { useComputed } from "@preact/signals";
 import { useEffect } from "preact/hooks";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
-import {
-  AdmGeojsonDataDownloadItem,
-  injectAdmGeojsonStore,
-} from "@/stores/adm-geojson.store.ts";
+import { AdmGeojsonDataDownloadItem } from "@/stores/adm-geojson.store.ts";
 import { AdmGeojsonMetadataClientCacheItem } from "@/types/cache.d.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export type AdmLevelDataSourceCardCacheStatusProps = {
   admLevelCode: AdmLevelCode;
@@ -15,7 +13,7 @@ export type AdmLevelDataSourceCardCacheStatusProps = {
 export default function AdmLevelDataSourceCardCacheStatus(
   { admLevelCode }: AdmLevelDataSourceCardCacheStatusProps,
 ) {
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const admGeoJsonStore = useStoresContext().injectAdmGeojsonStore();
 
   const cachedMetadata = useComputed<AdmGeojsonMetadataClientCacheItem | null>(
     () => {

@@ -1,7 +1,8 @@
-import { ArrowDownToLine, Database } from "lucide-preact";
-import SidebarNavLink from "@/islands/SidebarNavLink.tsx";
 import { useComputed } from "@preact/signals";
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
+import { ArrowDownToLine, Database } from "lucide-preact";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
+import SidebarNavLink from "@/islands/SidebarNavLink.tsx";
+
 import { pluralize } from "@scope/utils/string";
 
 export type SidebarDataSourcesLinkProps = {
@@ -11,7 +12,7 @@ export type SidebarDataSourcesLinkProps = {
 export default function SidebarDataSourcesLink({
   isActive = false,
 }: SidebarDataSourcesLinkProps) {
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const admGeoJsonStore = useStoresContext().injectAdmGeojsonStore();
 
   const activeDownloadsCount = useComputed(() => {
     return admGeoJsonStore.downloads.value.filter((d) =>

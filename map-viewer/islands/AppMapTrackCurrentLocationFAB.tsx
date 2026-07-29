@@ -10,9 +10,7 @@ import {
   TRACKING_PROFILE_FREQUENCY_OPTIONS,
   UNSUPPORTED_GEOLOCATION_ERROR_MESSAGE,
 } from "@/consts/pinned-locations.consts.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
 
 /**
@@ -23,12 +21,7 @@ import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
  * and clicking it stops the tracking.
  */
 export default function AppMapTrackCurrentLocationFAB() {
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const {
     trackingProfileFrequency,
     highAccuracyGeolocationEnabled,

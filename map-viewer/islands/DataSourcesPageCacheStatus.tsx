@@ -1,11 +1,11 @@
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
 import { useComputed } from "@preact/signals";
 import { ADM_LEVEL_INDEX_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import { CheckCircle, Download } from "lucide-preact";
 import { pluralize } from "@scope/utils/string";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export default function DataSourcesPageCacheStatus() {
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const admGeoJsonStore = useStoresContext().injectAdmGeojsonStore();
 
   const canDownloadAll = useComputed(() => {
     if (!admGeoJsonStore.layersToDownload.value) return true;

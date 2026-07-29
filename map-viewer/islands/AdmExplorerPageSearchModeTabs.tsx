@@ -1,12 +1,12 @@
 import { useSignal, useSignalEffect } from "@preact/signals";
 import { ArrowDownFromLine, ArrowDownWideNarrow } from "lucide-preact";
-import AdmExplorerPageGlobalFiltering from "@/islands/AdmExplorerPageGlobalFiltering.tsx";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import AdmExplorerPageMissingConfigError from "@/islands/AdmExplorerPageMissingConfigError.tsx";
 import AdmExplorerPageCascadeFiltering from "@/islands/AdmExplorerPageCascadeFiltering.tsx";
+import AdmExplorerPageGlobalFiltering from "@/islands/AdmExplorerPageGlobalFiltering.tsx";
 
 export default function AdmExplorerPageSearchModeTabs() {
-  const apiStore = injectApiStore();
+  const apiStore = useStoresContext().injectApiStore();
 
   const hasMissingConfigError = useSignal(false);
 

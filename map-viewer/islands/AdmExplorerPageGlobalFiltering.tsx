@@ -6,11 +6,11 @@ import {
   ADM_LEVEL_TITLE_BY_CODE,
   AdmLevelCode,
 } from "@scope/consts/models";
+import { AdmEntity } from "@scope/types/models";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import AdmEntitiesSearchComboBoxField, {
   SelectedAdmEntityValue,
 } from "@/islands/AdmEntitiesSearchComboBoxField.tsx";
-import { AdmEntity } from "@scope/types/models";
-import { injectApiStore } from "@/stores/api.store.ts";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback.ts";
 import {
   ADM_ENTITIES_SEARCH_DEBOUNCE_DELAY,
@@ -33,7 +33,7 @@ export default function AdmExplorerPageGlobalFiltering() {
     startingAdmLevelCode.value = target.value as AdmLevelCode;
   }
 
-  const apiStore = injectApiStore();
+  const apiStore = useStoresContext().injectApiStore();
 
   const searchValue = useSignal("");
   const selectedAdmEntityValue = useSignal<SelectedAdmEntityValue | null>(null);

@@ -2,11 +2,12 @@ import { useEffect, useRef } from "preact/hooks";
 import { useComputed, useSignalEffect } from "@preact/signals";
 import { Download, RefreshCcw } from "lucide-preact";
 import { pluralize } from "@scope/utils/string";
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
+
 import { ADM_LEVEL_TITLE_BY_CODE } from "@scope/consts/models";
 
 export default function AppMapAdmGeoJsonDownloadModal() {
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const admGeoJsonStore = useStoresContext().injectAdmGeojsonStore();
 
   const dialogRef = useRef<HTMLDialogElement>(
     null,

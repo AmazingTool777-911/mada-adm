@@ -20,17 +20,10 @@ import {
 import LocationTargetIcon from "@/islands/icons/LocationTargetIcon.tsx";
 import CopyToClipboardBtn from "@/islands/CopyToClipboardBtn.tsx";
 import useDynamicDateTime from "@/hooks/useDynamicDateTime.ts";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export default function PinsPagePinLocationModalCurrentLocationTrackingForm() {
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const {
     trackingProfileFrequency,
     highAccuracyGeolocationEnabled,

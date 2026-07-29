@@ -1,19 +1,13 @@
 import { useSignal } from "@preact/signals";
 import { MapPinPlusIcon } from "lucide-preact";
 import { convert } from "geo-coordinates-parser";
-
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 /**
  * Form for manually entering geographic coordinates to pin a location on the map.
  */
 export default function PinsPagePinLocationModalManualCoordinatesEntryForm() {
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    injectFokontanyApi(),
-    injectApiStore(),
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
 
   const titleInputValue = useSignal<string>("");
   const titleInputWasTouched = useSignal(false);

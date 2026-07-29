@@ -2,36 +2,26 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "preact/hooks";
 import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import { useWalkthroughDriverContext } from "@/islands/contexts/walkthrough-driver/index.ts";
-
 import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
-
 import {
   INITIAL_MAP_CENTER,
   INITIAL_ZOOM,
   MAX_ZOOM,
   OFM_TILE_LAYER_STYLE_URL,
 } from "@/consts/map.consts.ts";
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
 import { injectClientCacheIndexdDbConnection } from "@/client-cache/client-cache.indexeddb.ts";
 import { injectAdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.ts";
 import AppMapAdmGeoJsonDownloadModal from "@/islands/AppMapAdmGeoJsonDownloadModal.tsx";
 import { AdmGeojsonMetadataClientCacheItem } from "@/types/cache.d.ts";
-import { injectAppMapStore } from "@/stores/app-map.store.ts";
 import { LayerSwitcherControl } from "@/helpers/map-layer-switch-control.helper.ts";
 import { injectAdmEntityApi } from "@/api/adm-entity.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
-import { injectProvinceApi } from "@/api/province.api.ts";
-import { injectRegionApi } from "@/api/region.api.ts";
-import { injectDistrictApi } from "@/api/district.api.ts";
-import { injectCommuneApi } from "@/api/commune.api.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
 import AppMapDynamicAdmGeoJsonLayer from "@/islands/AppMapDynamicAdmGeoJsonLayer.tsx";
 import { UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL } from "@/config/adm-entities.config.ts";
 import AppMapCurrentLocationBeacon from "@/islands/AppMapCurrentLocationBeacon.tsx";
 import AppMapPinnedLocations from "@/islands/AppMapPinnedLocations.tsx";
 import AppMapPinLocationActions from "@/islands/AppMapPinLocationActions.tsx";
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
 
 export type AppMapProps = {
   admGeojsonDataVersionByCode: Map<AdmLevelCode, number>;
@@ -40,6 +30,13 @@ export type AppMapProps = {
 export default function AppMap(props: AppMapProps) {
   const indexedDb = injectClientCacheIndexdDbConnection();
   const admGeoJsonClientCache = injectAdmGeojsonClientCache(indexedDb);
+
+  const {
+    injectApiStore,
+    injectAppMapStore,
+    injectAdmGeojsonStore,
+    injectAppLayoutStore,
+  } = useStoresContext();
 
   const admGeoJsonStore = injectAdmGeojsonStore();
 
@@ -76,21 +73,7 @@ export default function AppMap(props: AppMapProps) {
 
   const apiStore = injectApiStore();
 
-  const provinceApi = injectProvinceApi();
-  const regionApi = injectRegionApi();
-  const districtApi = injectDistrictApi();
-  const communeApi = injectCommuneApi();
-  const fokontanyApi = injectFokontanyApi();
-  const appMapStore = injectAppMapStore(
-    admGeoJsonClientCache,
-    admGeoJsonStore,
-    apiStore,
-    provinceApi,
-    regionApi,
-    districtApi,
-    communeApi,
-    fokontanyApi,
-  );
+  const appMapStore = injectAppMapStore();
 
   const mapRef = useRef<maplibregl.Map>();
   const mapLayerSwitcherControlRef = useRef<LayerSwitcherControl>();

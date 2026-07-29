@@ -8,16 +8,13 @@ import {
 } from "lucide-preact";
 import { pluralize } from "@scope/utils/string";
 import { ADM_LEVEL_TITLE_BY_CODE } from "@scope/consts/models";
-import {
-  AdmGeojsonDataDownloadsToastItem,
-  injectAdmGeojsonStore,
-} from "@/stores/adm-geojson.store.ts";
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
+import { AdmGeojsonDataDownloadsToastItem } from "@/stores/adm-geojson.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export default function AppToasts() {
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const admGeoJsonStore = useStoresContext().injectAdmGeojsonStore();
 
-  const appLayoutStore = injectAppLayoutStore();
+  const appLayoutStore = useStoresContext().injectAppLayoutStore();
 
   function getToastId(toast: AdmGeojsonDataDownloadsToastItem) {
     const prefix = "adm-geojson-toast";

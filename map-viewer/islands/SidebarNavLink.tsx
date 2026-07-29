@@ -1,8 +1,8 @@
 import { ComponentChildren, FunctionComponent } from "preact";
-import { LucideProps } from "lucide-preact";
 import { useEffect, useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
+import { LucideProps } from "lucide-preact";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export type SidebarNavLinkProps = {
   href: string;
@@ -23,7 +23,7 @@ export default function SidebarNavLink({
   isActive = false,
   tooltip,
 }: SidebarNavLinkProps) {
-  const appLayoutStore = injectAppLayoutStore();
+  const appLayoutStore = useStoresContext().injectAppLayoutStore();
 
   const aElRef = useRef<HTMLAnchorElement>(null);
 

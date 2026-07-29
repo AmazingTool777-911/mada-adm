@@ -9,7 +9,7 @@ import {
 } from "@scope/types/models";
 import { AdmLevelCode } from "@scope/consts/models";
 import AdmEntitiesSearchComboBoxField from "@/islands/AdmEntitiesSearchComboBoxField.tsx";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback.ts";
 import { ApiCallPaginationParams } from "@/types/api.d.ts";
 import {
@@ -54,7 +54,7 @@ export default function AdmExplorerPageCascadeFilteringCommune({
     }
   }
 
-  const apiStore = injectApiStore();
+  const apiStore = useStoresContext().injectApiStore();
 
   const search = useSignal("");
   const directSearch = useSignal("");

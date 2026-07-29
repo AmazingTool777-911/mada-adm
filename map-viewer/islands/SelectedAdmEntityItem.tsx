@@ -11,17 +11,8 @@ import {
 import {
   AdmEntityDivisionWithEntry,
   AppMapAdmEntityGeoJsonEntry,
-  injectAppMapStore,
 } from "@/stores/app-map.store.ts";
-import { injectAdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.ts";
-import { injectClientCacheIndexdDbConnection } from "@/client-cache/client-cache.indexeddb.ts";
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
-import { injectProvinceApi } from "@/api/province.api.ts";
-import { injectRegionApi } from "@/api/region.api.ts";
-import { injectDistrictApi } from "@/api/district.api.ts";
-import { injectCommuneApi } from "@/api/commune.api.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import SelectedAdmEntityItemParentItem from "@/islands/SelectedAdmEntityItemParentItem.tsx";
 
 export type SelectedAdmEntityItemProps = {
@@ -69,27 +60,11 @@ export default function SelectedAdmEntityItem(
       (size === "md" ? " toggle-md" : " toggle-sm");
   }, [value.admLevelCode]);
 
-  const provinceApi = injectProvinceApi();
-  const regionApi = injectRegionApi();
-  const districtApi = injectDistrictApi();
-  const communeApi = injectCommuneApi();
-  const fokontanyApi = injectFokontanyApi();
+  const { injectApiStore, injectAppMapStore } = useStoresContext();
 
   const apiStore = injectApiStore();
 
-  const indexedDb = injectClientCacheIndexdDbConnection();
-  const admGeoJsonClientCache = injectAdmGeojsonClientCache(indexedDb);
-  const admGeoJsonStore = injectAdmGeojsonStore();
-  const appMapStore = injectAppMapStore(
-    admGeoJsonClientCache,
-    admGeoJsonStore,
-    apiStore,
-    provinceApi,
-    regionApi,
-    districtApi,
-    communeApi,
-    fokontanyApi,
-  );
+  const appMapStore = injectAppMapStore();
 
   function getAdmEntityEntryName(value: SelectedAdmEntityValue) {
     const admLevelCode = value.admLevelCode;

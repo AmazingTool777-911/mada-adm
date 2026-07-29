@@ -1,23 +1,9 @@
 import { useEffect, useMemo, useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
 import maplibregl from "maplibre-gl";
-import {
-  injectPinnedLocationsStore,
-  PinnedLocationEntry,
-} from "@/stores/pinned-locations.store.ts";
-import { injectClientCacheIndexdDbConnection } from "@/client-cache/client-cache.indexeddb.ts";
-import { injectAdmGeojsonClientCache } from "@/client-cache/adm-geojson.client-cache.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
-import { injectProvinceApi } from "@/api/province.api.ts";
-import { injectRegionApi } from "@/api/region.api.ts";
-import { injectDistrictApi } from "@/api/district.api.ts";
-import { injectCommuneApi } from "@/api/commune.api.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import {
-  AdmEntityDivisionWithEntry,
-  injectAppMapStore,
-} from "@/stores/app-map.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
+import { PinnedLocationEntry } from "@/stores/pinned-locations.store.ts";
+import { AdmEntityDivisionWithEntry } from "@/stores/app-map.store.ts";
 import { PINNED_LOCATION_FOCUS_ZOOM } from "@/consts/pinned-locations.consts.ts";
 import useAddPinnedLocationMarkerPopup from "@/hooks/useAddPinnedLocationMarkerPopup.ts";
 import { AdmLevelCode } from "@scope/consts/models";
@@ -28,7 +14,7 @@ import {
   showPinnedLocationOnMapEventHub,
 } from "@/helpers/pinned-locations.helper.ts";
 import { ROUTER_PAGE_DRAWER_STATIC_POSITION_BREAKPOINT } from "@/consts/app-layout.consts.ts";
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
+
 import AppMapPinnedLocationBeaconAdmTerritoryDivision from "@/islands/AppMapPinnedLocationAdmTerritoryDivision.tsx";
 
 const PIN_UNLOCKED_ICON_HTML = `
@@ -45,33 +31,15 @@ export type AppMapPinnedLocationsPinProps = {
 export default function AppMapPinnedLocationsPin(
   { pinnedLocationEntry, map }: AppMapPinnedLocationsPinProps,
 ) {
-  const appLayoutStore = injectAppLayoutStore();
+  const appLayoutStore = useStoresContext().injectAppLayoutStore();
 
-  const indexedDbConn = injectClientCacheIndexdDbConnection();
-  const admGeoJsonClientCache = injectAdmGeojsonClientCache(indexedDbConn);
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const { injectApiStore, injectAppMapStore } = useStoresContext();
+
   const apiStore = injectApiStore();
-  const provinceApi = injectProvinceApi();
-  const regionApi = injectRegionApi();
-  const districtApi = injectDistrictApi();
-  const communeApi = injectCommuneApi();
-  const fokontanyApi = injectFokontanyApi();
 
-  const appMapStore = injectAppMapStore(
-    admGeoJsonClientCache,
-    admGeoJsonStore,
-    apiStore,
-    provinceApi,
-    regionApi,
-    districtApi,
-    communeApi,
-    fokontanyApi,
-  );
+  const appMapStore = injectAppMapStore();
 
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
 
   const pinnedLocationEntrySignal = useValueToSignal<PinnedLocationEntry>(
     pinnedLocationEntry,

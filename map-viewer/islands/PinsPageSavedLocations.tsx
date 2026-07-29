@@ -1,16 +1,9 @@
 import PinsPageCurrentLocationCard from "@/islands/PinsPageCurrentLocationCard.tsx";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
 import PinsPagePinnedLocationCard from "@/islands/PinsPagePinnedLocationCard.tsx";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export default function PinsPageSavedLocations() {
-  const fokontanyApi = injectFokontanyApi();
-  const apiStore = injectApiStore();
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    fokontanyApi,
-    apiStore,
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const { currentLocationEntry, pinnedLocations } = pinnedLocationsStore;
 
   const hasSavedLocations = !!currentLocationEntry.value ||

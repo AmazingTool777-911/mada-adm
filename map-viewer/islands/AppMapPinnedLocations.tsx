@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "preact/hooks";
 import maplibregl from "maplibre-gl";
-import { injectPinnedLocationsStore } from "@/stores/pinned-locations.store.ts";
-import { injectFokontanyApi } from "@/api/fokontany.api.ts";
-import { injectApiStore } from "@/stores/api.store.ts";
+
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import { ROUTER_PAGE_DRAWER_STATIC_POSITION_BREAKPOINT } from "@/consts/app-layout.consts.ts";
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
 import AppMapPinnedLocationsPin from "@/islands/AppMapPinnedLocationsPin.tsx";
 
 // deno-lint-ignore ban-types
@@ -17,12 +15,9 @@ export type AppMapPinnedLocationsProps = {
 export default function AppMapPinnedLocations(
   { map }: AppMapPinnedLocationsProps,
 ) {
-  const appLayoutStore = injectAppLayoutStore();
+  const appLayoutStore = useStoresContext().injectAppLayoutStore();
 
-  const pinnedLocationsStore = injectPinnedLocationsStore(
-    injectFokontanyApi(),
-    injectApiStore(),
-  );
+  const pinnedLocationsStore = useStoresContext().injectPinnedLocationsStore();
   const { pointOnMapPayload, pinnedLocations } = pinnedLocationsStore;
 
   const markerRef = useRef<maplibregl.Marker | null>(null);

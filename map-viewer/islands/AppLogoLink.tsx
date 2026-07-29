@@ -1,7 +1,7 @@
-import { injectAppLayoutStore } from "@/stores/app-layout.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
 export default function AppLogoLink() {
-  const appLayoutStore = injectAppLayoutStore();
+  const appLayoutStore = useStoresContext().injectAppLayoutStore();
 
   return (
     <div class="tooltip tooltip-right" data-tip="Go to the homepage">

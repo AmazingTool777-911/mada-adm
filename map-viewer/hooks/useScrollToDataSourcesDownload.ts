@@ -1,10 +1,11 @@
 import { useEffect } from "preact/hooks";
 import { useSignalEffect } from "@preact/signals";
-import { injectAdmGeojsonStore } from "@/stores/adm-geojson.store.ts";
+import { useStoresContext } from "@/islands/contexts/stores/index.ts";
+
 import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 
 export default function useScrollToDataSourcesDownload() {
-  const admGeoJsonStore = injectAdmGeojsonStore();
+  const admGeoJsonStore = useStoresContext().injectAdmGeojsonStore();
 
   useEffect(() => {
     function handleNavigate(e: NavigateEvent) {

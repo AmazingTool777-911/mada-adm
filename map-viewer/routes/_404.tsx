@@ -10,7 +10,15 @@ export default define.page(function NotFoundPage() {
       </Head>
       <header class="text-center flex flex-col items-center">
         <h1 class="text-lg font-bold">404 Not Found</h1>
-        <img src={notFoundIconURL} alt="Lost on map" class="max-w-3xs" />
+        <img
+          src={notFoundIconURL}
+          alt="Lost on map"
+          loading="lazy"
+          decoding="async"
+          width="980"
+          height="980"
+          class="max-w-3xs"
+        />
         <p class="text-base-content/80 text-sm max-w-2xs">
           The page you are looking for does not exist.
         </p>

@@ -7,7 +7,15 @@ export default function AdmExplorerPageMissingConfigError() {
       aria-describedby="missing-db-config-error-description"
       class="flex flex-col items-center pt-12 pb-32"
     >
-      <img src={errorIcon} alt="Missing database config" class="w-16 mb-5" />
+      <img
+        src={errorIcon}
+        alt="Missing database config"
+        loading="lazy"
+        decoding="async"
+        width="512"
+        height="512"
+        class="w-16 mb-5"
+      />
       <h6
         id="missing-db-config-error-title"
         class="font-semibold text-error text-sm mb-2"

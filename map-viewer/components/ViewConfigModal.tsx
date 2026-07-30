@@ -323,7 +323,11 @@ export default function ViewConfigModal(
                 <div class="py-16 flex flex-col items-center">
                   <img
                     src={dbErrorIconURL}
-                    alt="Database error"
+                    alt="Missing database config"
+                    loading="lazy"
+                    decoding="async"
+                    width="512"
+                    height="512"
                     class="w-21"
                   />
                   <p class="mt-4 text-error">

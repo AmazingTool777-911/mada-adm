@@ -86,7 +86,7 @@ export default function PinsPageCurrentLocationCard() {
   }
 
   return !!currentLocationEntry.value && (
-    <article class="shadow shadow-base-content/30 rounded-sm px-3 pt-3 pb-4">
+    <article class="shadow shadow-base-content/30 hover:shadow-lg duration-300 rounded-sm px-3 pt-3 pb-4">
       <h3 class="font-bold flex items-center gap-x-1.5 text-sm">
         <LocationTargetIcon size={16} class="shrink-0" />
         <span>Current location</span>

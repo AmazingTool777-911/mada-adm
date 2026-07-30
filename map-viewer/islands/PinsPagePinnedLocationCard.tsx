@@ -340,7 +340,7 @@ export default function PinsPagePinnedLocationCard(
 
         <article
           ref={articleEltRef}
-          class={`shadow shadow-base-content/30 rounded-sm px-3 pt-3 pb-4 bg-base-100 ${articleClassName}`}
+          class={`shadow shadow-base-content/30 hover:shadow-lg duration-300 rounded-sm px-3 pt-3 pb-4 bg-base-100 ${articleClassName}`}
         >
           <div class="mb-3">
             <div class="flex items-start justify-between">

@@ -324,7 +324,7 @@ export default function ViewConfigModal(
                   <img
                     src={dbErrorIconURL}
                     alt="Database error"
-                    class="w-[5.25rem]"
+                    class="w-21"
                   />
                   <p class="mt-4 text-error">
                     Failed to load the database configuration.

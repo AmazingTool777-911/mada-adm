@@ -111,9 +111,7 @@ export class AdmGeojsonClientCache {
             admLevelCode: payload.admLevelCode,
             geojson: payload.geojson,
           };
-          const req = admGeoJsonMetadata
-            ? geojsonStore.put(geoJson)
-            : geojsonStore.add(geoJson);
+          const req = geojsonStore.put(geoJson);
           req.onsuccess = () => {
             resolve();
           };

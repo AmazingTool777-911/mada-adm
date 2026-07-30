@@ -46,8 +46,9 @@ export class AdmGeoJsonStore {
     if (i === -1) {
       this.downloads.value = [...this.downloads.value, download];
     } else {
-      this.downloads.value[i] = download;
-      this.downloads.value = [...this.downloads.value];
+      const downloads = [...this.downloads.value];
+      downloads[i] = download;
+      this.downloads.value = downloads;
     }
   }
 
@@ -168,37 +169,28 @@ export class AdmGeoJsonStore {
 
   readonly downloadModalIsOpen = signal(false);
   readonly admLevelCodesToBeDownloaded = signal<AdmLevelCode[]>([]);
-  readonly isLoadingFileSizes = signal(false);
-  readonly fileSizesLoadingError = signal(false);
   readonly fileSizes = signal<GetAdmGeojsonFileSizeResponseItem[]>([]);
 
-  async openDownloadModal(admLevelCodes?: AdmLevelCode[]) {
-    this.isLoadingFileSizes.value = true;
+  openDownloadModal(admLevelCodes?: AdmLevelCode[]) {
     this.downloadModalIsOpen.value = true;
-    this.fileSizesLoadingError.value = false;
     this.fileSizes.value = [];
     admLevelCodes && (this.admLevelCodesToBeDownloaded.value = admLevelCodes);
 
-    try {
-      const concatedAdmLevelCodes = this.admLevelCodesToBeDownloaded.value.join(
-        ",",
-      );
-      const url = `/api/adm-geojson/${concatedAdmLevelCodes}/file-size`;
-      const fileSizesData = await fetch(url).then((res) =>
-        res.json()
-      ) as GetAdmGeojsonFileSizeResponseItem[];
-
-      this.fileSizes.value = fileSizesData;
-    } catch (_) {
-      this.fileSizesLoadingError.value = true;
-    } finally {
-      this.isLoadingFileSizes.value = false;
+    const fileSizesByAdmLevelCode: GetAdmGeojsonFileSizeResponseItem[] = [];
+    for (const source of this.admLevelCodesToBeDownloaded.value) {
+      const sourceData = ADM_GEOJSON_DATA_SOURCE_BY_CODE.get(source)!;
+      fileSizesByAdmLevelCode.push({
+        admLevelCode: source,
+        rawURL: sourceData.rawURL,
+        previewURL: sourceData.previewURL,
+        fileSize: sourceData.fileSize,
+      });
     }
+    this.fileSizes.value = fileSizesByAdmLevelCode;
   }
 
   closeDownloadModal() {
     this.downloadModalIsOpen.value = false;
-    this.isLoadingFileSizes.value = false;
     this.fileSizes.value = [];
     this.admLevelCodesToBeDownloaded.value = [];
   }

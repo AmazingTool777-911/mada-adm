@@ -234,14 +234,14 @@ export default function AppMap(props: AppMapProps) {
       } else if (
         mapLayerSwitcherControlRef.current?.hasStaticAdmGeoJsonLayer(
           download.admLevelCode,
-        )
+        ) && download.geojson
       ) {
         mapLayerSwitcherControlRef.current?.removeStaticAdmGeoJsonLayer(
           download.admLevelCode,
         );
         await mapLayerSwitcherControlRef.current?.addStaticAdmGeoJsonLayer(
           download.admLevelCode,
-          download.geojson!,
+          download.geojson,
         );
       }
       delete download.geojson; // Free the reference to the geojson data from memory

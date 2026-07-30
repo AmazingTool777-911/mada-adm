@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "preact/hooks";
 import { useComputed, useSignalEffect } from "@preact/signals";
-import { Download, RefreshCcw } from "lucide-preact";
+import { Download } from "lucide-preact";
 import { pluralize } from "@scope/utils/string";
 import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 
@@ -64,14 +64,7 @@ export default function AppMapAdmGeoJsonDownloadModal() {
           <Download />{" "}
           <span>Download & Cache the ADM {layerTextWithPlural}</span>
         </h3>
-        {admGeoJsonStore.isLoadingFileSizes.value &&
-          admGeoJsonStore.fileSizes.value.length === 0 && (
-          <div class="flex justify-center">
-            <span class="loading loading-bars loading-xl text-primary"></span>
-          </div>
-        )}
-        {!admGeoJsonStore.isLoadingFileSizes.value &&
-          admGeoJsonStore.fileSizes.value.length > 0 && (
+        {admGeoJsonStore.fileSizes.value.length > 0 && (
           <div class="space-y-2">
             <p class="text-base-content/80 text-sm">
               {admGeoJsonStore.fileSizes.value.length} {layerTextWithPlural}
@@ -157,26 +150,6 @@ export default function AppMapAdmGeoJsonDownloadModal() {
                 </button>
               </div>
             </form>
-          </div>
-        )}
-        {!admGeoJsonStore.isLoadingFileSizes.value &&
-          admGeoJsonStore.fileSizesLoadingError.value && (
-          <div role="alert" class="alert alert-error alert-soft">
-            <div class="space-y-2">
-              <p>
-                Error. Could not retrieve the info about the layer(s) to be
-                downloaded.
-              </p>
-              <button
-                type="button"
-                class="btn btn-soft btn-sm"
-                onClick={() =>
-                  admGeoJsonStore.openDownloadModal()}
-              >
-                <RefreshCcw size={16} />
-                Try again
-              </button>
-            </div>
           </div>
         )}
       </div>

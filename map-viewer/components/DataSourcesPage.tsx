@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "lucide-preact";
 import { ADM_LEVEL_TITLE_BY_CODE, AdmLevelCode } from "@scope/consts/models";
 import AdmLevelDataSourceCard from "@/components/AdmLevelDataSourceCard.tsx";
 import DataSourcesPageCacheStatus from "@/islands/DataSourcesPageCacheStatus.tsx";
@@ -16,21 +17,33 @@ export default function DataSourcesPage() {
               target="_blank"
               class="link link-primary"
             >
-              Mada ADM app
+              Mada ADM app{" "}
+              <ExternalLinkIcon
+                size={14}
+                class="inline-block relative bottom-0.5"
+              />
             </a>. The primary spatial data is sourced from the{" "}
             <a
               href="https://data.humdata.org/dataset/geoboundaries-admin-boundaries-for-madagascar"
               target="_blank"
               class="link link-primary"
             >
-              geoBoundaries Open License Dataset for Madagascar via HDX
+              geoBoundaries Open License Dataset for Madagascar via HDX{" "}
+              <ExternalLinkIcon
+                size={14}
+                class="inline-block relative bottom-0.5"
+              />
             </a>, referencing the specific files maintained in the{" "}
             <a
               href="https://github.com/wmgeolab/geoBoundaries/tree/9469f09592ced973a3448cf66b6100b741b64c0d/releaseData/gbOpen/MDG"
               target="_blank"
               class="link link-primary"
             >
-              geoBoundaries GitHub Repository
+              geoBoundaries GitHub Repository{" "}
+              <ExternalLinkIcon
+                size={14}
+                class="inline-block relative bottom-0.5"
+              />
             </a>.
           </p>
         </header>
@@ -59,7 +72,11 @@ export default function DataSourcesPage() {
                 target="_blank"
                 class="link link-primary"
               >
-                Madagascar's administrative divisions
+                Madagascar's administrative divisions{" "}
+                <ExternalLinkIcon
+                  size={14}
+                  class="inline-block relative bottom-0.5"
+                />
               </a>:
             </p>
             <ol
@@ -94,7 +111,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      provinces boundaries of Madagascar
+                      provinces boundaries of Madagascar{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>. Since the province tier is not present in the original
                     {" "}
                     <a
@@ -102,7 +123,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      geoBoundaries
+                      geoBoundaries{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     dataset, its layer consists of custom generated data by the
                     {" "}
@@ -111,7 +136,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      Mada ADM app
+                      Mada ADM app{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     resulting from the grouping of the spatial features of their
                     respective underlying regions.
@@ -128,7 +157,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      regional boundaries of Madagascar
+                      regional boundaries of Madagascar{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     as provided by the original{" "}
                     <a
@@ -136,7 +169,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      geoBoundaries
+                      geoBoundaries{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     repository.
                   </>
@@ -152,7 +189,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      district boundaries of Madagascar
+                      district boundaries of Madagascar{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     as provided by the original{" "}
                     <a
@@ -160,7 +201,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      geoBoundaries
+                      geoBoundaries{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     repository.
                   </>
@@ -176,7 +221,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      commune boundaries of Madagascar
+                      commune boundaries of Madagascar{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     as provided by the original{" "}
                     <a
@@ -184,7 +233,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      geoBoundaries
+                      geoBoundaries{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     repository.
                   </>
@@ -200,7 +253,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      fokontany boundaries of Madagascar
+                      fokontany boundaries of Madagascar{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     as provided by the original{" "}
                     <a
@@ -208,7 +265,11 @@ export default function DataSourcesPage() {
                       target="_blank"
                       class="link link-primary"
                     >
-                      geoBoundaries
+                      geoBoundaries{" "}
+                      <ExternalLinkIcon
+                        size={14}
+                        class="inline-block relative bottom-0.5"
+                      />
                     </a>{" "}
                     repository.
                   </>

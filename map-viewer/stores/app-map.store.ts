@@ -670,7 +670,8 @@ export class AppMapStore {
     admEntityDiscriminated: AdmEntityDiscriminated,
     fieldAdmLevelCode: AdmLevelCode,
     toggle: boolean = true,
-    forceFitBbox: boolean = false,
+    forceFitBboxOnLoaded: boolean = false,
+    forceFitBboxOnNotLoaded: boolean = true,
   ) {
     const entryName = this.getAdmEntityEntryName(
       admEntityDiscriminated,
@@ -688,7 +689,7 @@ export class AppMapStore {
               entryName,
             );
           }
-          if (forceFitBbox) {
+          if (forceFitBboxOnLoaded) {
             await fitGeoJsonBboxIntoMap(this.map.value, entry.geojson);
           }
         }
@@ -698,7 +699,7 @@ export class AppMapStore {
             admEntityDiscriminated,
             fieldAdmLevelCode,
           );
-          if (this.map.value) {
+          if (this.map.value && forceFitBboxOnNotLoaded) {
             await fitGeoJsonBboxIntoMap(this.map.value, geojson);
           }
         } catch (error) {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "preact/hooks";
 import maplibregl from "maplibre-gl";
-import { AdmEntityDiscriminated } from "@scope/types/models";
-import { AdmLevelCode } from "@scope/consts/models";
+import { AdmEntityDiscriminated, EntityId } from "@scope/types/models";
+import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 import useAddPinnedLocationMarkerPopup from "@/hooks/useAddPinnedLocationMarkerPopup.ts";
 import { useStoresContext } from "@/islands/contexts/stores/index.ts";
 import { AdmEntityDivisionWithEntry } from "@/stores/app-map.store.ts";
@@ -108,6 +108,66 @@ export default function AppMapCurrentLocationBeacon(
   const renderedFokontanyDivisions = useMemo<AdmEntityDivisionWithEntry[]>(
     () => fokontanyDivisions?.filter((d) => d.isRendered) ?? [],
     [fokontanyDivisions],
+  );
+
+  const prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot = useRef<
+    { fokontanyId: EntityId | null; renderedCodes: AdmLevelCode[] }
+  >({
+    fokontanyId: currentLocationEntry.value?.fokontany?.id ?? null,
+    renderedCodes: renderedFokontanyDivisions.map((d) => d.admLevelCode),
+  });
+
+  useEffect(
+    () => {
+      const renderedDivisionsCodes = renderedFokontanyDivisions.map((d) =>
+        d.admLevelCode
+      );
+      for (const code of renderedDivisionsCodes) {
+        if (
+          !prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+            .renderedCodes
+            .includes(code)
+        ) {
+          prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+            .renderedCodes
+            .push(code);
+        }
+      }
+      if (fokontanyDiscriminated) {
+        const currentNonRenderedCodes = ADM_LEVEL_CODES_INDEXED
+          .filter((code) => {
+            return !renderedDivisionsCodes.includes(code) &&
+              prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+                .renderedCodes
+                .includes(code);
+          });
+        if (
+          fokontanyDiscriminated.entity.id !==
+            prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+              .fokontanyId
+        ) {
+          for (const code of currentNonRenderedCodes) {
+            appMapStore.toggleAdmEntityGeoJsonEntryOnMap(
+              fokontanyDiscriminated,
+              code,
+              true,
+              false,
+              false,
+            );
+          }
+        } else {
+          prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+            .renderedCodes =
+              prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+                .renderedCodes.filter((code) =>
+                  !currentNonRenderedCodes.includes(code)
+                );
+        }
+      }
+      prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current
+        .fokontanyId = fokontanyDiscriminated?.entity.id ?? null;
+    },
+    [renderedFokontanyDivisions],
   );
 
   const { markerPopup } = useAddPinnedLocationMarkerPopup(

@@ -64,3 +64,91 @@ export function camelToSnakeCase(str: string): string {
     .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
     .toLowerCase();
 }
+
+/**
+ * Increments the Unicode code point of the final character in a string.
+ *
+ * This utility handles standard characters, precomposed accents (via NFC normalization),
+ * and supplementary plane characters (like emojis or symbols) safely without corrupting
+ * surrogate pairs. It is commonly used to generate exclusive upper bounds for lexical
+ * range queries.
+ *
+ * @param {string} text - The input string whose final character will be incremented.
+ * @returns {string} A new string with the final character advanced to the next Unicode code point.
+ *
+ * @example
+ * incrementLastCharacterCodePoint("café"); // Returns "cafè"
+ * incrementLastCharacterCodePoint("abc");  // Returns "abd"
+ */
+export function incrementLastCharacterCodePoint(text: string): string {
+  if (!text) return text;
+
+  // 1. Normalize the text so characters (like é) are unified
+  const normalized: string = text.normalize("NFC");
+
+  // 2. Convert to an array of true characters (handles emojis/surrogates safely)
+  const chars: string[] = Array.from(normalized);
+
+  // 3. Isolate the last character and its code point
+  const lastChar: string = chars[chars.length - 1];
+  const nextCodePoint: number = (lastChar.codePointAt(0) ?? 0) + 1;
+
+  // 4. Replace the last character with the incremented one
+  chars[chars.length - 1] = String.fromCodePoint(nextCodePoint);
+
+  // 5. Re-join into a single string
+  return chars.join("");
+}
+
+/**
+ * Returns the singular or plural form of a word based on a condition.
+ *
+ * @param word - The singular form of the word.
+ * @param plural
+ *   How to pluralize the word:
+ *   - A string starting with `'+'` appends the rest as a suffix:
+ *     ```ts
+ *     pluralize('layer', '+s')   // → 'layers'
+ *     pluralize('match', '+es')  // → 'matches'
+ *     ```
+ *   - Any other string replaces the word entirely:
+ *     ```ts
+ *     pluralize('goose', 'geese')   // → 'geese'
+ *     pluralize('radius', 'radii')  // → 'radii'
+ *     ```
+ *   - A function receives the singular and returns the plural:
+ *     ```ts
+ *     pluralize('city', w => w.slice(0, -1) + 'ies')  // → 'cities'
+ *     pluralize('cactus', w => w.replace('us', 'i'))   // → 'cacti'
+ *     ```
+ * @param condition - When `false`, returns the singular word unchanged. Defaults to `true`.
+ *   ```ts
+ *   const count = selectedLayers.length;
+ *   `${count} ${pluralize('layer', '+s', count !== 1)} selected`
+ *   // → '1 layer selected' / '3 layers selected'
+ *   ```
+ * @returns The singular or plural form of the word.
+ */
+export function pluralize(
+  word: string,
+  plural: string | ((word: string) => string),
+  condition: boolean = true,
+): string {
+  if (!condition) return word;
+  if (typeof plural === "function") return plural(word);
+  if (plural.startsWith("+")) return word + plural.slice(1);
+  return plural;
+}
+
+/**
+ * Checks if a string is in snake_case.
+ * Rules:
+ * - Must contain at least one underscore
+ * - Only lowercase letters, digits, and underscores allowed
+ * - Cannot start or end with an underscore
+ * - No consecutive underscores
+ */
+export function isSnakeCase(value: string): boolean {
+  if (!value.includes("_")) return false;
+  return /^[a-z0-9]+(_[a-z0-9]+)+$/.test(value);
+}

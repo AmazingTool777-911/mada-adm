@@ -1,0 +1,44 @@
+info:
+  name: Get fokontanys
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/fokontanys"
+  params:
+    - name: limit
+      value: ""
+      type: query
+      disabled: true
+    - name: cursor
+      value: ""
+      type: query
+      disabled: true
+    - name: search
+      value: ""
+      type: query
+      disabled: true
+    - name: commune_id
+      value: ""
+      type: query
+      disabled: true
+    - name: district_id
+      value: ""
+      type: query
+      disabled: true
+    - name: region_id
+      value: ""
+      type: query
+      disabled: true
+    - name: province_id
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

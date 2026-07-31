@@ -64,12 +64,12 @@ export class CliClearCommand extends Command<GlobalCliConfig, void> {
     try {
       const { dbType, pgSchema } = resolveCommonGlobalCliConfig(options);
 
-      db = injectDbConnection(dbType);
+      db = await injectDbConnection(dbType);
 
       const madaAdmConfigDDL = injectMadaAdmConfigDDL(dbType, db, {
         pgSchema,
       });
-      const madaAdmConfigDML = injectMadaAdmConfigDML(dbType, db, {
+      const madaAdmConfigDML = await injectMadaAdmConfigDML(dbType, db, {
         pgSchema,
       });
 

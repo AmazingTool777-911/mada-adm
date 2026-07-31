@@ -101,6 +101,12 @@ export const MYSQL_KEY_PATH_DESCRIPTION: string =
 export const MYSQL_CONNECTION_LIMIT_DESCRIPTION: string =
   "Maximum number of connections in the MySQL pool (default 10).";
 
+export const MYSQL_MAX_IDLE_DESCRIPTION: string =
+  "Maximum number of idle connections in the MySQL pool.";
+
+export const MYSQL_IDLE_TIMEOUT_DESCRIPTION: string =
+  "The maximum time a connection can sit unused in the pool before being closed.";
+
 // ── SQLite descriptions ─────────────────────────────────────────────────────
 
 export const SQLITE_DB_FILE_DESCRIPTION: string =

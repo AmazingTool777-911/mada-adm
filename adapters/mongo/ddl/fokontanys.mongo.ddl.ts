@@ -95,7 +95,7 @@ export class FokontanysMongoDDL extends BaseAdmTableDDL {
     const collection = this.db.db.collection(this.tableName);
 
     await collection.createIndex(
-      { fokontany: 1 },
+      { fokontany: 1, _id: 1 },
       { collation: MONGO_FR_COLLATION, session },
     );
 

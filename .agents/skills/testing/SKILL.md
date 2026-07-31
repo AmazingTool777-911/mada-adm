@@ -87,7 +87,7 @@ import {
   assertRejects,
   assertStrictEquals,
   assertThrows,
-} from "jsr:@std/assert";
+} from "@std/assert";
 ```
 
 | Assertion            | Use for                                |

@@ -1,0 +1,184 @@
+import type {
+  District,
+  DistrictSnakeCased,
+  EntityId,
+  MadaAdmConfigValues,
+} from "@scope/types/models";
+import type { PostgresDbConnection } from "@scope/adapters/postgres";
+import { mapDistrictSnakeToCamel } from "@scope/helpers/models";
+import { DbType } from "@scope/consts/db";
+import { getAdmTableName } from "@scope/helpers/db";
+import { AdmLevelCode } from "@scope/consts/models";
+import type {
+  DistrictQueries,
+  GetDistrictByFokontanyGeoJsonOptions,
+  GetDistrictByIdOptions,
+  GetDistrictByPointCoodrdinatesOptions,
+  GetManyDistrictsPaginationCursor,
+  GetManyDistrictsQueryParams,
+  PointCoordinates,
+} from "../queries.d.ts";
+import { QueryCursorPaginator } from "../helpers/query-cursor-paginator.helper.ts";
+import { DistrictBaseQueries } from "../base/district.base.queries.ts";
+import { getManyDistrictPaginationCursorSchema } from "../schemas/district.schemas.ts";
+
+export class DistrictPostgresQueries extends DistrictBaseQueries
+  implements DistrictQueries {
+  #db!: PostgresDbConnection;
+  #pgSchema!: string;
+
+  constructor(
+    config: MadaAdmConfigValues,
+    db: PostgresDbConnection,
+    pgSchema: string = "public",
+  ) {
+    super(config, DbType.Postgres);
+    this.#db = db;
+    this.#pgSchema = pgSchema;
+  }
+
+  #getManyCursorPaginator = new QueryCursorPaginator<
+    GetManyDistrictsPaginationCursor,
+    District,
+    GetManyDistrictsQueryParams
+  >({
+    toCursor: ({ district, id }) => ({ district, id }),
+    queryFn: async ({ limit, cursor }, queryParams = {}) => {
+      const client = await this.#db.pool.connect();
+      try {
+        const tableName = `${this.#pgSchema}.${this.tableName}`;
+        const columns = this.getTableColunms({
+          excludeGeojson: true,
+        });
+
+        let sql = `SELECT ${columns.join(", ")} FROM ${tableName}`;
+        const conditions: string[] = [];
+        const args: unknown[] = [];
+
+        if (queryParams.regionId) {
+          args.push(Number(queryParams.regionId));
+          conditions.push(`region_id = $${args.length}`);
+        }
+
+        if (queryParams.provinceId) {
+          args.push(Number(queryParams.provinceId));
+          conditions.push(`province_id = $${args.length}`);
+        }
+
+        if (queryParams.search) {
+          args.push(`${queryParams.search.toLocaleLowerCase("fr")}%`);
+          conditions.push(`lower(district) LIKE $${args.length}`);
+        }
+
+        if (cursor) {
+          args.push(cursor.district, cursor.id);
+          conditions.push(
+            `(district, id) >= ($${args.length - 1}, $${args.length})`,
+          );
+        }
+
+        if (conditions.length > 0) {
+          sql += ` WHERE ${conditions.join(" AND ")}`;
+        }
+
+        args.push(limit);
+        sql += ` ORDER BY district ASC LIMIT $${args.length}`;
+
+        const rows = await client.queryObject<DistrictSnakeCased>(sql, args);
+        return rows.rows.map(mapDistrictSnakeToCamel);
+      } finally {
+        client.release();
+      }
+    },
+    cursorEncodedSchema: getManyDistrictPaginationCursorSchema,
+  });
+
+  override get getManyCursorPaginator() {
+    return this.#getManyCursorPaginator;
+  }
+
+  async getById(
+    id: EntityId,
+    options?: GetDistrictByIdOptions,
+  ): Promise<District | null> {
+    const client = await this.#db.pool.connect();
+    const tableName = `${this.#pgSchema}.${this.tableName}`;
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${tableName}
+      WHERE id = $1
+    `;
+    const result = await client.queryObject<DistrictSnakeCased>(sql, [
+      Number(id),
+    ]);
+    if (result.rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(result.rows[0]);
+  }
+
+  async _getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetDistrictByPointCoodrdinatesOptions,
+  ): Promise<District | null> {
+    const client = await this.#db.pool.connect();
+    const tableName = `${this.#pgSchema}.${this.tableName}`;
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${tableName}
+      WHERE ST_INTERSECTS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
+    `;
+    const result = await client.queryObject<DistrictSnakeCased>(
+      sql,
+      coordinates,
+    );
+    if (result.rows.length === 0) return null;
+    return mapDistrictSnakeToCamel(result.rows[0]);
+  }
+
+  async _getByFokontanyGeoJson(
+    fokontanyId: EntityId,
+    options?: GetDistrictByFokontanyGeoJsonOptions,
+  ): Promise<District | null> {
+    const client = await this.#db.pool.connect();
+    try {
+      const tableName = `${this.#pgSchema}.${this.tableName}`;
+      const columns = this.getTableColunms({
+        excludeGeojson: options?.excludeGeoJSON,
+      });
+      const fokontanyTable = getAdmTableName(
+        AdmLevelCode.FOKONTANY,
+        this.config,
+        this.dbType,
+      );
+      const sql = `
+        SELECT ${columns.join(", ")}
+        FROM ${tableName}
+        WHERE ST_Contains(geojson, (SELECT geojson FROM ${this.#pgSchema}.${fokontanyTable} WHERE id = $1))
+      `;
+      const result = await client.queryObject<DistrictSnakeCased>(
+        sql,
+        [Number(fokontanyId)],
+      );
+      if (result.rows.length === 0) return null;
+      return mapDistrictSnakeToCamel(result.rows[0]);
+    } finally {
+      client.release();
+    }
+  }
+}
+
+let _instance: DistrictPostgresQueries | null = null;
+
+export function injectDistrictPostgresQueries(
+  config: MadaAdmConfigValues,
+  db: PostgresDbConnection,
+  pgSchema?: string,
+): DistrictPostgresQueries {
+  return _instance ??
+    (_instance = new DistrictPostgresQueries(config, db, pgSchema));
+}

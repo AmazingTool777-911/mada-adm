@@ -4,8 +4,16 @@
   "exports": {
     ".": "./index.ts",
     "./postgres": "./postgres/index.ts",
+    "./postgres/db": "./postgres/postgres-db.connection.ts",
+    "./postgres/dml/mada-adm-config": "./postgres/dml/mada-adm-config.postgres.dml.ts",
     "./sqlite": "./sqlite/index.ts",
+    "./sqlite/db": "./sqlite/sqlite-db.connection.ts",
+    "./sqlite/dml/mada-adm-config": "./sqlite/dml/mada-adm-config.sqlite.dml.ts",
     "./mysql": "./mysql/index.ts",
-    "./mongo": "./mongo/index.ts"
+    "./mysql/db": "./mysql/mysql-db.connection.ts",
+    "./mysql/dml/mada-adm-config": "./mysql/dml/mada-adm-config.mysql.dml.ts",
+    "./mongo": "./mongo/index.ts",
+    "./mongo/db": "./mongo/mongo-db.connection.ts",
+    "./mongo/dml/mada-adm-config": "./mongo/dml/mada-adm-config.mongo.dml.ts"
   }
 }

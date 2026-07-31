@@ -1,0 +1,26 @@
+{
+  "name": "@scope/rest-api",
+  "version": "0.0.1",
+  "exports": {
+    ".": "./main.ts",
+    "./types": "./rest-api.d.ts"
+  },
+  "imports": {
+    "@hono/zod-validator": "jsr:@hono/zod-validator@^0.8.0",
+    "@zod/zod": "jsr:@zod/zod@^4.4.3",
+    "http-status-codes": "npm:http-status-codes@^2.3.0"
+  },
+  "tasks": {
+    "start": "deno run -N -R -W -E -S --allow-ffi --env-file=\"../.env\" --watch main.ts"
+  },
+  "compilerOptions": {
+    "jsx": "precompile",
+    "jsxImportSource": "hono/jsx",
+    "strict": true
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
+  }
+}

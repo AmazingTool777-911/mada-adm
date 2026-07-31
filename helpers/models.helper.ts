@@ -1,6 +1,8 @@
 import type {
   AdmEntity,
   AdmEntityBSON,
+  AdmEntityBSONUnionRecord,
+  AdmEntitySnakeCasedUnionRecord,
   AdmRecord,
   AdmValues,
   Commune,
@@ -15,6 +17,7 @@ import type {
   DistrictRecord,
   DistrictSnakeCased,
   DistrictValues,
+  Entity,
   Fokontany,
   FokontanyBSON,
   FokontanyRecord,
@@ -35,6 +38,7 @@ import type {
   RegionValues,
 } from "@scope/types/models";
 import type { GeoJSONGeometry } from "@scope/types/utils";
+import { ADM_LEVEL_CODES_INDEXED, AdmLevelCode } from "@scope/consts/models";
 
 /**
  * Parses any unformatted timestamp payload into its deterministic ISO standard format.
@@ -593,4 +597,192 @@ export function mapAdmEntityBsonToEntity(bson: AdmEntityBSON): AdmEntity {
   }
   if (isRegionValues(record)) return mapRegionBsonToEntity(bson as RegionBSON);
   return mapProvinceBsonToEntity(bson as ProvinceBSON);
+}
+
+/**
+ * Maps an ADM entity union BSON record to its correponding ADM entity
+ * @param record - The ADM entity union record
+ * @returns The converted ADM entity
+ */
+export function mapAdmEntityUnionBSONRecordToEntity(
+  record: AdmEntityBSONUnionRecord,
+): AdmEntity {
+  const admLevel = ADM_LEVEL_CODES_INDEXED[record.admLevel];
+
+  const baseEntity: Entity<Record<string, unknown>> = {
+    id: record._id.toString(),
+    createdAt: record.createdAt?.toISOString(),
+    updatedAt: record.updatedAt?.toISOString(),
+    admLevel,
+  };
+
+  switch (admLevel) {
+    case AdmLevelCode.PROVINCE: {
+      const province: Province = {
+        ...baseEntity,
+        province: record.province!,
+        admLevel: record.admLevel,
+      };
+      return province;
+    }
+
+    case AdmLevelCode.REGION: {
+      const region: Region = {
+        ...baseEntity,
+        region: record.region!,
+        province: record.province!,
+        provinceId: record.provinceId!.toString(),
+        admLevel: record.admLevel,
+      };
+      return region;
+    }
+
+    case AdmLevelCode.DISTRICT: {
+      const district: District = {
+        ...baseEntity,
+        district: record.district!,
+        region: record.region!,
+        regionId: record.regionId!.toString(),
+        admLevel: record.admLevel,
+      };
+      if (record.province) district.province = record.province;
+      if (record.provinceId) district.provinceId = record.provinceId.toString();
+      return district;
+    }
+
+    case AdmLevelCode.COMMUNE: {
+      const commune: Commune = {
+        ...baseEntity,
+        commune: record.commune!,
+        district: record.district!,
+        region: record.region!,
+        districtId: record.districtId!.toString(),
+        admLevel: record.admLevel,
+      };
+      if (record.regionId) commune.regionId = record.regionId.toString();
+      if (record.province) commune.province = record.province;
+      if (record.provinceId) commune.provinceId = record.provinceId.toString();
+      return commune;
+    }
+
+    case AdmLevelCode.FOKONTANY: {
+      const fokontany: Fokontany = {
+        ...baseEntity,
+        fokontany: record.fokontany!,
+        district: record.district!,
+        region: record.region!,
+        commune: record.commune!,
+        communeId: record.communeId!.toString(),
+        admLevel: record.admLevel,
+      };
+      if (record.districtId) {
+        fokontany.districtId = record.districtId.toString();
+      }
+      if (record.regionId) fokontany.regionId = record.regionId.toString();
+      if (record.province) fokontany.province = record.province;
+      if (record.provinceId) {
+        fokontany.provinceId = record.provinceId.toString();
+      }
+      return fokontany;
+    }
+
+    default:
+      throw new Error(
+        `Unknown ADM level code: ${admLevel satisfies never} when mapping adm entity union record to entity.`,
+      );
+  }
+}
+
+/**
+ * Maps an ADM entity union snake cased record to its correponding ADM entity
+ * @param record - The ADM entity union record
+ * @returns The converted ADM entity
+ */
+export function mapAdmEntityUnionSnakeCasedRecordToEntity(
+  record: AdmEntitySnakeCasedUnionRecord,
+): AdmEntity {
+  const admLevel = ADM_LEVEL_CODES_INDEXED[record.adm_level];
+
+  const baseEntity: Entity<Record<string, unknown>> = {
+    id: record.id,
+    createdAt: record.created_at
+      ? new Date(record.created_at).toISOString()
+      : undefined,
+    updatedAt: record.updated_at
+      ? new Date(record.updated_at).toISOString()
+      : undefined,
+    admLevel,
+  };
+
+  switch (admLevel) {
+    case AdmLevelCode.PROVINCE: {
+      const province: Province = {
+        ...baseEntity,
+        province: record.province!,
+        admLevel: record.adm_level,
+      };
+      return province;
+    }
+
+    case AdmLevelCode.REGION: {
+      const region: Region = {
+        ...baseEntity,
+        region: record.region!,
+        province: record.province!,
+        provinceId: record.province_id!,
+        admLevel: record.adm_level,
+      };
+      return region;
+    }
+
+    case AdmLevelCode.DISTRICT: {
+      const district: District = {
+        ...baseEntity,
+        district: record.district!,
+        region: record.region!,
+        regionId: record.region_id!,
+        admLevel: record.adm_level,
+      };
+      if (record.province) district.province = record.province;
+      if (record.province_id) district.provinceId = record.province_id;
+      return district;
+    }
+
+    case AdmLevelCode.COMMUNE: {
+      const commune: Commune = {
+        ...baseEntity,
+        commune: record.commune!,
+        district: record.district!,
+        region: record.region!,
+        districtId: record.district_id!,
+        admLevel: record.adm_level,
+      };
+      if (record.region_id) commune.regionId = record.region_id;
+      if (record.province) commune.province = record.province;
+      if (record.province_id) commune.provinceId = record.province_id;
+      return commune;
+    }
+
+    case AdmLevelCode.FOKONTANY: {
+      const fokontany: Fokontany = {
+        ...baseEntity,
+        fokontany: record.fokontany!,
+        district: record.district!,
+        region: record.region!,
+        commune: record.commune!,
+        communeId: record.commune_id!,
+        admLevel: record.adm_level,
+      };
+      if (record.district_id) fokontany.districtId = record.district_id;
+      if (record.region_id) fokontany.regionId = record.region_id;
+      if (record.province) fokontany.province = record.province;
+      if (record.province_id) fokontany.provinceId = record.province_id;
+      return fokontany;
+    }
+
+    default:
+      throw new Error(
+        `Unknown ADM level code: ${admLevel satisfies never} when mapping adm entity union record to entity.`,
+      );
+  }
 }

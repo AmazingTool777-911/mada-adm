@@ -1,0 +1,11 @@
+export enum ResponseErrorCode {
+  InvalidQueryParam = "INVALID_QUERY_PARAM",
+  ValidationError = "VALIDATION_ERROR",
+  MadaAdmConfigConflict = "MADA_ADM_CONFIG_CONFLICT",
+  UnexpectedError = "UNEXPECTED_ERROR",
+  ProvinceNotFound = "PROVINCE_NOT_FOUND",
+  RegionNotFound = "REGION_NOT_FOUND",
+  DistrictNotFound = "DISTRICT_NOT_FOUND",
+  CommuneNotFound = "COMMUNE_NOT_FOUND",
+  FokontanyNotFound = "FOKONTANY_NOT_FOUND",
+}

@@ -106,8 +106,8 @@ export class FokontanysSqliteDDL extends BaseAdmTableDDL {
     }
 
     let indexesQuery = `
-      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany 
-      ON ${this.tableName} (fokontany COLLATE NOCASE);
+      CREATE INDEX IF NOT EXISTS idx_${this.tableName}_fokontany__id
+      ON ${this.tableName} (fokontany COLLATE NOCASE, id);
       CREATE INDEX IF NOT EXISTS idx_${this.tableName}_commune_id 
       ON ${this.tableName} (commune_id);
     `;

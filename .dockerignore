@@ -5,3 +5,6 @@ db/.ca-certificates/
 redis/.ca-certificates/
 .git/
 .env
+data/inputs/.generated
+data/ndjson/.generated
+data/catalogs/.generated

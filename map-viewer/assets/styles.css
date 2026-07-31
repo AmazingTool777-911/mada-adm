@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+
+  --color-fokontany: oklch(0.2695 0.1656 267.1);
+  --color-fokontany-content: oklch(1 0 0);
+
+  --color-commune: oklch(0.8867 0.185 102.18);
+  --color-commune-content: oklch(0.3074 0.0998 36.95);
+
+  --color-district: oklch(0.7176 0.185 43.94);
+  --color-district-content: oklch(1 0 0);
+
+  --color-region: oklch(0.5786 0.185 143.47);
+  --color-region-content: oklch(1 0 0);
+
+  --color-province: oklch(0.531 0.211 17.6);
+  --color-province-content: oklch(1 0 0);
+
+  --color-primary: oklch(0.449 0.1238 249.79);
+  --color-primary-content: oklch(1 0 0);
+}
+
+@layer utilities {
+  .maplibregl-popup-content {
+    @apply font-sans;
+  }
+
+  .btn-province {
+    --btn-color: var(--color-province);
+    --btn-fg: var(--color-province-content);
+  }
+  .btn-region {
+    --btn-color: var(--color-region);
+    --btn-fg: var(--color-region-content);
+  }
+  .btn-district {
+    --btn-color: var(--color-district);
+    --btn-fg: var(--color-district-content);
+  }
+  .btn-commune {
+    --btn-color: var(--color-commune);
+    --btn-fg: var(--color-commune-content);
+  }
+  .btn-fokontany {
+    --btn-color: var(--color-fokontany);
+    --btn-fg: var(--color-fokontany-content);
+  }
+
+  .badge-province {
+    --badge-color: var(--color-province);
+    --badge-fg: var(--color-province-content);
+  }
+  .badge-region {
+    --badge-color: var(--color-region);
+    --badge-fg: var(--color-region-content);
+  }
+  .badge-district {
+    --badge-color: var(--color-district);
+    --badge-fg: var(--color-district-content);
+  }
+  .badge-commune {
+    --badge-color: var(--color-commune);
+    --badge-fg: var(--color-commune-content);
+  }
+  .badge-fokontany {
+    --badge-color: var(--color-fokontany);
+    --badge-fg: var(--color-fokontany-content);
+  }
+
+  .toggle-province:checked,
+  .toggle-province[aria-checked="true"] {
+    --input-color: var(--color-province);
+  }
+  .toggle-region:checked,
+  .toggle-region[aria-checked="true"] {
+    --input-color: var(--color-region);
+  }
+  .toggle-district:checked,
+  .toggle-district[aria-checked="true"] {
+    --input-color: var(--color-district);
+  }
+  .toggle-commune:checked,
+  .toggle-commune[aria-checked="true"] {
+    --input-color: var(--color-commune);
+  }
+  .toggle-fokontany:checked,
+  .toggle-fokontany[aria-checked="true"] {
+    --input-color: var(--color-fokontany);
+  }
+}
+
+html {
+  --sidebar-width: 5rem;
+  --base-z-index: 1000;
+  --base-drawer-width: 22rem;
+}
+
+@media (min-width: 768px) {
+  html {
+    --base-drawer-width: 23rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    --base-drawer-width: 24rem;
+  }
+}

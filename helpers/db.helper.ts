@@ -291,8 +291,8 @@ export function getAdmTableName(
 ): string {
   const baseName = `${ADM_LEVEL_TITLE_BY_CODE.get(admLevel)!}s`;
   return dbType === DbType.MongoDB
-    ? prefixWithSnakeCase(config.tablesPrefix, baseName)
-    : prefixWithCamelCase(config.tablesPrefix, baseName);
+    ? prefixWithCamelCase(config.tablesPrefix, baseName)
+    : prefixWithSnakeCase(config.tablesPrefix, baseName);
 }
 
 export type GetAdmEntityUnionSetColumnsColumnData = {

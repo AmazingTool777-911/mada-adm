@@ -182,6 +182,8 @@ export default function SelectedAdmEntityItem(
   }, [geojsonEntry?.isRendered, geojsonEntry?.isLoading]);
 
   async function handlePillClick(admLevelCode?: AdmLevelCode) {
+    if (!apiStore.config.value?.hasGeojson) return;
+
     await appMapStore.toggleAdmEntityGeoJsonEntryOnMap(
       value,
       admLevelCode ?? value.admLevelCode,

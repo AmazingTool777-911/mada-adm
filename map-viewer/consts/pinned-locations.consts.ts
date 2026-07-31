@@ -102,6 +102,7 @@ export const UNSUPPORTED_GEOLOCATION_ERROR_MESSAGE =
 
 export enum PinnedLocationErrorCause {
   UnavailableConfig = "UnavailableConfig",
+  GeoJsonNotSupported = "GeoJsonNotSupported",
   NotFound = "NotFound",
   Unexpected = "Unexpected",
 }
@@ -113,6 +114,10 @@ export const PINNED_LOCATION_ADM_TERRITORY_ERROR_MESSAGE_BY_CAUSE = new Map<
   [
     PinnedLocationErrorCause.UnavailableConfig,
     "The database configuration is not available.",
+  ],
+  [
+    PinnedLocationErrorCause.GeoJsonNotSupported,
+    "GeoJSON geometries data are not available for this database configuration.",
   ],
   [
     PinnedLocationErrorCause.NotFound,

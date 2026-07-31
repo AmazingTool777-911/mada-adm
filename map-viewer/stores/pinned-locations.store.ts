@@ -85,14 +85,24 @@ export class PinnedLocationsStore {
 
   private async loadCurrentLocationFokontany() {
     if (!this.currentLocationEntry.value) return;
-    if (this.apiStore.configIsLoaded.value && !this.apiStore.config.value) {
-      this.currentLocationEntry.value = {
-        ...this.currentLocationEntry.value,
-        fokontany: null,
-        isLoadingFokontany: false,
-        fokontanyErrorCause: PinnedLocationErrorCause.UnavailableConfig,
-      };
-      return;
+    if (this.apiStore.configIsLoaded.value) {
+      if (!this.apiStore.config.value) {
+        this.currentLocationEntry.value = {
+          ...this.currentLocationEntry.value,
+          fokontany: null,
+          isLoadingFokontany: false,
+          fokontanyErrorCause: PinnedLocationErrorCause.UnavailableConfig,
+        };
+        return;
+      } else if (!this.apiStore.config.value.hasGeojson) {
+        this.currentLocationEntry.value = {
+          ...this.currentLocationEntry.value,
+          fokontany: null,
+          isLoadingFokontany: false,
+          fokontanyErrorCause: PinnedLocationErrorCause.GeoJsonNotSupported,
+        };
+        return;
+      }
     }
     try {
       const fokontany = await this.fokontanyApi
@@ -245,12 +255,24 @@ export class PinnedLocationsStore {
       pinnedLocation.isLoadingFokontany = false;
       pinnedLocation.fokontanyErrorCause =
         PinnedLocationErrorCause.UnavailableConfig;
-      this.pinnedLocations.value[pinnedLocationIndex] = pinnedLocation;
+      const pinnedLocations = [...this.pinnedLocations.value];
+      pinnedLocations[pinnedLocationIndex] = pinnedLocation;
+      this.pinnedLocations.value = pinnedLocations;
+      return;
+    } else if (!this.apiStore.config.value.hasGeojson) {
+      pinnedLocation.isLoadingFokontany = false;
+      pinnedLocation.fokontanyErrorCause =
+        PinnedLocationErrorCause.GeoJsonNotSupported;
+      const pinnedLocations = [...this.pinnedLocations.value];
+      pinnedLocations[pinnedLocationIndex] = pinnedLocation;
+      this.pinnedLocations.value = pinnedLocations;
       return;
     }
 
     pinnedLocation.isLoadingFokontany = true;
-    this.pinnedLocations.value[pinnedLocationIndex] = pinnedLocation;
+    const pinnedLocations = [...this.pinnedLocations.value];
+    pinnedLocations[pinnedLocationIndex] = pinnedLocation;
+    this.pinnedLocations.value = pinnedLocations;
 
     try {
       const fokontany = await this.fokontanyApi.getByCoordinates(

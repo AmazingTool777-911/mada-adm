@@ -99,7 +99,16 @@ export default function AdmExplorerPageGlobalFiltering() {
           );
         })
         : apiStore.provinces.value;
-      entities.push(...provinces.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+      let slicedProvinces = provinces.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE);
+      if (!apiStore.config.value?.hasAdmLevel) {
+        slicedProvinces = slicedProvinces.map((p) => {
+          return {
+            ...p,
+            admLevel: ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.PROVINCE)!,
+          };
+        });
+      }
+      entities.push(...slicedProvinces);
     }
     const startingAdmLevelCodeIndex = ADM_LEVEL_INDEX_BY_CODE.get(
       startingAdmLevelCode.value,
@@ -115,7 +124,16 @@ export default function AdmExplorerPageGlobalFiltering() {
           );
         })
         : apiStore.regions.value;
-      entities.push(...regions.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+      let slicedRegions = regions.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE);
+      if (!apiStore.config.value?.hasAdmLevel) {
+        slicedRegions = slicedRegions.map((r) => {
+          return {
+            ...r,
+            admLevel: ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.REGION)!,
+          };
+        });
+      }
+      entities.push(...slicedRegions);
     }
     if (
       startingAdmLevelCodeIndex <=
@@ -128,7 +146,16 @@ export default function AdmExplorerPageGlobalFiltering() {
           );
         })
         : apiStore.districts.value;
-      entities.push(...districts.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+      let slicedDistricts = districts.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE);
+      if (!apiStore.config.value?.hasAdmLevel) {
+        slicedDistricts = slicedDistricts.map((d) => {
+          return {
+            ...d,
+            admLevel: ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.DISTRICT)!,
+          };
+        });
+      }
+      entities.push(...slicedDistricts);
     }
     if (
       startingAdmLevelCodeIndex <=
@@ -141,7 +168,16 @@ export default function AdmExplorerPageGlobalFiltering() {
           );
         })
         : apiStore.communes.value;
-      entities.push(...communes.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+      let slicedCommunes = communes.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE);
+      if (!apiStore.config.value?.hasAdmLevel) {
+        slicedCommunes = slicedCommunes.map((c) => {
+          return {
+            ...c,
+            admLevel: ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.COMMUNE)!,
+          };
+        });
+      }
+      entities.push(...slicedCommunes);
     }
     const fokontanys = lowerCaseSearchValue
       ? apiStore.fokontanys.value.filter((f) => {
@@ -150,7 +186,16 @@ export default function AdmExplorerPageGlobalFiltering() {
         );
       })
       : apiStore.fokontanys.value;
-    entities.push(...fokontanys.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE));
+    let slicedFokontanys = fokontanys.slice(0, ADM_ENTITIES_COUNT.GLOBAL_MODE);
+    if (!apiStore.config.value?.hasAdmLevel) {
+      slicedFokontanys = slicedFokontanys.map((f) => {
+        return {
+          ...f,
+          admLevel: ADM_LEVEL_INDEX_BY_CODE.get(AdmLevelCode.FOKONTANY)!,
+        };
+      });
+    }
+    entities.push(...slicedFokontanys);
     return entities;
   });
 

@@ -51,6 +51,9 @@ export default function AdmEntitiesSearchComboBoxField({
   onScrollEnd,
   onInputChange,
 }: AdmEntitiesSearchComboBoxFieldProps) {
+  const onScrollEndRef = useRef(onScrollEnd);
+  onScrollEndRef.current = onScrollEnd;
+
   const showMenu = useSignal(false);
   const selectedItemIndex = useSignal(-1);
   const inputActiveDescendent = useComputed(() => {
@@ -146,7 +149,7 @@ export default function AdmEntitiesSearchComboBoxField({
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                onScrollEnd?.();
+                onScrollEndRef.current?.();
               }
             });
           },

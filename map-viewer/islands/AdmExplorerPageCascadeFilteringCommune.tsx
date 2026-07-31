@@ -122,16 +122,22 @@ export default function AdmExplorerPageCascadeFilteringCommune({
 
   const disabledReason = useMemo<string | null>(() => {
     const config = apiStore.config.value;
-    if (config) {
-      if (selectedProvince && !config.isProvinceFkRepeated) {
-        return "The province id foreign key is not supported by the communes based on the database configuration.";
-      }
+    if (config && !selectedDistrict) {
       if (selectedRegion && !config.isFkRepeated) {
         return "The region id foreign key is not supported by the communes based on the database configuration.";
+      } else if (
+        selectedProvince && !config.isProvinceFkRepeated && !selectedRegion
+      ) {
+        return "The province id foreign key is not supported by the communes based on the database configuration.";
       }
     }
     return null;
-  }, [apiStore.config.value, selectedProvince]);
+  }, [
+    apiStore.config.value,
+    selectedProvince,
+    selectedRegion,
+    selectedDistrict,
+  ]);
 
   function buildApiCallRequestParams(
     search: string,

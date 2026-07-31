@@ -117,13 +117,14 @@ export default function AdmExplorerPageCascadeFilteringDistrict({
 
   const disabledReason = useMemo<string | null>(() => {
     const config = apiStore.config.value;
-    if (selectedProvince && config) {
-      if (!config.isProvinceFkRepeated) {
-        return "The province id foreign key is not supported by the districts based on the database configuration.";
-      }
+    if (
+      !selectedRegion && selectedProvince && config &&
+      !config.isProvinceFkRepeated
+    ) {
+      return "The province id foreign key is not supported by the districts based on the database configuration.";
     }
     return null;
-  }, [apiStore.config.value, selectedProvince]);
+  }, [apiStore.config.value, selectedProvince, selectedRegion]);
 
   function buildApiCallRequestParams(
     search: string,

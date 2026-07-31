@@ -128,10 +128,7 @@ export default function AdmExplorerPageCascadeFilteringFokontany({
 
   const disabledReason = useMemo<string | null>(() => {
     const config = apiStore.config.value;
-    if (config) {
-      if (selectedProvince && !config.isProvinceFkRepeated) {
-        return "The province id foreign key is not supported by the communes based on the database configuration.";
-      }
+    if (config && !selectedCommune) {
       if (!config.isFkRepeated) {
         if (selectedRegion) {
           return "The region id foreign key is not supported by the communes based on the database configuration.";
@@ -140,9 +137,21 @@ export default function AdmExplorerPageCascadeFilteringFokontany({
           return "The district id foreign key is not supported by the communes based on the database configuration.";
         }
       }
+      if (
+        selectedProvince && !config.isProvinceFkRepeated && !selectedRegion &&
+        !selectedDistrict && !selectedCommune
+      ) {
+        return "The province id foreign key is not supported by the communes based on the database configuration.";
+      }
     }
     return null;
-  }, [apiStore.config.value, selectedProvince]);
+  }, [
+    apiStore.config.value,
+    selectedProvince,
+    selectedCommune,
+    selectedDistrict,
+    selectedRegion,
+  ]);
 
   function buildApiCallRequestParams(
     search: string,

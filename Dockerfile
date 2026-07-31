@@ -9,5 +9,7 @@ COPY . .
 
 RUN deno install
 
+RUN deno task map-viewer:build
+
 # Just to keep the container running
 CMD ["tail", "-f", "/dev/null"]

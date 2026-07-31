@@ -2,7 +2,7 @@
   "name": "@scope/rest-api",
   "version": "0.0.1",
   "exports": {
-    ".": "./main.ts",
+    ".": "./index.ts",
     "./types": "./rest-api.d.ts"
   },
   "imports": {

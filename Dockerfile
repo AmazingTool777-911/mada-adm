@@ -3,6 +3,8 @@ FROM denoland/deno:alpine
 # Install SQLite with spatialite extension
 RUN apk add --no-cache libspatialite libspatialite-dev
 
+RUN apk add --no-cache libstdc++
+
 WORKDIR /app
 
 COPY . .

@@ -8,3 +8,4 @@ redis/.ca-certificates/
 data/inputs/.generated
 data/ndjson/.generated
 data/catalogs/.generated
+node_modules/

@@ -11,4 +11,12 @@ export default defineConfig({
     },
   },
   envDir: path.join(Deno.cwd(), ".."),
+  resolve: {
+    alias: [
+      {
+        find: /^@babel\/runtime\/helpers\/(?!esm\/)(.*)$/,
+        replacement: "@babel/runtime/helpers/esm/$1",
+      },
+    ],
+  },
 });

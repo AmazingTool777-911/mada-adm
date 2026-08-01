@@ -110,7 +110,7 @@ export class AppMapStore {
     }
     if (!admGeoJsonMetadata) {
       this.checkAdmGeoJsonLayer(admLevelCode, true);
-      await this.admGeoJsonStore.openDownloadModal([admLevelCode]);
+      this.admGeoJsonStore.openDownloadModal([admLevelCode]);
     } else {
       const fitBbox = options?.fitBbox ??
         this.admGeoJsonLayersCheckboxesStates.value.find((state) =>
@@ -863,7 +863,7 @@ export class AppMapStore {
         break;
       }
       case AdmLevelCode.FOKONTANY: {
-        const province = admEntityDiscriminated.entity.province;
+        const province = resolveProvinceName();
         const region = admEntityDiscriminated.entity.region;
         const district = admEntityDiscriminated.entity.district;
         const commune = admEntityDiscriminated.entity.commune;

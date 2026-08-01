@@ -62,7 +62,7 @@ export default function DataSourcesPage() {
             >
               <strong>Layers</strong> are the source{" "}
               <strong>GeoJSON files</strong>{" "}
-              that powers the app's administrative boundaries database, and they
+              that power the app's administrative boundaries database, and they
               can also be toggled onto the map. These layers are organized into
               {" "}
               <strong>5 distinct tiers</strong>{" "}

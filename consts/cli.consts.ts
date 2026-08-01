@@ -236,14 +236,11 @@ export const UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS = {
   PROVINCE: "The name of the province.",
   REGION: "The name of the region.",
   DISTRICT: "The name of the district.",
-  DISTRICT_REGION: "The name of the region of the district.",
   COMMUNE: "The name of the commune.",
   COMMUNE_DISTRICT: "The name of the district of the commune.",
-  COMMUNE_REGION: "The name of the region of the commune.",
   FOKONTANY: "The name of the fokontany.",
   FOKONTANY_COMMUNE: "The name of the commune of the fokontany.",
   FOKONTANY_DISTRICT: "The name of the district of the fokontany.",
-  FOKONTANY_REGION: "The name of the region of the fokontany.",
 };
 
 export const UPDATE_FIELD_COMMAND_VALUE_OPTION_DESCRIPTION =

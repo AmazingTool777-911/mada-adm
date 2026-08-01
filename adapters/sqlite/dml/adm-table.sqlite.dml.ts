@@ -240,12 +240,12 @@ export class BaseAdmTableSqliteDML {
   protected _deleteDuplicates(): void {
     const tableName = this.tableName;
     const partitionKeys: string[] = [`${this.admLevelTitle} COLLATE NOCASE`];
-    const regionAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
-      AdmLevelCode.REGION,
+    const districtAdmLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(
+      AdmLevelCode.DISTRICT,
     )!;
-    if (ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! > regionAdmLevelIndex) {
+    if (ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)! > districtAdmLevelIndex) {
       const admLevelIndex = ADM_LEVEL_INDEX_BY_CODE.get(this.#admLevel)!;
-      for (let i = admLevelIndex - 1; i >= regionAdmLevelIndex; i--) {
+      for (let i = admLevelIndex - 1; i >= districtAdmLevelIndex; i--) {
         const parentAdmLevelTitle = ADM_LEVEL_TITLE_BY_CODE.get(
           ADM_LEVEL_CODES_INDEXED[i],
         )!;

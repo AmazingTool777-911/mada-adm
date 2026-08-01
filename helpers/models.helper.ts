@@ -12,7 +12,6 @@ import type {
   CommuneSnakeCased,
   CommuneValues,
   District,
-  DistrictAttributes,
   DistrictBSON,
   DistrictRecord,
   DistrictSnakeCased,
@@ -427,12 +426,8 @@ export function compareAdmValues(
   }
 }
 
-export function encodeDistrictAttributes(attr: DistrictAttributes): string {
-  return `district:${attr.district}-region:${attr.region}`;
-}
-
 export function encodeCommuneAttributes(attr: CommuneAttributes): string {
-  return `commune:${attr.commune}-district:${attr.district}-region:${attr.region}`;
+  return `commune:${attr.commune}-district:${attr.district}`;
 }
 /**
  * Type guard that checks if a value is a valid GeoJSON geometry (Polygon or MultiPolygon).

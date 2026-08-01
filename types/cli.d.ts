@@ -528,20 +528,15 @@ export type UpdateFieldCliConfig = {
   valuePath?: string;
   province?: string;
   region?: string;
-  district?: {
-    value?: string;
-    region?: string;
-  };
+  district?: string;
   commune?: {
     value?: string;
     district?: string;
-    region?: string;
   };
   fokontany?: {
     value?: string;
     commune?: string;
     district?: string;
-    region?: string;
   };
 };
 

@@ -18,7 +18,6 @@ import type {
 import {
   compareAdmValues,
   encodeCommuneAttributes,
-  encodeDistrictAttributes,
   getAdmValuesEncodedString,
   isCommuneValues,
   isDistrictValues,
@@ -414,12 +413,8 @@ Deno.test("models.helper", async (t) => {
 
   await t.step("encode attributes", () => {
     assertEquals(
-      encodeDistrictAttributes({ district: "D", region: "R" }),
-      "district:D-region:R",
-    );
-    assertEquals(
-      encodeCommuneAttributes({ commune: "C", district: "D", region: "R" }),
-      "commune:C-district:D-region:R",
+      encodeCommuneAttributes({ commune: "C", district: "D" }),
+      "commune:C-district:D",
     );
   });
 

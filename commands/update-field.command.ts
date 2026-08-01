@@ -49,18 +49,15 @@ type AdmLevelIdentifiers = {
 } | {
   admLevel: AdmLevelCode.DISTRICT;
   district: string;
-  region: string;
 } | {
   admLevel: AdmLevelCode.COMMUNE;
   commune: string;
   district: string;
-  region: string;
 } | {
   admLevel: AdmLevelCode.FOKONTANY;
   fokontany: string;
   commune: string;
   district: string;
-  region: string;
 };
 
 const admLevelType = new EnumType(Array.from(ADM_LEVEL_CODE_BY_TITLE.keys()));
@@ -121,15 +118,8 @@ export class CliUpdateFieldCommand extends Command<
       )
       .group("District identifiers")
       .option(
-        "--district.value <district:string>",
+        "--district <district:string>",
         UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS.DISTRICT,
-      )
-      .option(
-        "--district.region <district-region:string>",
-        UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS.DISTRICT_REGION,
-        {
-          depends: ["district.value"],
-        },
       )
       .group("Commune identifiers")
       .option(
@@ -139,13 +129,6 @@ export class CliUpdateFieldCommand extends Command<
       .option(
         "--commune.district <commune-district:string>",
         UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS.COMMUNE_DISTRICT,
-        {
-          depends: ["commune.value"],
-        },
-      )
-      .option(
-        "--commune.region <commune-region:string>",
-        UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS.COMMUNE_REGION,
         {
           depends: ["commune.value"],
         },
@@ -165,13 +148,6 @@ export class CliUpdateFieldCommand extends Command<
       .option(
         "--fokontany.district <fokontany-district:string>",
         UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS.FOKONTANY_DISTRICT,
-        {
-          depends: ["fokontany.value"],
-        },
-      )
-      .option(
-        "--fokontany.region <fokontany-region:string>",
-        UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS.FOKONTANY_REGION,
         {
           depends: ["fokontany.value"],
         },
@@ -274,29 +250,25 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
         return { admLevel: AdmLevelCode.REGION, region: identifiers.region };
       }
       case AdmLevelCode.DISTRICT: {
-        if (!identifiers.district?.value || !identifiers.district?.region) {
+        if (!identifiers.district) {
           console.error(
-            `\n${
-              colors.red("❌ Error:")
-            } ${"District and region are required"}`,
+            `\n${colors.red("❌ Error:")} ${"District is are required"}`,
           );
           Deno.exit(1);
         }
         return {
           admLevel: AdmLevelCode.DISTRICT,
-          district: identifiers.district.value,
-          region: identifiers.district.region,
+          district: identifiers.district,
         };
       }
       case AdmLevelCode.COMMUNE: {
         if (
-          !identifiers.commune?.value || !identifiers.commune?.district ||
-          !identifiers.commune?.region
+          !identifiers.commune?.value || !identifiers.commune?.district
         ) {
           console.error(
             `\n${
               colors.red("❌ Error:")
-            } ${"Commune, district and region are required"}`,
+            } ${"Commune and district are required"}`,
           );
           Deno.exit(1);
         }
@@ -304,18 +276,17 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
           admLevel: AdmLevelCode.COMMUNE,
           commune: identifiers.commune.value,
           district: identifiers.commune.district,
-          region: identifiers.commune.region,
         };
       }
       case AdmLevelCode.FOKONTANY: {
         if (
           !identifiers.fokontany?.value || !identifiers.fokontany?.commune ||
-          !identifiers.fokontany?.district || !identifiers.fokontany?.region
+          !identifiers.fokontany?.district
         ) {
           console.error(
             `\n${
               colors.red("❌ Error:")
-            } ${"Fokontany, commune, district and region are required"}`,
+            } ${"Fokontany, commune and district are required"}`,
           );
           Deno.exit(1);
         }
@@ -324,7 +295,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
           fokontany: identifiers.fokontany.value,
           commune: identifiers.fokontany.commune,
           district: identifiers.fokontany.district,
-          region: identifiers.fokontany.region,
         };
       }
       default: {
@@ -424,11 +394,8 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
                 ], txCtx);
                 break;
               case AdmLevelCode.DISTRICT:
-                entities = await districtsDML.getManyByAttributes([
-                  {
-                    district: identifiers.district,
-                    region: identifiers.region,
-                  },
+                entities = await districtsDML.getManyByNames([
+                  identifiers.district,
                 ], txCtx);
                 break;
               case AdmLevelCode.COMMUNE:
@@ -436,7 +403,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
                   {
                     commune: identifiers.commune,
                     district: identifiers.district,
-                    region: identifiers.region,
                   },
                 ], txCtx);
                 break;
@@ -446,7 +412,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
                     fokontany: identifiers.fokontany,
                     commune: identifiers.commune,
                     district: identifiers.district,
-                    region: identifiers.region,
                   },
                 ], txCtx);
                 break;
@@ -638,11 +603,8 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
           ]);
           break;
         case AdmLevelCode.DISTRICT:
-          finalEntities = await districtsDML.getManyByAttributes([
-            {
-              district: updatedIdentifiers.district,
-              region: updatedIdentifiers.region,
-            },
+          finalEntities = await districtsDML.getManyByNames([
+            updatedIdentifiers.district,
           ]);
           break;
         case AdmLevelCode.COMMUNE:
@@ -650,7 +612,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
             {
               commune: updatedIdentifiers.commune,
               district: updatedIdentifiers.district,
-              region: updatedIdentifiers.region,
             },
           ]);
           break;
@@ -660,7 +621,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
               fokontany: updatedIdentifiers.fokontany,
               commune: updatedIdentifiers.commune,
               district: updatedIdentifiers.district,
-              region: updatedIdentifiers.region,
             },
           ]);
           break;
@@ -778,8 +738,8 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
           const dml = injectDistrictsDML(config, dbType, db, {
             pgSchema,
           });
-          const result = await dml.updateGeojsonByAttributes(
-            { district: identifiers.district, region: identifiers.region },
+          const result = await dml.updateGeojsonByName(
+            identifiers.district,
             geojsonStr,
           );
           affectedRows = result.affectedRows;
@@ -793,7 +753,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
             {
               commune: identifiers.commune,
               district: identifiers.district,
-              region: identifiers.region,
             },
             geojsonStr,
           );
@@ -809,7 +768,6 @@ Please specify a valid file using --value-file, --value-path, or ensure the defa
               fokontany: identifiers.fokontany,
               commune: identifiers.commune,
               district: identifiers.district,
-              region: identifiers.region,
             },
             geojsonStr,
           );

@@ -170,6 +170,24 @@ export default function AppMapCurrentLocationBeacon(
     [renderedFokontanyDivisions],
   );
 
+  useEffect(
+    () => {
+      if (currentLocationEntry.value?.fokontany) {
+        prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current = {
+          fokontanyId: currentLocationEntry.value.fokontany.id ?? null,
+          renderedCodes: renderedFokontanyDivisions.map((d) => d.admLevelCode),
+        };
+        return () => {
+          prevFokontanyIdAndRenderedDivisionsAdmLevelCodesSnapshot.current = {
+            fokontanyId: null,
+            renderedCodes: [],
+          };
+        };
+      }
+    },
+    [!!currentLocationEntry.value?.fokontany],
+  );
+
   const { markerPopup } = useAddPinnedLocationMarkerPopup(
     currentLocationEntry,
     { fokontanyDiscriminated, fokontanyDivisions },

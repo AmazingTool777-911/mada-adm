@@ -1894,6 +1894,7 @@
       "jsr:@std/path@^1.0.8",
       "jsr:@std/streams@^1.0.17",
       "npm:@floating-ui/dom@^1.7.6",
+      "npm:geo-coordinates-parser@^1.7.4",
       "npm:mongodb@^6.21.0",
       "npm:mysql2@^3.22.3"
     ],

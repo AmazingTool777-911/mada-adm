@@ -571,3 +571,19 @@ export type UpdateFieldCliConfigV1 = {
     region: string;
   };
 };
+
+export type QueryCliCommandType = "name" | "id" | "coordinates";
+
+export type QueryCliCommandLevel =
+  | "province"
+  | "region"
+  | "district"
+  | "commune"
+  | "fokontany";
+
+export interface QueryCliOptions {
+  type: QueryCliCommandType;
+  level?: QueryCliCommandLevel;
+  pageSize: number;
+  [key: string]: unknown;
+}

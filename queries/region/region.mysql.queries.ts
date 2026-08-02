@@ -7,11 +7,14 @@ import type {
 import type { MySQLDbConnection } from "@scope/adapters/mysql";
 import { mapRegionSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
-import { AdmLevelCode } from "@scope/consts/models";
 import type { GetRegionByIdOptions, RegionQueries } from "../queries.d.ts";
-import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
+import type {
+  GetRegionByPointCoordinatesOptions,
+  PointCoordinates,
+} from "../queries.d.ts";
+import { RegionBaseQueries } from "../base/region.base.queries.ts";
 
-export class RegionMySQLQueries extends AdmTableBaseQueries
+export class RegionMySQLQueries extends RegionBaseQueries
   implements RegionQueries {
   #db!: MySQLDbConnection;
 
@@ -19,7 +22,7 @@ export class RegionMySQLQueries extends AdmTableBaseQueries
     config: MadaAdmConfigValues,
     db: MySQLDbConnection,
   ) {
-    super(config, DbType.MySQL, AdmLevelCode.REGION);
+    super(config, DbType.MySQL);
     this.#db = db;
   }
 
@@ -52,6 +55,27 @@ export class RegionMySQLQueries extends AdmTableBaseQueries
     const results = await this.#db.pool.execute(
       sql,
       [BigInt(Number(id))],
+    );
+    const rows = results[0] as RegionSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapRegionSnakeToCamel(rows[0]);
+  }
+
+  async _getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetRegionByPointCoordinatesOptions,
+  ): Promise<Region | null> {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE ST_Contains(geojson, ST_GeomFromText(?, 4326))
+    `;
+    const results = await this.#db.pool.execute(
+      sql,
+      [`POINT(${coordinates[1]} ${coordinates[0]})`],
     );
     const rows = results[0] as RegionSnakeCased[];
     if (rows.length === 0) return null;

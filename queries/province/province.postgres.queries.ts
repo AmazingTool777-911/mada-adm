@@ -7,11 +7,14 @@ import type {
 import type { PostgresDbConnection } from "@scope/adapters/postgres";
 import { mapProvinceSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
-import { AdmLevelCode } from "@scope/consts/models";
 import type { GetProvinceByIdOptions, ProvinceQueries } from "../queries.d.ts";
-import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
+import type {
+  GetProvinceByPointCoordinatesOptions,
+  PointCoordinates,
+} from "../queries.d.ts";
+import { ProvinceBaseQueries } from "../base/province.base.queries.ts";
 
-export class ProvincePostgresQueries extends AdmTableBaseQueries
+export class ProvincePostgresQueries extends ProvinceBaseQueries
   implements ProvinceQueries {
   #db!: PostgresDbConnection;
 
@@ -22,7 +25,7 @@ export class ProvincePostgresQueries extends AdmTableBaseQueries
     db: PostgresDbConnection,
     pgSchema: string = "public",
   ) {
-    super(config, DbType.Postgres, AdmLevelCode.PROVINCE);
+    super(config, DbType.Postgres);
     this.#db = db;
     this.#pgSchema = pgSchema;
   }
@@ -58,6 +61,28 @@ export class ProvincePostgresQueries extends AdmTableBaseQueries
     const result = await client.queryObject<ProvinceSnakeCased>(sql, [
       Number(id),
     ]);
+    if (result.rows.length === 0) return null;
+    return mapProvinceSnakeToCamel(result.rows[0]);
+  }
+
+  async _getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetProvinceByPointCoordinatesOptions,
+  ): Promise<Province | null> {
+    const client = await this.#db.pool.connect();
+    const tableName = `${this.#pgSchema}.${this.tableName}`;
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${tableName}
+      WHERE ST_INTERSECTS(geojson, ST_SetSRID(ST_POINT($1, $2), 4326))
+    `;
+    const result = await client.queryObject<ProvinceSnakeCased>(
+      sql,
+      coordinates,
+    );
     if (result.rows.length === 0) return null;
     return mapProvinceSnakeToCamel(result.rows[0]);
   }

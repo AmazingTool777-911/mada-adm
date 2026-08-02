@@ -39,6 +39,10 @@ export type GetProvinceByIdOptions = {
   excludeGeoJSON?: boolean;
 };
 
+export type GetProvinceByPointCoordinatesOptions = {
+  excludeGeoJSON?: boolean;
+};
+
 export interface ProvinceQueries {
   getAll(): MaybePromise<Province[]>;
 
@@ -46,9 +50,18 @@ export interface ProvinceQueries {
     id: EntityId,
     options?: GetProvinceByIdOptions,
   ): MaybePromise<Province | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetProvinceByPointCoordinatesOptions,
+  ): MaybePromise<Province | null>;
 }
 
 export type GetRegionByIdOptions = {
+  excludeGeoJSON?: boolean;
+};
+
+export type GetRegionByPointCoordinatesOptions = {
   excludeGeoJSON?: boolean;
 };
 
@@ -58,6 +71,11 @@ export interface RegionQueries {
   getById(
     id: EntityId,
     options?: GetRegionByIdOptions,
+  ): MaybePromise<Region | null>;
+
+  getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetRegionByPointCoordinatesOptions,
   ): MaybePromise<Region | null>;
 }
 

@@ -9,11 +9,14 @@ import type {
 import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapProvinceBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
-import { AdmLevelCode } from "@scope/consts/models";
 import type { GetProvinceByIdOptions, ProvinceQueries } from "../queries.d.ts";
-import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
+import type {
+  GetProvinceByPointCoordinatesOptions,
+  PointCoordinates,
+} from "../queries.d.ts";
+import { ProvinceBaseQueries } from "../base/province.base.queries.ts";
 
-export class ProvinceMongoQueries extends AdmTableBaseQueries
+export class ProvinceMongoQueries extends ProvinceBaseQueries
   implements ProvinceQueries {
   #db!: MongoDbConnection;
 
@@ -24,7 +27,7 @@ export class ProvinceMongoQueries extends AdmTableBaseQueries
   }
 
   constructor(config: MadaAdmConfigValues, db: MongoDbConnection) {
-    super(config, DbType.MongoDB, AdmLevelCode.PROVINCE);
+    super(config, DbType.MongoDB);
     this.#db = db;
   }
 
@@ -45,6 +48,26 @@ export class ProvinceMongoQueries extends AdmTableBaseQueries
     if (!province) return null;
     options?.excludeGeoJSON && province.geojson && delete province.geojson;
     return mapProvinceBsonToEntity(province);
+  }
+
+  async _getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetProvinceByPointCoordinatesOptions,
+  ): Promise<Province | null> {
+    const doc = await this.collection
+      .findOne({
+        geojson: {
+          $geoIntersects: {
+            $geometry: {
+              type: "Point",
+              coordinates,
+            },
+          },
+        },
+      });
+    if (!doc) return null;
+    options?.excludeGeoJSON && doc.geojson && delete doc.geojson;
+    return mapProvinceBsonToEntity(doc);
   }
 }
 

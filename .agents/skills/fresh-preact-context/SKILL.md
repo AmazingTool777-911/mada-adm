@@ -5,7 +5,11 @@ description: Use this skill when writing, generating, or modifying Preact contex
 
 # Fresh Preact Context Architecture
 
-When defining a new Preact context inside the `map-viewer` (which uses Deno Fresh), always structure it as a feature folder inside `map-viewer/islands/contexts/`. The folder should contain a set of files that separate the context definition, the provider, the consumer hook, and a barrel export.
+When defining a new Preact context inside the `map-viewer` (which uses Deno
+Fresh), always structure it as a feature folder inside
+`map-viewer/islands/contexts/`. The folder should contain a set of files that
+separate the context definition, the provider, the consumer hook, and a barrel
+export.
 
 ## File Structure Pattern
 
@@ -43,12 +47,16 @@ export const myFeatureContext = createContext<MyFeatureContextValue>({
 
 ### 2. The Provider Component (`MyFeatureProvider.tsx`)
 
-Implement the provider component that manages the state/logic and passes it down via the context object.
+Implement the provider component that manages the state/logic and passes it down
+via the context object.
 
 ```tsx
 import { ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
-import { myFeatureContext, MyFeatureContextValue } from "./my-feature.context.ts";
+import {
+  myFeatureContext,
+  MyFeatureContextValue,
+} from "./my-feature.context.ts";
 
 export type MyFeatureProviderProps = {
   children?: ComponentChildren;
@@ -72,11 +80,15 @@ export function MyFeatureProvider({ children }: MyFeatureProviderProps) {
 
 ### 3. The Consumer Hook (`useMyFeatureContext.ts`)
 
-Create a custom hook to easily consume the context without needing to manually import `useContext` and the context object every time.
+Create a custom hook to easily consume the context without needing to manually
+import `useContext` and the context object every time.
 
 ```ts
 import { useContext } from "preact/hooks";
-import { myFeatureContext, MyFeatureContextValue } from "./my-feature.context.ts";
+import {
+  myFeatureContext,
+  MyFeatureContextValue,
+} from "./my-feature.context.ts";
 
 export function useMyFeatureContext(): MyFeatureContextValue {
   return useContext(myFeatureContext);
@@ -95,4 +107,7 @@ export * from "./MyFeatureProvider.tsx";
 
 ## Consuming the Context
 
-When consuming the context in components or hooks, **always** use the custom wrapper hook exposed in the barrel (e.g., `useMyFeatureContext()`). **Do not** manually import Preact's native `useContext` and the raw context instance to consume it.
+When consuming the context in components or hooks, **always** use the custom
+wrapper hook exposed in the barrel (e.g., `useMyFeatureContext()`). **Do not**
+manually import Preact's native `useContext` and the raw context instance to
+consume it.

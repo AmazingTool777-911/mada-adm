@@ -35,11 +35,15 @@ Follow these steps to set up the project locally.
 2. **Deno**: The project is built with Deno. You need to have it installed on
    your machine.
    - [Install Deno](https://docs.deno.com/runtime/getting_started/installation/)
-3. **Database Software**: This project supports PostgreSQL, SQLite, MySQL, and MongoDB.
-4. **Redis**: Used for job orchestration, progress tracking, and resumable state. This is required if using the default configuration.
+3. **Database Software**: This project supports PostgreSQL, SQLite, MySQL, and
+   MongoDB.
+4. **Redis**: Used for job orchestration, progress tracking, and resumable
+   state. This is required if using the default configuration.
 
 > [!TIP]
-> **Skip the setup?** If you have Docker installed, you can bypass the local installation of Deno and Redis by using the [Docker setup](#running-with-docker).
+> **Skip the setup?** If you have Docker installed, you can bypass the local
+> installation of Deno and Redis by using the
+> [Docker setup](#running-with-docker).
 
 ### Installation
 
@@ -75,11 +79,15 @@ deno task compile:all
 deno task compile
 ```
 
-The compiled binaries are placed in `bin/<platform>/mada-adm` (or `mada-adm.exe` on Windows). The `compile` task outputs to the `bin/current-platform/` directory.
+The compiled binaries are placed in `bin/<platform>/mada-adm` (or `mada-adm.exe`
+on Windows). The `compile` task outputs to the `bin/current-platform/`
+directory.
 
 ### Using the Compiled Executable
 
-Once compiled (or [downloaded from the releases](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/releases)), you can run the `mada-adm` binary directly from its output directory:
+Once compiled (or
+[downloaded from the releases](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/releases)),
+you can run the `mada-adm` binary directly from its output directory:
 
 ```bash
 # Example for Linux/macOS
@@ -89,10 +97,15 @@ Once compiled (or [downloaded from the releases](https://github.com/AmazingTool7
 .\bin\current-platform\mada-adm.exe --help
 ```
 
-You can optionally add the output directory to your system's `PATH` to run `mada-adm` from any location without specifying the full path.
+You can optionally add the output directory to your system's `PATH` to run
+`mada-adm` from any location without specifying the full path.
 
 > [!WARNING]
-> **Unsigned Binaries:** The compiled executables are not digitally signed. Depending on your operating system (e.g., Windows SmartScreen or macOS Gatekeeper), you may encounter security warnings or blocks when attempting to run them. You will need to manually allow or trust the application within your system settings to proceed.
+> **Unsigned Binaries:** The compiled executables are not digitally signed.
+> Depending on your operating system (e.g., Windows SmartScreen or macOS
+> Gatekeeper), you may encounter security warnings or blocks when attempting to
+> run them. You will need to manually allow or trust the application within your
+> system settings to proceed.
 
 ### Running CLI Tasks
 
@@ -117,11 +130,13 @@ docker compose up -d
 docker compose exec app deno task cli --db-type postgres --pg.user user --pg.password pass --pg.database mada_adm
 ```
 
-Environment variables defined in a `.env` file are automatically injected into the container.
+Environment variables defined in a `.env` file are automatically injected into
+the container.
 
 ## Database Support
 
-The CLI supports multiple database drivers with native spatial capabilities where available. Minimum supported versions are listed below.
+The CLI supports multiple database drivers with native spatial capabilities
+where available. Minimum supported versions are listed below.
 
 | Database       | Min. Version | Spatial Extension                                                |
 | :------------- | :----------- | :--------------------------------------------------------------- |
@@ -131,7 +146,8 @@ The CLI supports multiple database drivers with native spatial capabilities wher
 | **MongoDB**    | 2.4          | Native                                                           |
 
 > [!IMPORTANT]
-> You are responsible for ensuring that the database and its spatial extensions are correctly installed and configured before running the CLI.
+> You are responsible for ensuring that the database and its spatial extensions
+> are correctly installed and configured before running the CLI.
 
 ## Project Structure & Content
 
@@ -142,70 +158,111 @@ logic required to process it:
   (found in `/commands/`).
 - **CLI Executables**: The compiled standalone executables for different
   platforms (found in `/bin/`).
-- **Raw Sources (`data/geojson/`)**: Original GeoJSON spatial data files collected from external sources.
-- **Intermediate Format (`data/ndjson/`)**: Raw sources converted into Newline Delimited JSON (NDJSON) for more efficient stream-based processing and cleaning.
-- **Seeding Inputs (`data/inputs/`)**: The final, optimized, and schema-aware datasets generated by the extraction scripts, ready to be ingested by the CLI index command.
-- **Extraction Scripts**: Utility scripts (found in `/scripts/`) used to orchestrate the transition from raw GeoJSON to the final seeding inputs.
+- **Raw Sources (`data/geojson/`)**: Original GeoJSON spatial data files
+  collected from external sources.
+- **Intermediate Format (`data/ndjson/`)**: Raw sources converted into Newline
+  Delimited JSON (NDJSON) for more efficient stream-based processing and
+  cleaning.
+- **Seeding Inputs (`data/inputs/`)**: The final, optimized, and schema-aware
+  datasets generated by the extraction scripts, ready to be ingested by the CLI
+  index command.
+- **Extraction Scripts**: Utility scripts (found in `/scripts/`) used to
+  orchestrate the transition from raw GeoJSON to the final seeding inputs.
 - **Data Catalogs**: Structured references for administrative metadata.
 
 > [!WARNING]
-> **Data Quality & Topological Inconsistencies:** The current official GeoJSON data for regions is not fully topologically inclusive of the geometrical boundaries of the underlying districts. This results in visual inconsistencies between these parent-child levels, likely due to oversimplified or outdated source features.
+> **Data Quality & Topological Inconsistencies:** The current official GeoJSON
+> data for regions is not fully topologically inclusive of the geometrical
+> boundaries of the underlying districts. This results in visual inconsistencies
+> between these parent-child levels, likely due to oversimplified or outdated
+> source features.
 >
-> If you have access to a more accurate official dataset for Madagascar's regional boundaries, contributions are highly welcome. Alternatively, we are planning a manual merge of district features to reconstruct accurate region and province boundaries. If you would like to help with this task, please reach out or submit a PR.
+> If you have access to a more accurate official dataset for Madagascar's
+> regional boundaries, contributions are highly welcome. Alternatively, we are
+> planning a manual merge of district features to reconstruct accurate region
+> and province boundaries. If you would like to help with this task, please
+> reach out or submit a PR.
 
 ## Fundamental Concepts & Architecture
 
-Understanding the internal mechanics of the seeding process helps in optimizing performance and ensuring data integrity.
+Understanding the internal mechanics of the seeding process helps in optimizing
+performance and ensuring data integrity.
 
 ### Worker Pipeline
 
-The seeding process uses a two-stage worker pipeline to handle the administrative hierarchy efficiently:
+The seeding process uses a two-stage worker pipeline to handle the
+administrative hierarchy efficiently:
 
-1.  **Processing Workers**: These workers parallelize the task of gathering data. Their primary role is to resolve foreign keys for child administrative levels (e.g., finding the `regionId` for a district) by querying the already-seeded parent data. This stage is computationally intensive and can be parallelized using `--processing-workers-count`.
-2.  **Insert Worker**: A single, unique worker responsible for performing the final database writes. Using a single worker for insertion prevents overwhelming the database with concurrent write requests and maintains transaction integrity.
+1. **Processing Workers**: These workers parallelize the task of gathering data.
+   Their primary role is to resolve foreign keys for child administrative levels
+   (e.g., finding the `regionId` for a district) by querying the already-seeded
+   parent data. This stage is computationally intensive and can be parallelized
+   using `--processing-workers-count`.
+2. **Insert Worker**: A single, unique worker responsible for performing the
+   final database writes. Using a single worker for insertion prevents
+   overwhelming the database with concurrent write requests and maintains
+   transaction integrity.
 
 ### Batching & Efficiency
 
-To reduce database round-trips, ADM data is processed and inserted in batches. You can configure the batch size using `--queue-batch-size` to balance memory usage and insertion speed.
+To reduce database round-trips, ADM data is processed and inserted in batches.
+You can configure the batch size using `--queue-batch-size` to balance memory
+usage and insertion speed.
 
 ### Schema Flexibility & Configuration
 
-The project uses a configuration system (stored in the `mada_adm_configs` table or `madaAdmConfigs` collection) to allow users to adapt the schema to their needs.
+The project uses a configuration system (stored in the `mada_adm_configs` table
+or `madaAdmConfigs` collection) to allow users to adapt the schema to their
+needs.
 
 > [!TIP]
-> To better understand how these configurations impact the resulting database schema and the relationships between administrative levels, you can open the [diagrams/database.drawio](file:///home/tolotra/it/projects/mada-adm/diagrams/database.drawio) file with [Draw.io](https://app.diagrams.net/).
+> To better understand how these configurations impact the resulting database
+> schema and the relationships between administrative levels, you can open the
+> [diagrams/database.drawio](file:///home/tolotra/it/projects/mada-adm/diagrams/database.drawio)
+> file with [Draw.io](https://app.diagrams.net/).
 >
-> The document contains multiple pages, each representing a different state of these configuration values.
+> The document contains multiple pages, each representing a different state of
+> these configuration values.
 
-| Field | Description |
-| :--- | :--- |
-| `tablesPrefix` | Prefix for all ADM tables/collections (e.g., `app_`). |
-| `isFkRepeated` | If true, child levels store foreign keys of all ancestors (not just the immediate parent). |
-| `isProvinceRepeated` | If true, the province name is explicitly included in all sub-levels. |
-| `isProvinceFkRepeated` | If true, the province ID is explicitly included as a FK in all sub-levels. |
-| `hasGeojson` | Enables/disables the storage of the spatial geometries (GeoJSON) for the ADM boundaries. |
-| `hasAdmLevel` | Includes an explicit `admLevel` column in every table (0 for province, 1 for region, 2 for district, 3 for commune, 4 for fokontany). |
+| Field                  | Description                                                                                                                           |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `tablesPrefix`         | Prefix for all ADM tables/collections (e.g., `app_`).                                                                                 |
+| `isFkRepeated`         | If true, child levels store foreign keys of all ancestors (not just the immediate parent).                                            |
+| `isProvinceRepeated`   | If true, the province name is explicitly included in all sub-levels.                                                                  |
+| `isProvinceFkRepeated` | If true, the province ID is explicitly included as a FK in all sub-levels.                                                            |
+| `hasGeojson`           | Enables/disables the storage of the spatial geometries (GeoJSON) for the ADM boundaries.                                              |
+| `hasAdmLevel`          | Includes an explicit `admLevel` column in every table (0 for province, 1 for region, 2 for district, 3 for commune, 4 for fokontany). |
 
 ### Indexing & Collation
 
-To support flexible and efficient data retrieval, the project implements the following database-level conventions:
+To support flexible and efficient data retrieval, the project implements the
+following database-level conventions:
 
-- **Case-Insensitive Unicode Collation**: Text columns (like names of provinces, regions, etc.) use case-insensitive Unicode collations. This enables flexible exact matches and reliable `<prefix>%` wildcard queries regardless of casing or accents.
-- **B-Tree Indexes**: All primary identification fields and foreign key columns are indexed using B-tree structures. This ensures that the hierarchical relationship lookups remain fast even as the dataset grows, while also providing a foundation for basic text-search queries. Advanced full-text indexing strategies are left as an implementation choice for the end-user.
+- **Case-Insensitive Unicode Collation**: Text columns (like names of provinces,
+  regions, etc.) use case-insensitive Unicode collations. This enables flexible
+  exact matches and reliable `<prefix>%` wildcard queries regardless of casing
+  or accents.
+- **B-Tree Indexes**: All primary identification fields and foreign key columns
+  are indexed using B-tree structures. This ensures that the hierarchical
+  relationship lookups remain fast even as the dataset grows, while also
+  providing a foundation for basic text-search queries. Advanced full-text
+  indexing strategies are left as an implementation choice for the end-user.
 
 #### Text Indexing Summary
 
-| Database | Strategy | Collation / Operator |
-| :--- | :--- | :--- |
-| **PostgreSQL** | `CITEXT` data type | `citext_ops` |
-| **MySQL** | `utf8mb4` character set | `utf8mb4_0900_as_ci` |
-| **SQLite** | `COLLATE NOCASE` | `NOCASE` |
-| **MongoDB** | Collation document | `locale: "fr", strength: 2, normalization: true, backwards: true` |
+| Database       | Strategy                | Collation / Operator                                              |
+| :------------- | :---------------------- | :---------------------------------------------------------------- |
+| **PostgreSQL** | `CITEXT` data type      | `citext_ops`                                                      |
+| **MySQL**      | `utf8mb4` character set | `utf8mb4_0900_as_ci`                                              |
+| **SQLite**     | `COLLATE NOCASE`        | `NOCASE`                                                          |
+| **MongoDB**    | Collation document      | `locale: "fr", strength: 2, normalization: true, backwards: true` |
 
 ### Fault Tolerance: Redis vs In-Memory
 
--   **Redis (Default)**: Provides a resumable, fault-tolerant state. If a job is interrupted, it can pick up exactly where it left off.
--   **In-Memory**: Used when Redis is disabled (`--disable-redis`). It is simpler but lacks persistence; interrupting a job means it must restart from scratch.
+- **Redis (Default)**: Provides a resumable, fault-tolerant state. If a job is
+  interrupted, it can pick up exactly where it left off.
+- **In-Memory**: Used when Redis is disabled (`--disable-redis`). It is simpler
+  but lacks persistence; interrupting a job means it must restart from scratch.
 
 ## CLI Commands & Usage
 
@@ -264,17 +321,20 @@ commands. All options are optional.
 
 #### MongoDB Configuration
 
-| CLI Flag | Environment Variable | Description | Default |
-| :--- | :--- | :--- | :--- |
-| `--mongo.uri` | `MONGO_URI` | The URI to connect to the MongoDB database. | `mongodb://localhost:27017` |
-| `--mongo.database` | `MONGO_DATABASE` | Name of the target MongoDB database. | `mada-adm` |
-| `--mongo.pool-size` | `MONGO_POOL_SIZE` | Maximum number of connections in the pool. | `10` |
-| `--mongo.tls` | `MONGO_TLS` | Whether to use TLS for the connection. | `false` |
-| `--mongo.tls-ca-path` | `MONGO_TLS_CA_PATH` | Full path to the CA certificate file. | - |
-| `--mongo.tls-cert-key-path` | `MONGO_TLS_CERT_KEY_PATH` | Full path to the client certificate and key PEM file. | - |
+| CLI Flag                    | Environment Variable      | Description                                           | Default                     |
+| :-------------------------- | :------------------------ | :---------------------------------------------------- | :-------------------------- |
+| `--mongo.uri`               | `MONGO_URI`               | The URI to connect to the MongoDB database.           | `mongodb://localhost:27017` |
+| `--mongo.database`          | `MONGO_DATABASE`          | Name of the target MongoDB database.                  | `mada-adm`                  |
+| `--mongo.pool-size`         | `MONGO_POOL_SIZE`         | Maximum number of connections in the pool.            | `10`                        |
+| `--mongo.tls`               | `MONGO_TLS`               | Whether to use TLS for the connection.                | `false`                     |
+| `--mongo.tls-ca-path`       | `MONGO_TLS_CA_PATH`       | Full path to the CA certificate file.                 | -                           |
+| `--mongo.tls-cert-key-path` | `MONGO_TLS_CERT_KEY_PATH` | Full path to the client certificate and key PEM file. | -                           |
 
 > [!IMPORTANT]
-> **MongoDB Replica Set:** Since the seeding pipeline utilizes multi-document transactions to ensure data consistency, the target MongoDB instance **must** be configured as a **Replica Set**. Single-node instances without replica set configuration do not support transactions.
+> **MongoDB Replica Set:** Since the seeding pipeline utilizes multi-document
+> transactions to ensure data consistency, the target MongoDB instance **must**
+> be configured as a **Replica Set**. Single-node instances without replica set
+> configuration do not support transactions.
 
 > **Note on File Paths:** Options ending in `-file` (e.g., `--sqlite.db-file`,
 > `--pg.ca-cert-file`) resolve paths relative to the internal project structure.
@@ -289,7 +349,9 @@ commands. All options are optional.
 **CLI Execution:** `mada-adm [options]`\
 **Local Execution:** `deno task cli [options]`
 
-The core CLI command for seeding administrative data into the database. It features a resumable, fault-tolerant architecture with real-time terminal progress visualization.
+The core CLI command for seeding administrative data into the database. It
+features a resumable, fault-tolerant architecture with real-time terminal
+progress visualization.
 
 **Example Usage:**
 
@@ -299,43 +361,47 @@ mada-adm --db-type postgres \
   --processing-workers-count 4 --queue-batch-size 50
 ```
 
-*In this example, we connect to a PostgreSQL database with 4 parallel processing workers and a batch size of 50 records per database round-trip.*
+_In this example, we connect to a PostgreSQL database with 4 parallel processing
+workers and a batch size of 50 records per database round-trip._
 
-> **Note:** Resumable jobs are only supported when Redis is enabled. If the job is executed entirely in-memory, it will restart from scratch if interrupted.
+> **Note:** Resumable jobs are only supported when Redis is enabled. If the job
+> is executed entirely in-memory, it will restart from scratch if interrupted.
 
-**Command-Scoped Options / Env Variables** These options control the job orchestration (Redis or In-Memory queues) specifically for the seeding pipeline. All options are optional.
+**Command-Scoped Options / Env Variables** These options control the job
+orchestration (Redis or In-Memory queues) specifically for the seeding pipeline.
+All options are optional.
 
 **Redis Options**
 
-| CLI Flag | Environment Variable | Description | Default |
-| :--- | :--- | :--- | :--- |
-| `--disable-redis` | `DISABLE_REDIS` | Disable Redis connection. Uses the in-memory queue instead. | `false` |
-| `--redis.url` | `REDIS_URL` | Full Redis connection URL. | - |
-| `--redis.host` | `REDIS_HOST` | Hostname or IP address of the Redis server. | `localhost` |
-| `--redis.port` | `REDIS_PORT` | TCP port the Redis server listens on. | `6379` |
-| `--redis.user` | `REDIS_USERNAME` | Username for Redis authentication. | - |
-| `--redis.password` | `REDIS_PASSWORD` | Password for Redis authentication. | - |
-| `--redis.db` | `REDIS_DB` | Database index. | - |
-| `--redis.ssl` | `REDIS_SSL` | Enable TLS/SSL for the connection. | `false` |
-| `--redis.cert-file` | `REDIS_CERT_FILE` | Filename of the client cert under `redis/.ca-certificates/`. **(Deno only)** | - |
-| `--redis.cert-path` | `REDIS_CERT_PATH` | Full path to the client certificate file. | - |
-| `--redis.key-file` | `REDIS_KEY_FILE` | Filename of the client key under `redis/.ca-certificates/`. **(Deno only)** | - |
-| `--redis.key-path` | `REDIS_KEY_PATH` | Full path to the client key file. | - |
-| `--redis.ca-cert-file` | `REDIS_CA_CERT_FILE` | Filename of the CA cert under `redis/.ca-certificates/`. **(Deno only)** | - |
-| `--redis.ca-cert-path` | `REDIS_CA_CERT_PATH` | Full path to the CA cert file for Redis. | - |
+| CLI Flag               | Environment Variable | Description                                                                  | Default     |
+| :--------------------- | :------------------- | :--------------------------------------------------------------------------- | :---------- |
+| `--disable-redis`      | `DISABLE_REDIS`      | Disable Redis connection. Uses the in-memory queue instead.                  | `false`     |
+| `--redis.url`          | `REDIS_URL`          | Full Redis connection URL.                                                   | -           |
+| `--redis.host`         | `REDIS_HOST`         | Hostname or IP address of the Redis server.                                  | `localhost` |
+| `--redis.port`         | `REDIS_PORT`         | TCP port the Redis server listens on.                                        | `6379`      |
+| `--redis.user`         | `REDIS_USERNAME`     | Username for Redis authentication.                                           | -           |
+| `--redis.password`     | `REDIS_PASSWORD`     | Password for Redis authentication.                                           | -           |
+| `--redis.db`           | `REDIS_DB`           | Database index.                                                              | -           |
+| `--redis.ssl`          | `REDIS_SSL`          | Enable TLS/SSL for the connection.                                           | `false`     |
+| `--redis.cert-file`    | `REDIS_CERT_FILE`    | Filename of the client cert under `redis/.ca-certificates/`. **(Deno only)** | -           |
+| `--redis.cert-path`    | `REDIS_CERT_PATH`    | Full path to the client certificate file.                                    | -           |
+| `--redis.key-file`     | `REDIS_KEY_FILE`     | Filename of the client key under `redis/.ca-certificates/`. **(Deno only)**  | -           |
+| `--redis.key-path`     | `REDIS_KEY_PATH`     | Full path to the client key file.                                            | -           |
+| `--redis.ca-cert-file` | `REDIS_CA_CERT_FILE` | Filename of the CA cert under `redis/.ca-certificates/`. **(Deno only)**     | -           |
+| `--redis.ca-cert-path` | `REDIS_CA_CERT_PATH` | Full path to the CA cert file for Redis.                                     | -           |
 
 **Queue & Worker Options**
 
-| CLI Flag | Environment Variable | Description | Default |
-| :--- | :--- | :--- | :--- |
-| `--queue-batch-size` | `QUEUE_BATCH_SIZE` | Batch size for processing messages concurrently. | `1` |
-| `--queue-max-retries` | `QUEUE_MAX_RETRIES` | Maximum number of retries per batch in case of an error. | `3` |
-| `--in-memory-processing-hwm` | `IN_MEMORY_PROCESSING_HWM` | High water mark for in-memory processing workers. | `1` |
-| `--in-memory-insert-hwm` | `IN_MEMORY_INSERT_HWM` | High water mark for the in-memory insert worker. | `1` |
-| `--worker-healthcheck-interval` | `WORKER_HEALTHCHECK_INTERVAL` | Interval for worker healthcheck in milliseconds. | `10000` |
+| CLI Flag                                  | Environment Variable                    | Description                                              | Default |
+| :---------------------------------------- | :-------------------------------------- | :------------------------------------------------------- | :------ |
+| `--queue-batch-size`                      | `QUEUE_BATCH_SIZE`                      | Batch size for processing messages concurrently.         | `1`     |
+| `--queue-max-retries`                     | `QUEUE_MAX_RETRIES`                     | Maximum number of retries per batch in case of an error. | `3`     |
+| `--in-memory-processing-hwm`              | `IN_MEMORY_PROCESSING_HWM`              | High water mark for in-memory processing workers.        | `1`     |
+| `--in-memory-insert-hwm`                  | `IN_MEMORY_INSERT_HWM`                  | High water mark for the in-memory insert worker.         | `1`     |
+| `--worker-healthcheck-interval`           | `WORKER_HEALTHCHECK_INTERVAL`           | Interval for worker healthcheck in milliseconds.         | `10000` |
 | `--worker-pending-min-duration-threshold` | `WORKER_PENDING_MIN_DURATION_THRESHOLD` | Threshold for claiming pending messages in milliseconds. | `60000` |
-| `--xread-block-duration` | `XREAD_BLOCK_DURATION` | Duration in milliseconds for XREAD BLOCK calls in Redis. | `5000` |
-| `--processing-workers-count` | `PROCESSING_WORKERS_COUNT` | Number of concurrent processing workers to spawn. | `2` |
+| `--xread-block-duration`                  | `XREAD_BLOCK_DURATION`                  | Duration in milliseconds for XREAD BLOCK calls in Redis. | `5000`  |
+| `--processing-workers-count`              | `PROCESSING_WORKERS_COUNT`              | Number of concurrent processing workers to spawn.        | `2`     |
 
 ### Sub-Commands
 
@@ -447,13 +513,13 @@ existing ADM record in the database.
 Depending on the `<adm-level>` argument provided, you must provide the following
 identifier options to correctly locate the administrative boundary:
 
-| `<adm-level>` | Required Identifier Options | Example |
-| :--- | :--- | :--- |
-| `province` | `--province` | `--province "Antananarivo"` |
-| `region` | `--region` | `--region "Analamanga"` |
-| `district` | `--district.value`, `--district.region` | `--district.value "Ambohidratrimo" --district.region "Analamanga"` |
-| `commune` | `--commune.value`, `--commune.district`, `--commune.region` | `--commune.value "Ivato" --commune.district "Ambohidratrimo" --commune.region "Analamanga"` |
-| `fokontany` | `--fokontany.value`, `--fokontany.commune`, `--fokontany.district`, `--fokontany.region` | `--fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --fokontany.region "Analamanga"` |
+| `<adm-level>` | Required Identifier Options                                                              | Example                                                                                                                              |
+| :------------ | :--------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `province`    | `--province`                                                                             | `--province "Antananarivo"`                                                                                                          |
+| `region`      | `--region`                                                                               | `--region "Analamanga"`                                                                                                              |
+| `district`    | `--district.value`, `--district.region`                                                  | `--district.value "Ambohidratrimo" --district.region "Analamanga"`                                                                   |
+| `commune`     | `--commune.value`, `--commune.district`, `--commune.region`                              | `--commune.value "Ivato" --commune.district "Ambohidratrimo" --commune.region "Analamanga"`                                          |
+| `fokontany`   | `--fokontany.value`, `--fokontany.commune`, `--fokontany.district`, `--fokontany.region` | `--fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --fokontany.region "Analamanga"` |
 
 #### Examples
 
@@ -480,18 +546,29 @@ identifier options to correctly locate the administrative boundary:
 
 ## Current Status
 
-- **Extraction Pipeline**: Fully functional pipeline for seeding and indexing Madagascar's administrative boundaries data from optimized GeoJSON sources, with supported sub-commands for configuration management (`set-config`), data resetting (`clear`), and field-level updates (`update-field`).
-- **Database Adapters**: Native support for PostgreSQL, SQLite, MySQL, and MongoDB.
+- **Extraction Pipeline**: Fully functional pipeline for seeding and indexing
+  Madagascar's administrative boundaries data from optimized GeoJSON sources,
+  with supported sub-commands for configuration management (`set-config`), data
+  resetting (`clear`), and field-level updates (`update-field`).
+- **Database Adapters**: Native support for PostgreSQL, SQLite, MySQL, and
+  MongoDB.
 
 ### Coming Soon
 
-- **Map Viewer**: A mini web application to visualize and query the seeded administrative boundaries.
-- **Data Catalog**: A comprehensive, public-facing catalog of administrative metadata.
+- **Map Viewer**: A mini web application to visualize and query the seeded
+  administrative boundaries.
+- **Data Catalog**: A comprehensive, public-facing catalog of administrative
+  metadata.
 
 ## Known Issues & Future Improvements
 
-- **Progress Bar Rendering**: The real-time terminal progress bar may occasionally flicker or render inconsistently depending on the terminal emulator and environment (e.g., within certain CI/CD logs or simplified shells).
-- **Topological Data Inconsistencies**: As mentioned in the [Data Quality remark](#project-structure--content), some boundary misalignments exist between regions and districts.
+- **Progress Bar Rendering**: The real-time terminal progress bar may
+  occasionally flicker or render inconsistently depending on the terminal
+  emulator and environment (e.g., within certain CI/CD logs or simplified
+  shells).
+- **Topological Data Inconsistencies**: As mentioned in the
+  [Data Quality remark](#project-structure--content), some boundary
+  misalignments exist between regions and districts.
 
 ## License & Attribution
 
@@ -501,21 +578,32 @@ The source code of this project is licensed under the [MIT License](LICENSE).
 
 ### Data License & Attribution
 
-The administrative boundary data distributed in this repository (found in `data/geojson/`) is the **geoBoundaries Administrative Boundaries for Madagascar**, sourced from the [Humanitarian Data Exchange (HDX)](https://data.humdata.org/dataset/geoboundaries-admin-boundaries-for-madagascar).
+The administrative boundary data distributed in this repository (found in
+`data/geojson/`) is the **geoBoundaries Administrative Boundaries for
+Madagascar**, sourced from the
+[Humanitarian Data Exchange (HDX)](https://data.humdata.org/dataset/geoboundaries-admin-boundaries-for-madagascar).
 
-All other data files (found in `data/ndjson/` and `data/inputs/`) are **derived** from this original source through cleaning, optimization, and transformation processes.
+All other data files (found in `data/ndjson/` and `data/inputs/`) are
+**derived** from this original source through cleaning, optimization, and
+transformation processes.
 
-Each data directory contains a formal `LICENSE.md` file specifying these terms in detail.
+Each data directory contains a formal `LICENSE.md` file specifying these terms
+in detail.
 
-This data is made available under the **Open Data Commons Open Database License (ODbL)**.
+This data is made available under the **Open Data Commons Open Database License
+(ODbL)**.
 
 #### Requirements for Derived Works
 
-If you use, distribute, or create derived works from the datasets provided in this repository, you must:
+If you use, distribute, or create derived works from the datasets provided in
+this repository, you must:
 
-1.  **Attribute the original source**: Credit the geoBoundaries project and the Humanitarian Data Exchange.
-2.  **Attribute this repository**: Credit the **Mada ADM** project for the cleaning, optimization, and processing of the data.
-3.  **Share-Alike**: Any derived database must also be made available under the ODbL license.
+1. **Attribute the original source**: Credit the geoBoundaries project and the
+   Humanitarian Data Exchange.
+2. **Attribute this repository**: Credit the **Mada ADM** project for the
+   cleaning, optimization, and processing of the data.
+3. **Share-Alike**: Any derived database must also be made available under the
+   ODbL license.
 
 ---
 

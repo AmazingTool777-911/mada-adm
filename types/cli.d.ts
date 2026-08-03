@@ -528,20 +528,15 @@ export type UpdateFieldCliConfig = {
   valuePath?: string;
   province?: string;
   region?: string;
-  district?: {
-    value?: string;
-    region?: string;
-  };
+  district?: string;
   commune?: {
     value?: string;
     district?: string;
-    region?: string;
   };
   fokontany?: {
     value?: string;
     commune?: string;
     district?: string;
-    region?: string;
   };
 };
 
@@ -576,3 +571,19 @@ export type UpdateFieldCliConfigV1 = {
     region: string;
   };
 };
+
+export type QueryCliCommandType = "name" | "id" | "coordinates";
+
+export type QueryCliCommandLevel =
+  | "province"
+  | "region"
+  | "district"
+  | "commune"
+  | "fokontany";
+
+export interface QueryCliOptions {
+  type: QueryCliCommandType;
+  level?: QueryCliCommandLevel;
+  pageSize: number;
+  [key: string]: unknown;
+}

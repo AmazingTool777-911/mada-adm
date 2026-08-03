@@ -124,7 +124,6 @@ export class CommunesMongoDML extends BaseAdmCollectionMongoDML
       {
         commune: attributes.commune,
         district: attributes.district,
-        region: attributes.region,
       },
       geojson,
       transactionContext,

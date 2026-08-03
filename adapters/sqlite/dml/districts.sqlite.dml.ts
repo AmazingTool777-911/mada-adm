@@ -28,12 +28,17 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     super(config, db, AdmLevelCode.DISTRICT);
   }
 
-  getManyByAttributes(
-    attributes: DistrictAttributes[],
+  getManyByNames(
+    districtNames: string[],
     transactionContext?: DbTransactionContext,
   ): District[] {
+    const districtAttributes = districtNames.map<DistrictAttributes>((
+      name,
+    ) => ({
+      district: name,
+    }));
     return this._getManyByAttributes(
-      attributes,
+      districtAttributes,
       transactionContext,
     ) as District[];
   }
@@ -68,13 +73,13 @@ export class DistrictsSqliteDML extends BaseAdmTableSqliteDML
     this._deleteDuplicates();
   }
 
-  updateGeojsonByAttributes(
-    attributes: DistrictAttributes,
+  updateGeojsonByName(
+    districtName: string,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): DMLUpdateResult {
     return this._updateGeojsonByIdentifiers(
-      attributes,
+      { district: districtName },
       geojson,
       transactionContext,
     );

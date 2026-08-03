@@ -236,14 +236,11 @@ export const UPDATE_FIELD_COMMAND_OPTIONS_DESCRIPTIONS = {
   PROVINCE: "The name of the province.",
   REGION: "The name of the region.",
   DISTRICT: "The name of the district.",
-  DISTRICT_REGION: "The name of the region of the district.",
   COMMUNE: "The name of the commune.",
   COMMUNE_DISTRICT: "The name of the district of the commune.",
-  COMMUNE_REGION: "The name of the region of the commune.",
   FOKONTANY: "The name of the fokontany.",
   FOKONTANY_COMMUNE: "The name of the commune of the fokontany.",
   FOKONTANY_DISTRICT: "The name of the district of the fokontany.",
-  FOKONTANY_REGION: "The name of the region of the fokontany.",
 };
 
 export const UPDATE_FIELD_COMMAND_VALUE_OPTION_DESCRIPTION =
@@ -272,3 +269,24 @@ export const CLEAR_COMMAND_NAME = "clear";
 
 export const CLEAR_COMMAND_DESCRIPTION =
   "Drops all ADM tables and the configuration table from the database.";
+
+// Query command
+
+export const QUERY_COMMAND_NAME = "query";
+
+export const QUERY_COMMAND_DESCRIPTION =
+  "Queries the administrative boundaries data inside the database.";
+
+export const QUERY_COMMAND_ARGUMENTS_DESCRIPTIONS = {
+  SEARCH:
+    'The search term. Can be an ADM territory name, an ID, or geographic coordinates. If passing coordinates, they must be valid geographic coordinates values; wrap them inside double quotes "" if space-separated.',
+};
+
+export const QUERY_COMMAND_OPTIONS_DESCRIPTIONS = {
+  TYPE:
+    'The type of the query. Value: "name" (default), "id", or "coordinates". For "coordinates", the search term must be valid geographic coordinates; wrap them inside double quotes "" if space-separated.',
+  LEVEL:
+    "The administrative level to query (province, region, district, commune, fokontany). Required for ID query type.",
+  PAGE_SIZE:
+    "The number of records to return per page in the results of a query by ADM territory name",
+};

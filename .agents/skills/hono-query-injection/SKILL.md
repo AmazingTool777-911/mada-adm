@@ -8,11 +8,15 @@ description: >
 
 # Injecting Queries into Hono Context
 
-In the `rest-api` package, database queries are not imported directly into route handlers. Instead, they are injected into the Hono context (`c`) via middleware. This ensures that the database connection and configuration dependencies are correctly resolved per request, and allows for easier mocking during testing.
+In the `rest-api` package, database queries are not imported directly into route
+handlers. Instead, they are injected into the Hono context (`c`) via middleware.
+This ensures that the database connection and configuration dependencies are
+correctly resolved per request, and allows for easier mocking during testing.
 
 ## 1. Type Definitions (`rest-api.d.ts`)
 
-Any query module you want to make available to Hono routes must first be registered in the `RestApiEnv` type.
+Any query module you want to make available to Hono routes must first be
+registered in the `RestApiEnv` type.
 
 1. Import the corresponding query interface from `@scope/queries/types`.
 2. Add a property to the `Variables` object inside `RestApiEnv`.
@@ -25,7 +29,7 @@ export type RestApiEnv = {
     db: DbConnection;
     config: GlobalCliConfigResolved;
     madaAdmConfig: MadaAdmConfig;
-    
+
     // Add query interfaces here:
     provinceQueries: ProvinceQueries;
     regionQueries: RegionQueries;
@@ -35,11 +39,14 @@ export type RestApiEnv = {
 
 ## 2. Middleware Injection (`inject-queries.middleware.ts`)
 
-The `injectQueriesMiddleware` function is a factory that takes a variable list of query keys and injects the requested queries into the Hono context before the route handler executes.
+The `injectQueriesMiddleware` function is a factory that takes a variable list
+of query keys and injects the requested queries into the Hono context before the
+route handler executes.
 
 ### Updating `ContextQueriesKeys`
 
-When you add a new query to `RestApiEnv`, you must explicitly add its key to the `ContextQueriesKeys` union:
+When you add a new query to `RestApiEnv`, you must explicitly add its key to the
+`ContextQueriesKeys` union:
 
 ```ts
 export type ContextQueriesKeys = Extract<
@@ -50,11 +57,16 @@ export type ContextQueriesKeys = Extract<
 
 ### Implementing the Injection Factory
 
-Inside the `injectQueriesMiddleware` loop, add a `case` statement for your new query key.
-Use the specific query injector from the `@scope/queries` workspace (e.g., `injectProvinceQueries`), passing it the required dependencies which are already extracted from the context (`madaAdmConfig`, `config.dbType`, `db`, etc.).
+Inside the `injectQueriesMiddleware` loop, add a `case` statement for your new
+query key. Use the specific query injector from the `@scope/queries` workspace
+(e.g., `injectProvinceQueries`), passing it the required dependencies which are
+already extracted from the context (`madaAdmConfig`, `config.dbType`, `db`,
+etc.).
 
 ```ts
-export const injectQueriesMiddleware = (...queriesKeys: ContextQueriesKeys[]) => {
+export const injectQueriesMiddleware = (
+  ...queriesKeys: ContextQueriesKeys[]
+) => {
   return createMiddleware<RestApiEnv>(async (c, next) => {
     // 1. Retrieve dependencies from the context
     const config = c.get("config");
@@ -72,8 +84,8 @@ export const injectQueriesMiddleware = (...queriesKeys: ContextQueriesKeys[]) =>
             }),
           );
           break;
-          
-        // ... Add your new case here
+
+          // ... Add your new case here
       }
     }
 
@@ -84,7 +96,9 @@ export const injectQueriesMiddleware = (...queriesKeys: ContextQueriesKeys[]) =>
 
 ## 3. Usage in Routes
 
-Once properly typed and handled by the middleware, you can securely apply the middleware to any route, knowing that it will only instantiate and inject the queries you explicitly request:
+Once properly typed and handled by the middleware, you can securely apply the
+middleware to any route, knowing that it will only instantiate and inject the
+queries you explicitly request:
 
 ```ts
 app.get(
@@ -94,6 +108,6 @@ app.get(
     const provinceQueries = c.get("provinceQueries");
     const provinces = await provinceQueries.getAll();
     return c.json(provinces);
-  }
+  },
 );
 ```

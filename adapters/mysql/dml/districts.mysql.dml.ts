@@ -28,14 +28,19 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     super(config, db, AdmLevelCode.DISTRICT);
   }
 
-  async getManyByAttributes(
-    attributes: DistrictAttributes[],
+  getManyByNames(
+    districtNames: string[],
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
-    return (await this._getManyByAttributes(
-      attributes,
+    const districtAttributes = districtNames.map<DistrictAttributes>((
+      name,
+    ) => ({
+      district: name,
+    }));
+    return this._getManyByAttributes(
+      districtAttributes,
       transactionContext,
-    )) as District[];
+    ) as Promise<District[]>;
   }
 
   async getManyByRegionIds(
@@ -74,13 +79,13 @@ export class DistrictsMySQLDML extends BaseAdmTableMySQLDML
     await this._deleteDuplicates(transactionContext);
   }
 
-  async updateGeojsonByAttributes(
-    attributes: DistrictAttributes,
+  async updateGeojsonByName(
+    districtName: string,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      attributes,
+      { district: districtName },
       geojson,
       transactionContext,
     );

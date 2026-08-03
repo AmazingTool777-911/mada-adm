@@ -9,11 +9,14 @@ import type {
 import type { MongoDbConnection } from "@scope/adapters/mongo";
 import { mapRegionBsonToEntity } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
-import { AdmLevelCode } from "@scope/consts/models";
 import type { GetRegionByIdOptions, RegionQueries } from "../queries.d.ts";
-import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
+import type {
+  GetRegionByPointCoordinatesOptions,
+  PointCoordinates,
+} from "../queries.d.ts";
+import { RegionBaseQueries } from "../base/region.base.queries.ts";
 
-export class RegionMongoQueries extends AdmTableBaseQueries
+export class RegionMongoQueries extends RegionBaseQueries
   implements RegionQueries {
   #db!: MongoDbConnection;
 
@@ -24,7 +27,7 @@ export class RegionMongoQueries extends AdmTableBaseQueries
   }
 
   constructor(config: MadaAdmConfigValues, db: MongoDbConnection) {
-    super(config, DbType.MongoDB, AdmLevelCode.REGION);
+    super(config, DbType.MongoDB);
     this.#db = db;
   }
 
@@ -45,6 +48,26 @@ export class RegionMongoQueries extends AdmTableBaseQueries
     if (!region) return null;
     options?.excludeGeoJSON && region.geojson && delete region.geojson;
     return mapRegionBsonToEntity(region);
+  }
+
+  async _getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetRegionByPointCoordinatesOptions,
+  ): Promise<Region | null> {
+    const doc = await this.collection
+      .findOne({
+        geojson: {
+          $geoIntersects: {
+            $geometry: {
+              type: "Point",
+              coordinates,
+            },
+          },
+        },
+      });
+    if (!doc) return null;
+    options?.excludeGeoJSON && doc.geojson && delete doc.geojson;
+    return mapRegionBsonToEntity(doc);
   }
 }
 

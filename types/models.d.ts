@@ -336,7 +336,7 @@ export type RegionAttributes = { region: string };
 /**
  * Attributes used to uniquely identify a district.
  */
-export type DistrictAttributes = { district: string; region: string };
+export type DistrictAttributes = { district: string };
 
 /**
  * Attributes used to uniquely identify a commune.
@@ -344,7 +344,6 @@ export type DistrictAttributes = { district: string; region: string };
 export type CommuneAttributes = {
   commune: string;
   district: string;
-  region: string;
 };
 
 /**
@@ -354,7 +353,6 @@ export type FokontanyAttributes = {
   fokontany: string;
   commune: string;
   district: string;
-  region: string;
 };
 
 export type AdmAttributes =

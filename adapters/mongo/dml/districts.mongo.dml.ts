@@ -25,20 +25,25 @@ export class DistrictsMongoDML extends BaseAdmCollectionMongoDML
   }
 
   /**
-   * Retrieves multiple districts by their unique attributes.
+   * Retrieves multiple districts by district names.
    *
-   * @param attributes - The list of district identifying attributes.
+   * @param districtNames - The list of district names.
    * @param transactionContext - Optional database transaction context.
    * @returns An array of matching district entities.
    */
-  async getManyByAttributes(
-    attributes: DistrictAttributes[],
+  getManyByNames(
+    districtNames: string[],
     transactionContext?: DbTransactionContext,
   ): Promise<District[]> {
-    return (await this._getManyByAttributes(
-      attributes,
+    const districtAttributes = districtNames.map<DistrictAttributes>((
+      name,
+    ) => ({
+      district: name,
+    }));
+    return this._getManyByAttributes(
+      districtAttributes,
       transactionContext,
-    )) as District[];
+    ) as Promise<District[]>;
   }
 
   /**
@@ -106,20 +111,20 @@ export class DistrictsMongoDML extends BaseAdmCollectionMongoDML
   }
 
   /**
-   * Updates the geojson field of a district record identified by its attributes.
+   * Updates the geojson field of a district record identified by district name.
    *
-   * @param attributes - The identifying attributes for the district.
+   * @param districtName - The district name.
    * @param geojson - The GeoJSON string value to assign.
    * @param transactionContext - Optional database transaction context.
    * @returns An object containing the number of affected rows.
    */
-  async updateGeojsonByAttributes(
-    attributes: DistrictAttributes,
+  async updateGeojsonByName(
+    districtName: string,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): Promise<DMLUpdateResult> {
     return await this._updateGeojsonByIdentifiers(
-      { district: attributes.district, region: attributes.region },
+      { district: districtName },
       geojson,
       transactionContext,
     );

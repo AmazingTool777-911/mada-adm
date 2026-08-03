@@ -310,14 +310,12 @@ export class BaseAdmCollectionMongoDML {
       case AdmLevelCode.DISTRICT:
         groupAggregateIdentifiers = {
           district: "$district",
-          region: "$region",
         };
         break;
       case AdmLevelCode.COMMUNE:
         groupAggregateIdentifiers = {
           commune: "$commune",
           district: "$district",
-          region: "$region",
         };
         break;
       case AdmLevelCode.FOKONTANY:
@@ -325,7 +323,6 @@ export class BaseAdmCollectionMongoDML {
           fokontany: "$fokontany",
           commune: "$commune",
           district: "$district",
-          region: "$region",
         };
         break;
       default:
@@ -394,7 +391,11 @@ export class BaseAdmCollectionMongoDML {
 
     const rows = await this.collection
       .find(
-        { [parentIdColumn]: { $in: parentsIds.map((id) => new ObjectId(id as string)) } },
+        {
+          [parentIdColumn]: {
+            $in: parentsIds.map((id) => new ObjectId(id as string)),
+          },
+        },
         { session },
       )
       .toArray();

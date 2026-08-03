@@ -126,7 +126,6 @@ export class FokontanysMongoDML extends BaseAdmCollectionMongoDML
         fokontany: attributes.fokontany,
         commune: attributes.commune,
         district: attributes.district,
-        region: attributes.region,
       },
       geojson,
       transactionContext,

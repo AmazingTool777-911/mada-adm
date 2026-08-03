@@ -10,7 +10,6 @@ import {
 } from "@scope/db/dml";
 import {
   encodeCommuneAttributes,
-  encodeDistrictAttributes,
   isCommuneValues,
   isDistrictValues,
   isFokontanyValues,
@@ -34,7 +33,6 @@ import type {
   CommuneAttributes,
   CommuneRecord,
   CommuneValues,
-  DistrictAttributes,
   DistrictRecord,
   FokontanyRecord,
   FokontanyValues,
@@ -145,7 +143,6 @@ executor.run({
           const parentAttributes: CommuneAttributes = {
             commune: values.commune,
             district: values.district,
-            region: values.region,
           };
           const encoding = encodeCommuneAttributes(parentAttributes);
           const encodingValues = valuesByParentEncoding.get(encoding);
@@ -164,19 +161,18 @@ executor.run({
           const communeEncoding = encodeCommuneAttributes({
             commune: commune.commune,
             district: commune.district,
-            region: commune.region,
           });
-          const communeFokontanys = valuesByParentEncoding.get(communeEncoding);
-          if (communeFokontanys) {
-            for (const fokontany of communeFokontanys) {
-              fokontanyRecords.push({
-                ...fokontany,
-                communeId: commune.id,
-                districtId: commune.districtId,
-                regionId: commune.regionId,
-                provinceId: commune.provinceId,
-              });
-            }
+          const communeFokontanys = valuesByParentEncoding.get(
+            communeEncoding,
+          )!;
+          for (const fokontany of communeFokontanys) {
+            fokontanyRecords.push({
+              ...fokontany,
+              communeId: commune.id,
+              districtId: commune.districtId,
+              regionId: commune.regionId,
+              provinceId: commune.provinceId,
+            });
           }
         }
         return fokontanyRecords;
@@ -192,32 +188,23 @@ executor.run({
           }
           return m;
         });
-        const districtAttributes: DistrictAttributes[] = [];
         const valuesByParentEncoding = new Map<string, CommuneValues[]>();
         for (const values of communeValues) {
-          const parentAttributes: DistrictAttributes = {
-            district: values.district,
-            region: values.region,
-          };
-          const encoding = encodeDistrictAttributes(parentAttributes);
-          const encodingValues = valuesByParentEncoding.get(encoding);
+          const encodingValues = valuesByParentEncoding.get(values.district);
           if (!encodingValues) {
-            valuesByParentEncoding.set(encoding, [values]);
-            districtAttributes.push(parentAttributes);
+            valuesByParentEncoding.set(values.district, [values]);
           } else {
             encodingValues.push(values);
           }
         }
-        const districts = await districtsDML.getManyByAttributes(
-          districtAttributes,
+        const districts = await districtsDML.getManyByNames(
+          [...valuesByParentEncoding.keys()],
         );
         const communeRecords: CommuneRecord[] = [];
         for (const district of districts) {
-          const districtEncoding = encodeDistrictAttributes({
-            district: district.district,
-            region: district.region,
-          });
-          const districtCommunes = valuesByParentEncoding.get(districtEncoding);
+          const districtCommunes = valuesByParentEncoding.get(
+            district.district,
+          );
           if (districtCommunes) {
             for (const commune of districtCommunes) {
               communeRecords.push({

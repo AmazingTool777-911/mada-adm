@@ -427,13 +427,13 @@ export interface RegionTableDML extends BaseAdmTableDML {
  */
 export interface DistrictTableDML extends BaseAdmTableDML {
   /**
-   * Retrieves multiple districts by their unique attributes.
+   * Retrieves multiple districts by district names.
    *
-   * @param attributes - The list of district identifying attributes.
+   * @param districtNames - The list of district names.
    * @returns An array of matching district entities.
    */
-  getManyByAttributes(
-    attributes: DistrictAttributes[],
+  getManyByNames(
+    districtNames: string[],
     transactionContext?: DbTransactionContext,
   ): MaybePromise<District[]>;
 
@@ -467,13 +467,13 @@ export interface DistrictTableDML extends BaseAdmTableDML {
   createMany(values: DistrictRecord[]): MaybePromise<DMLCreateManyResult>;
 
   /**
-   * Updates the geojson field of a district record by its identifying attributes.
+   * Updates the geojson field of a district record by district name.
    *
-   * @param attributes - The identifying attributes for the district.
+   * @param districtName - The district name.
    * @param geojson - The GeoJSON string value to assign.
    */
-  updateGeojsonByAttributes(
-    attributes: DistrictAttributes,
+  updateGeojsonByName(
+    districtName: string,
     geojson: string,
     transactionContext?: DbTransactionContext,
   ): MaybePromise<DMLUpdateResult>;

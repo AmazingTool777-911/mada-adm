@@ -7,14 +7,17 @@ import type {
 import type { SqliteDbConnection } from "@scope/adapters/sqlite";
 import { mapProvinceSnakeToCamel } from "@scope/helpers/models";
 import { DbType } from "@scope/consts/db";
-import { AdmLevelCode } from "@scope/consts/models";
 import type {
   GetProvinceByIdOptions,
   ProvinceQueries,
 } from "@scope/queries/types";
-import { AdmTableBaseQueries } from "../base/adm-table.base.queries.ts";
+import type {
+  GetProvinceByPointCoordinatesOptions,
+  PointCoordinates,
+} from "../queries.d.ts";
+import { ProvinceBaseQueries } from "../base/province.base.queries.ts";
 
-export class ProvinceSqliteQueries extends AdmTableBaseQueries
+export class ProvinceSqliteQueries extends ProvinceBaseQueries
   implements ProvinceQueries {
   #db!: SqliteDbConnection;
 
@@ -22,7 +25,7 @@ export class ProvinceSqliteQueries extends AdmTableBaseQueries
     config: MadaAdmConfigValues,
     db: SqliteDbConnection,
   ) {
-    super(config, DbType.SQLite, AdmLevelCode.PROVINCE);
+    super(config, DbType.SQLite);
     this.#db = db;
   }
 
@@ -50,6 +53,25 @@ export class ProvinceSqliteQueries extends AdmTableBaseQueries
     const rows = this.#db.client.prepare(sql).all(
       Number(id),
     ) as ProvinceSnakeCased[];
+    if (rows.length === 0) return null;
+    return mapProvinceSnakeToCamel(rows[0]);
+  }
+
+  _getByPointCoordinates(
+    coordinates: PointCoordinates,
+    options?: GetProvinceByPointCoordinatesOptions,
+  ): Province | null {
+    const columns = this.getTableColunms({
+      excludeGeojson: options?.excludeGeoJSON,
+    });
+    const sql = `
+      SELECT ${columns.join(", ")}
+      FROM ${this.tableName}
+      WHERE Contains(geojson, MakePoint(?, ?, 4326))
+    `;
+    const rows = this.#db.client
+      .prepare(sql)
+      .all(...coordinates) as ProvinceSnakeCased[];
     if (rows.length === 0) return null;
     return mapProvinceSnakeToCamel(rows[0]);
   }

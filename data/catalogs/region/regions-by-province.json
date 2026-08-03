@@ -1,0 +1,104 @@
+[
+  {
+    "province": "Antananarivo",
+    "regions": [
+      {
+        "region": "Analamanga"
+      },
+      {
+        "region": "Bongolava"
+      },
+      {
+        "region": "Itasy"
+      },
+      {
+        "region": "Vakinankaratra"
+      }
+    ]
+  },
+  {
+    "province": "Toliara",
+    "regions": [
+      {
+        "region": "Atsimo-Andrefana"
+      },
+      {
+        "region": "Androy"
+      },
+      {
+        "region": "Menabe"
+      },
+      {
+        "region": "Anosy"
+      }
+    ]
+  },
+  {
+    "province": "Fianarantsoa",
+    "regions": [
+      {
+        "region": "Ihorombe"
+      },
+      {
+        "region": "Atsimo-Atsinanana"
+      },
+      {
+        "region": "Matsiatra Ambony"
+      },
+      {
+        "region": "Fitovinany"
+      },
+      {
+        "region": "Vatovavy"
+      },
+      {
+        "region": "Amoron'i Mania"
+      }
+    ]
+  },
+  {
+    "province": "Antsiranana",
+    "regions": [
+      {
+        "region": "Diana"
+      },
+      {
+        "region": "Sava"
+      }
+    ]
+  },
+  {
+    "province": "Toamasina",
+    "regions": [
+      {
+        "region": "Alaotra-Mangoro"
+      },
+      {
+        "region": "Analanjirofo"
+      },
+      {
+        "region": "Ambatosoa"
+      },
+      {
+        "region": "Atsinanana"
+      }
+    ]
+  },
+  {
+    "province": "Mahajanga",
+    "regions": [
+      {
+        "region": "Melaky"
+      },
+      {
+        "region": "Sofia"
+      },
+      {
+        "region": "Boeny"
+      },
+      {
+        "region": "Betsiboka"
+      }
+    ]
+  }
+]

@@ -1,0 +1,5572 @@
+[
+  {
+    "district": "Antananarivo Avaradrano",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ambohimangakely"
+      },
+      {
+        "commune": "Manandriana"
+      },
+      {
+        "commune": "Ambohimalaza Miray"
+      },
+      {
+        "commune": "Fiaferana"
+      },
+      {
+        "commune": "Ambohimanga Rova"
+      },
+      {
+        "commune": "Viliahazo"
+      },
+      {
+        "commune": "Talata Volonondry"
+      },
+      {
+        "commune": "Anjeva Gara"
+      },
+      {
+        "commune": "Masindray"
+      },
+      {
+        "commune": "Ankadinandriana"
+      },
+      {
+        "commune": "Alasora"
+      },
+      {
+        "commune": "Ankadikely Ilafy"
+      },
+      {
+        "commune": "Ambohimanambola"
+      },
+      {
+        "commune": "Sabotsy Namehana"
+      }
+    ]
+  },
+  {
+    "district": "6e Arrondissement",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "6e Arrondissement"
+      }
+    ]
+  },
+  {
+    "district": "Ambohidratrimo",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ambatolampy"
+      },
+      {
+        "commune": "Ampangabe"
+      },
+      {
+        "commune": "Ampanotokana"
+      },
+      {
+        "commune": "Mananjara"
+      },
+      {
+        "commune": "Manjakavaradrano"
+      },
+      {
+        "commune": "Ivato Firaisana"
+      },
+      {
+        "commune": "Ivato Aeroport"
+      },
+      {
+        "commune": "Ambohitrimanjaka"
+      },
+      {
+        "commune": "Mahitsy"
+      },
+      {
+        "commune": "Merimandroso"
+      },
+      {
+        "commune": "Ambohidratrimo"
+      },
+      {
+        "commune": "Anosiala"
+      },
+      {
+        "commune": "Talatamaty"
+      },
+      {
+        "commune": "Antehiroka"
+      },
+      {
+        "commune": "Iarinarivo"
+      },
+      {
+        "commune": "Antsahafilo"
+      },
+      {
+        "commune": "Ambohimanjaka"
+      },
+      {
+        "commune": "Fiadanana"
+      },
+      {
+        "commune": "Mahabo"
+      },
+      {
+        "commune": "Mahereza"
+      },
+      {
+        "commune": "Antanetibe"
+      },
+      {
+        "commune": "Ambohipihaonana"
+      },
+      {
+        "commune": "Ambato"
+      },
+      {
+        "commune": "Anjanadoria"
+      },
+      {
+        "commune": "Avaratsena"
+      }
+    ]
+  },
+  {
+    "district": "1er Arrondissement",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "1er Arrondissement"
+      }
+    ]
+  },
+  {
+    "district": "2e Arrondissement",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "2e Arrondissement"
+      }
+    ]
+  },
+  {
+    "district": "3e Arrondissement",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "3e Arrondissement"
+      }
+    ]
+  },
+  {
+    "district": "4e Arrondissement",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "4e Arrondissement"
+      }
+    ]
+  },
+  {
+    "district": "5e Arrondissement",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "5e Arrondissement"
+      }
+    ]
+  },
+  {
+    "district": "Ankazobe",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ankazobe"
+      },
+      {
+        "commune": "Talata Angavo"
+      },
+      {
+        "commune": "Ambohitromby"
+      },
+      {
+        "commune": "Antotohazo"
+      },
+      {
+        "commune": "Marondry"
+      },
+      {
+        "commune": "Antakavana"
+      },
+      {
+        "commune": "Kiangara"
+      },
+      {
+        "commune": "Miantso"
+      },
+      {
+        "commune": "Fihaonana"
+      },
+      {
+        "commune": "Mahavelona"
+      },
+      {
+        "commune": "Fiadanana"
+      },
+      {
+        "commune": "Tsaramasoandro"
+      },
+      {
+        "commune": "Ambolotarakely"
+      }
+    ]
+  },
+  {
+    "district": "Manjakandriana",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Sambaina"
+      },
+      {
+        "commune": "Ambohibary"
+      },
+      {
+        "commune": "Ambatomanga"
+      },
+      {
+        "commune": "Alarobia"
+      },
+      {
+        "commune": "Mantasoa"
+      },
+      {
+        "commune": "Manjakandriana"
+      },
+      {
+        "commune": "Ambatolaona"
+      },
+      {
+        "commune": "Ranovao"
+      },
+      {
+        "commune": "Miadanandriana"
+      },
+      {
+        "commune": "Nandihizana"
+      },
+      {
+        "commune": "Anjepy"
+      },
+      {
+        "commune": "Ambanitsena"
+      },
+      {
+        "commune": "Ambohitrandriamanitra"
+      },
+      {
+        "commune": "Ambatomena"
+      },
+      {
+        "commune": "Ambohibao Sud"
+      },
+      {
+        "commune": "Ambohitseheno"
+      },
+      {
+        "commune": "Antsahalalina"
+      },
+      {
+        "commune": "Ambohitrony"
+      },
+      {
+        "commune": "Merikanjaka"
+      },
+      {
+        "commune": "Anjoma Betoho"
+      },
+      {
+        "commune": "Ankazondandy"
+      },
+      {
+        "commune": "Soavinandriana"
+      },
+      {
+        "commune": "Ambohitrolomahitsy"
+      },
+      {
+        "commune": "Ampaneva"
+      },
+      {
+        "commune": "Sadabe"
+      }
+    ]
+  },
+  {
+    "district": "Ambohimahasoa",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ambohimahasoa"
+      },
+      {
+        "commune": "Ampitana"
+      },
+      {
+        "commune": "Ankerana"
+      },
+      {
+        "commune": "Manandroy"
+      },
+      {
+        "commune": "Ambalakindresy"
+      },
+      {
+        "commune": "Ambatosoa"
+      },
+      {
+        "commune": "Isaka"
+      },
+      {
+        "commune": "Vohitrarivo"
+      },
+      {
+        "commune": "Ambohinamboarina"
+      },
+      {
+        "commune": "Sahatona"
+      },
+      {
+        "commune": "Ankafina Tsarafidy"
+      },
+      {
+        "commune": "Sahave"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Ikalalao"
+      },
+      {
+        "commune": "Vohiposa"
+      },
+      {
+        "commune": "Camp Robin"
+      },
+      {
+        "commune": "Befeta"
+      },
+      {
+        "commune": "Fiadanana"
+      }
+    ]
+  },
+  {
+    "district": "Manandriana",
+    "region": "Amoron'i Mania",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ambohipo"
+      },
+      {
+        "commune": "Anjoman'ankona"
+      },
+      {
+        "commune": "Vinany Andakatanikely"
+      },
+      {
+        "commune": "Ambovombe Centre"
+      },
+      {
+        "commune": "Ambohimahazo"
+      },
+      {
+        "commune": "Anjoma Nandihizana"
+      },
+      {
+        "commune": "Ambohimilanja"
+      },
+      {
+        "commune": "Talata Vohimena"
+      },
+      {
+        "commune": "Ambatomarina"
+      },
+      {
+        "commune": "Andakatany"
+      }
+    ]
+  },
+  {
+    "district": "Antsirabe I",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ampatana Mandriankeniheny"
+      },
+      {
+        "commune": "Antsenakely Andraikiba"
+      },
+      {
+        "commune": "Soamalaza Mahatsinjo"
+      },
+      {
+        "commune": "Antsirabe Afovoany Atsinanana"
+      },
+      {
+        "commune": "Manodidina Ny Gara Ambilombe"
+      },
+      {
+        "commune": "Mahazoarivo Avarabohitra"
+      }
+    ]
+  },
+  {
+    "district": "Antanifotsy",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ampitatafika"
+      },
+      {
+        "commune": "Ambatomiady"
+      },
+      {
+        "commune": "Andranofito"
+      },
+      {
+        "commune": "Antanifotsy"
+      },
+      {
+        "commune": "Ambatolahy"
+      },
+      {
+        "commune": "Ambohimandroso"
+      },
+      {
+        "commune": "Ambatotsipihina"
+      },
+      {
+        "commune": "Ambohitompoina"
+      },
+      {
+        "commune": "Belanitra"
+      },
+      {
+        "commune": "Antsahalava"
+      },
+      {
+        "commune": "Ambodiriana"
+      },
+      {
+        "commune": "Antsampandrano"
+      }
+    ]
+  },
+  {
+    "district": "Ambalavao",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Fenoarivo"
+      },
+      {
+        "commune": "Ambalavao"
+      },
+      {
+        "commune": "Manamisoa"
+      },
+      {
+        "commune": "Iarintsena"
+      },
+      {
+        "commune": "Ambohimandroso"
+      },
+      {
+        "commune": "Andrainjato"
+      },
+      {
+        "commune": "Anjoma"
+      },
+      {
+        "commune": "Kirano"
+      },
+      {
+        "commune": "Sendrisoa"
+      },
+      {
+        "commune": "Besoa"
+      },
+      {
+        "commune": "Mahazony"
+      },
+      {
+        "commune": "Ambinanindovoka"
+      },
+      {
+        "commune": "Ankaramena"
+      },
+      {
+        "commune": "Ambinaniroa"
+      },
+      {
+        "commune": "Ambohimahamasina"
+      },
+      {
+        "commune": "Miarinarivo"
+      },
+      {
+        "commune": "Vohitsaoka"
+      }
+    ]
+  },
+  {
+    "district": "Andramasina",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Sabotsy Ambohitromby"
+      },
+      {
+        "commune": "Andohariana"
+      },
+      {
+        "commune": "Mandrosoa"
+      },
+      {
+        "commune": "Andramasina"
+      },
+      {
+        "commune": "Alatsinainy Bakaro"
+      },
+      {
+        "commune": "Antotohazo"
+      },
+      {
+        "commune": "Anosibe Trimoloharano"
+      },
+      {
+        "commune": "Ambohimiadana"
+      },
+      {
+        "commune": "Tankafatra"
+      },
+      {
+        "commune": "Alarobia Vatosola"
+      },
+      {
+        "commune": "Fitsinjovana Bakaro"
+      },
+      {
+        "commune": "Sabotsy Manjakavahoaka"
+      }
+    ]
+  },
+  {
+    "district": "Antananarivo Atsimondrano",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ambatofahavalo"
+      },
+      {
+        "commune": "Andoharanofotsy"
+      },
+      {
+        "commune": "Ankaraobato"
+      },
+      {
+        "commune": "Soalandy"
+      },
+      {
+        "commune": "Antanetikely"
+      },
+      {
+        "commune": "Alatsinainy Ambazaha"
+      },
+      {
+        "commune": "Bemasoandro"
+      },
+      {
+        "commune": "Fiombonana"
+      },
+      {
+        "commune": "Itaosy"
+      },
+      {
+        "commune": "Ambavahaditokana"
+      },
+      {
+        "commune": "Tanjombato"
+      },
+      {
+        "commune": "Ampitatafika"
+      },
+      {
+        "commune": "Anosizato Andrefana"
+      },
+      {
+        "commune": "Andranonahoatra"
+      },
+      {
+        "commune": "Ambohidrapeto"
+      },
+      {
+        "commune": "Ambohijanaka"
+      },
+      {
+        "commune": "Ampahitrosy"
+      },
+      {
+        "commune": "Bongatsara"
+      },
+      {
+        "commune": "Androhibe"
+      },
+      {
+        "commune": "Tsiafahy"
+      },
+      {
+        "commune": "Ampanefy"
+      },
+      {
+        "commune": "Ankadimanga"
+      },
+      {
+        "commune": "Fenoarivo"
+      },
+      {
+        "commune": "Alakamisy Fenoarivo"
+      },
+      {
+        "commune": "Soavina"
+      },
+      {
+        "commune": "Ambalavao"
+      }
+    ]
+  },
+  {
+    "district": "Ikongo",
+    "region": "Fitovinany",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ankarimbelo"
+      },
+      {
+        "commune": "Antodinga"
+      },
+      {
+        "commune": "Kalafotsy"
+      },
+      {
+        "commune": "Ikongo"
+      },
+      {
+        "commune": "Ambolomadinika"
+      },
+      {
+        "commune": "Ambatofotsy"
+      },
+      {
+        "commune": "Belemoka"
+      },
+      {
+        "commune": "Maromiandra"
+      },
+      {
+        "commune": "Manampatrana"
+      },
+      {
+        "commune": "Ambinanitromby"
+      },
+      {
+        "commune": "Ifanirea"
+      },
+      {
+        "commune": "Tanakambana"
+      },
+      {
+        "commune": "Sahalanona"
+      },
+      {
+        "commune": "Tolongoina"
+      },
+      {
+        "commune": "Ambohimisafy"
+      }
+    ]
+  },
+  {
+    "district": "Befotaka",
+    "region": "Atsimo-Atsinanana",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Antondabe"
+      },
+      {
+        "commune": "Marovitsika Sud"
+      },
+      {
+        "commune": "Antaninarenina"
+      },
+      {
+        "commune": "Befotaka Sud"
+      },
+      {
+        "commune": "Ranotsara Sud"
+      },
+      {
+        "commune": "Beharena"
+      },
+      {
+        "commune": "Bekofafa Sud"
+      }
+    ]
+  },
+  {
+    "district": "Anjozorobe",
+    "region": "Analamanga",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Amparatanjona"
+      },
+      {
+        "commune": "Amboasary Nord"
+      },
+      {
+        "commune": "Androvakely"
+      },
+      {
+        "commune": "Ambohibary Vohilena"
+      },
+      {
+        "commune": "Ambohimirary"
+      },
+      {
+        "commune": "Anjozorobe"
+      },
+      {
+        "commune": "Mangamila"
+      },
+      {
+        "commune": "Ambongamarina"
+      },
+      {
+        "commune": "Tsarasaotra"
+      },
+      {
+        "commune": "Ambohimanarina Marovazaha"
+      },
+      {
+        "commune": "Betatao"
+      },
+      {
+        "commune": "Alakamisy"
+      },
+      {
+        "commune": "Analaroa"
+      },
+      {
+        "commune": "Antanetibe"
+      },
+      {
+        "commune": "Belanitra"
+      },
+      {
+        "commune": "Ambatomanoina"
+      },
+      {
+        "commune": "Marotsipoy"
+      },
+      {
+        "commune": "Beronono"
+      }
+    ]
+  },
+  {
+    "district": "Betafo",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Betafo"
+      },
+      {
+        "commune": "Andranomafana"
+      },
+      {
+        "commune": "Mandritsara"
+      },
+      {
+        "commune": "Alakamisy Anativato"
+      },
+      {
+        "commune": "Antsoso"
+      },
+      {
+        "commune": "Tritriva"
+      },
+      {
+        "commune": "Soavina"
+      },
+      {
+        "commune": "Manohisoa"
+      },
+      {
+        "commune": "Ambatonikolahy"
+      },
+      {
+        "commune": "Antohobe"
+      },
+      {
+        "commune": "Mahaiza"
+      },
+      {
+        "commune": "Anosiarivo Manapa"
+      },
+      {
+        "commune": "Alakamisy Marososona"
+      },
+      {
+        "commune": "Ambohimanambola"
+      },
+      {
+        "commune": "Ambohimasina"
+      },
+      {
+        "commune": "Inanantonana"
+      },
+      {
+        "commune": "Alarobia Bemaha"
+      },
+      {
+        "commune": "Andrembesoa"
+      }
+    ]
+  },
+  {
+    "district": "Ambatolampy",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ambatolampy"
+      },
+      {
+        "commune": "Morarano"
+      },
+      {
+        "commune": "Ambohipihaonana"
+      },
+      {
+        "commune": "Manjakatompo"
+      },
+      {
+        "commune": "Ambatondrakalavao"
+      },
+      {
+        "commune": "Andriambilany"
+      },
+      {
+        "commune": "Belambo Firaisana"
+      },
+      {
+        "commune": "Andravola Vohipeno"
+      },
+      {
+        "commune": "Tsiafajavona Ankaratra"
+      },
+      {
+        "commune": "Ambodifarihy Fenomanana"
+      },
+      {
+        "commune": "Sabotsy Namatoana"
+      },
+      {
+        "commune": "Antanimasaka"
+      },
+      {
+        "commune": "Andranovelona"
+      },
+      {
+        "commune": "Behenjy"
+      },
+      {
+        "commune": "Antsampandrano"
+      },
+      {
+        "commune": "Antanamalaza"
+      },
+      {
+        "commune": "Antakasina"
+      },
+      {
+        "commune": "Tsinjoarivo"
+      }
+    ]
+  },
+  {
+    "district": "Faratsiho",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Faratsiho"
+      },
+      {
+        "commune": "Antsampanimahazo"
+      },
+      {
+        "commune": "Faravohitra"
+      },
+      {
+        "commune": "Ramainandro"
+      },
+      {
+        "commune": "Andranomiady"
+      },
+      {
+        "commune": "Vinaninony Atsimo"
+      },
+      {
+        "commune": "Ambohiborona"
+      },
+      {
+        "commune": "Miandrarivo"
+      },
+      {
+        "commune": "Valabetokana"
+      }
+    ]
+  },
+  {
+    "district": "Antsirabe II",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Belazao"
+      },
+      {
+        "commune": "Alakamisy"
+      },
+      {
+        "commune": "Antanimandry"
+      },
+      {
+        "commune": "Vinaninkarena"
+      },
+      {
+        "commune": "Andranomanelatra"
+      },
+      {
+        "commune": "Ambano"
+      },
+      {
+        "commune": "Ambohidranandriana"
+      },
+      {
+        "commune": "Ambohimiarivo"
+      },
+      {
+        "commune": "Ambohitsimanova"
+      },
+      {
+        "commune": "Mangarano"
+      },
+      {
+        "commune": "Manandona"
+      },
+      {
+        "commune": "Antsoatany"
+      },
+      {
+        "commune": "Alatsinainy Ibity"
+      },
+      {
+        "commune": "Sahanivotry Manandona"
+      },
+      {
+        "commune": "Soanindrariny"
+      },
+      {
+        "commune": "Ambatomena"
+      },
+      {
+        "commune": "Ambohibary"
+      },
+      {
+        "commune": "Mandrosohasina"
+      },
+      {
+        "commune": "Tsarahonenana Sahanivotry"
+      },
+      {
+        "commune": "Antanambao"
+      }
+    ]
+  },
+  {
+    "district": "Mandoto",
+    "region": "Vakinankaratra",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Mandoto"
+      },
+      {
+        "commune": "Betsohana"
+      },
+      {
+        "commune": "Antanambao Ambary"
+      },
+      {
+        "commune": "Anjoma Ramartina"
+      },
+      {
+        "commune": "Ankazomiriotra"
+      },
+      {
+        "commune": "Fidirana"
+      },
+      {
+        "commune": "Vasiana"
+      },
+      {
+        "commune": "Vinany"
+      }
+    ]
+  },
+  {
+    "district": "Arivonimamo",
+    "region": "Itasy",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ampahimanga"
+      },
+      {
+        "commune": "Amboanana"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Imerintsiatosika"
+      },
+      {
+        "commune": "Morarano"
+      },
+      {
+        "commune": "Mahatsinjo Est"
+      },
+      {
+        "commune": "Marofangady"
+      },
+      {
+        "commune": "Rambolamasoandro Andranomiely"
+      },
+      {
+        "commune": "Ambohimandry"
+      },
+      {
+        "commune": "Antambolo"
+      },
+      {
+        "commune": "Ambatomirahavavy"
+      },
+      {
+        "commune": "Ambatomanga"
+      },
+      {
+        "commune": "Manalalondo"
+      },
+      {
+        "commune": "Antenimbe"
+      },
+      {
+        "commune": "Alakamisikely"
+      },
+      {
+        "commune": "Arivonimamo I"
+      },
+      {
+        "commune": "Arivonimamo II"
+      },
+      {
+        "commune": "Ambohitrambo"
+      },
+      {
+        "commune": "Ambohimasina"
+      },
+      {
+        "commune": "Ambohipandrano"
+      },
+      {
+        "commune": "Miandrandra"
+      },
+      {
+        "commune": "Miantsoarivo"
+      }
+    ]
+  },
+  {
+    "district": "Miarinarivo",
+    "region": "Itasy",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Analavory"
+      },
+      {
+        "commune": "Alatsinainikely"
+      },
+      {
+        "commune": "Mandiavato"
+      },
+      {
+        "commune": "Anosibe Ifanja"
+      },
+      {
+        "commune": "Sarobaratra Ifanja"
+      },
+      {
+        "commune": "Miarinarivo II"
+      },
+      {
+        "commune": "Ambatomanjaka"
+      },
+      {
+        "commune": "Manazary"
+      },
+      {
+        "commune": "Antoby Est"
+      },
+      {
+        "commune": "Soamahamanina"
+      },
+      {
+        "commune": "Miarinarivo I"
+      },
+      {
+        "commune": "Zoma Bealoka"
+      },
+      {
+        "commune": "Soavimbazaha"
+      },
+      {
+        "commune": "Andolofotsy"
+      }
+    ]
+  },
+  {
+    "district": "Soavinandriana",
+    "region": "Itasy",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Ampary"
+      },
+      {
+        "commune": "Mananasy"
+      },
+      {
+        "commune": "Masindray"
+      },
+      {
+        "commune": "Amparibohitra"
+      },
+      {
+        "commune": "Ampefy"
+      },
+      {
+        "commune": "Antanetibe"
+      },
+      {
+        "commune": "Amparaky"
+      },
+      {
+        "commune": "Amberomanga"
+      },
+      {
+        "commune": "Ankaranana"
+      },
+      {
+        "commune": "Mahavelona"
+      },
+      {
+        "commune": "Soavinandriana"
+      },
+      {
+        "commune": "Dondona"
+      },
+      {
+        "commune": "Ankisabe"
+      },
+      {
+        "commune": "Ambatoasana Centre"
+      },
+      {
+        "commune": "Tamponala"
+      }
+    ]
+  },
+  {
+    "district": "Tsiroanomandidy",
+    "region": "Bongolava",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Tsiroanomandidy Ville"
+      },
+      {
+        "commune": "Tsiroanomandidy Fihaonana"
+      },
+      {
+        "commune": "Ambatolampy"
+      },
+      {
+        "commune": "Maritampona"
+      },
+      {
+        "commune": "Bevato"
+      },
+      {
+        "commune": "Ankadinondry Sakay"
+      },
+      {
+        "commune": "Ankerana Avaratra"
+      },
+      {
+        "commune": "Miandrarivo"
+      },
+      {
+        "commune": "Tsinjoarivo Imanga"
+      },
+      {
+        "commune": "Soanierana"
+      },
+      {
+        "commune": "Anosy"
+      },
+      {
+        "commune": "Ambararatabe"
+      },
+      {
+        "commune": "Belobaka"
+      },
+      {
+        "commune": "Ambalanirana"
+      },
+      {
+        "commune": "Mahasolo"
+      },
+      {
+        "commune": "Bemahatazana"
+      },
+      {
+        "commune": "Fierenana"
+      },
+      {
+        "commune": "Maroharona"
+      }
+    ]
+  },
+  {
+    "district": "Fianarantsoa I",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Tanana Ambany"
+      },
+      {
+        "commune": "Andrainjato Avaratra"
+      },
+      {
+        "commune": "Andrainjato Sud"
+      },
+      {
+        "commune": "Manolafaka"
+      },
+      {
+        "commune": "Lalazana"
+      },
+      {
+        "commune": "Vatosola"
+      },
+      {
+        "commune": "Tanana Ambony"
+      }
+    ]
+  },
+  {
+    "district": "Fenoarivobe",
+    "region": "Bongolava",
+    "province": "Antananarivo",
+    "communes": [
+      {
+        "commune": "Tsinjoarivo 22"
+      },
+      {
+        "commune": "Mahajeby"
+      },
+      {
+        "commune": "Ambohitromby"
+      },
+      {
+        "commune": "Ambatomainty Atsimo"
+      },
+      {
+        "commune": "Fenoarivo Centre"
+      },
+      {
+        "commune": "Firavahana"
+      },
+      {
+        "commune": "Morarano Maritampona"
+      },
+      {
+        "commune": "Kiranomena"
+      }
+    ]
+  },
+  {
+    "district": "Lalangina",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Taindambo"
+      },
+      {
+        "commune": "Mahatsinjony"
+      },
+      {
+        "commune": "Sahambavy"
+      },
+      {
+        "commune": "Ambalamahasoa"
+      },
+      {
+        "commune": "Alakamisy Ambohimaha"
+      },
+      {
+        "commune": "Androy"
+      },
+      {
+        "commune": "Alatsinainy Ialamarina"
+      },
+      {
+        "commune": "Fandrandava"
+      },
+      {
+        "commune": "Ialananindro"
+      },
+      {
+        "commune": "Andrainjato Centre"
+      },
+      {
+        "commune": "Andrainjato Est"
+      },
+      {
+        "commune": "Ambalakely"
+      },
+      {
+        "commune": "Ivoamba"
+      }
+    ]
+  },
+  {
+    "district": "Vohibato",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Mahasoabe"
+      },
+      {
+        "commune": "Vinanitelo"
+      },
+      {
+        "commune": "Alakamisy Itenina"
+      },
+      {
+        "commune": "Talata Ampano"
+      },
+      {
+        "commune": "Ihazoara"
+      },
+      {
+        "commune": "Ankaromalaza Mifanasoa"
+      },
+      {
+        "commune": "Vohimarina"
+      },
+      {
+        "commune": "Maneva"
+      },
+      {
+        "commune": "Vohitrafeno"
+      },
+      {
+        "commune": "Andranovorivato"
+      },
+      {
+        "commune": "Vohibato Ouest"
+      },
+      {
+        "commune": "Andranomiditra"
+      },
+      {
+        "commune": "Soaindrana"
+      },
+      {
+        "commune": "Mahaditra"
+      }
+    ]
+  },
+  {
+    "district": "Ikalamavony",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ikalamavony"
+      },
+      {
+        "commune": "Mangidy"
+      },
+      {
+        "commune": "Tanamarina Bekisopa"
+      },
+      {
+        "commune": "Solila"
+      },
+      {
+        "commune": "Ambatomainty"
+      },
+      {
+        "commune": "Fitampito"
+      },
+      {
+        "commune": "Tanamarina Sakay"
+      },
+      {
+        "commune": "Tsitondroina"
+      }
+    ]
+  },
+  {
+    "district": "Isandra",
+    "region": "Matsiatra Ambony",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Isorana"
+      },
+      {
+        "commune": "Anjoma Itsara"
+      },
+      {
+        "commune": "Andoharanomaitso"
+      },
+      {
+        "commune": "Ambondrona"
+      },
+      {
+        "commune": "Ambalamidera II"
+      },
+      {
+        "commune": "Ankarinarivo Manirisoa"
+      },
+      {
+        "commune": "Soatanana"
+      },
+      {
+        "commune": "Nasandratrony"
+      },
+      {
+        "commune": "Mahazoarivo"
+      },
+      {
+        "commune": "Fanjakana"
+      },
+      {
+        "commune": "Iavonomby Vohibola"
+      }
+    ]
+  },
+  {
+    "district": "Ambositra",
+    "region": "Amoron'i Mania",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ankazoambo"
+      },
+      {
+        "commune": "Ivony Miaramiasa"
+      },
+      {
+        "commune": "Andina"
+      },
+      {
+        "commune": "Imerina Imady"
+      },
+      {
+        "commune": "Ivato"
+      },
+      {
+        "commune": "Ambalamanakana"
+      },
+      {
+        "commune": "Ilaka Centre"
+      },
+      {
+        "commune": "Ihadilanana"
+      },
+      {
+        "commune": "Ambatofitorahana"
+      },
+      {
+        "commune": "Antoetra"
+      },
+      {
+        "commune": "Tsarasaotra"
+      },
+      {
+        "commune": "Marosoa"
+      },
+      {
+        "commune": "Fahizay"
+      },
+      {
+        "commune": "Alakamisy Ambohijato"
+      },
+      {
+        "commune": "Kianjandrakefina"
+      },
+      {
+        "commune": "Mahazina Ambohipierenana"
+      },
+      {
+        "commune": "Sahatsiho Ambohimanjaka"
+      },
+      {
+        "commune": "Ambohimitombo I"
+      },
+      {
+        "commune": "Ambohimitombo II"
+      },
+      {
+        "commune": "Ambinanindrano"
+      },
+      {
+        "commune": "Vohidahy"
+      },
+      {
+        "commune": "Ambositra I"
+      },
+      {
+        "commune": "Ambositra II"
+      }
+    ]
+  },
+  {
+    "district": "Ambatofinandrahana",
+    "region": "Amoron'i Mania",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ambatofinandrahana"
+      },
+      {
+        "commune": "Itremo"
+      },
+      {
+        "commune": "Fenoarivo"
+      },
+      {
+        "commune": "Soavina"
+      },
+      {
+        "commune": "Ambondromisotra"
+      },
+      {
+        "commune": "Ambatomifanongoa"
+      },
+      {
+        "commune": "Amborompotsy"
+      },
+      {
+        "commune": "Mandrosonoro"
+      },
+      {
+        "commune": "Mangataboahangy"
+      }
+    ]
+  },
+  {
+    "district": "Fandriana",
+    "region": "Amoron'i Mania",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Tsarazaza"
+      },
+      {
+        "commune": "Tatamalaza"
+      },
+      {
+        "commune": "Ankarinoro"
+      },
+      {
+        "commune": "Sandrandahy"
+      },
+      {
+        "commune": "Mahazoarivo"
+      },
+      {
+        "commune": "Fandriana"
+      },
+      {
+        "commune": "Milamaina"
+      },
+      {
+        "commune": "Sahamadio Fisakana"
+      },
+      {
+        "commune": "Fiadanana"
+      },
+      {
+        "commune": "Miarinavaratra"
+      },
+      {
+        "commune": "Betsimisotra"
+      },
+      {
+        "commune": "Alakamisy Ambohimahazo"
+      },
+      {
+        "commune": "Imito"
+      }
+    ]
+  },
+  {
+    "district": "Ifanadiana",
+    "region": "Vatovavy",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ifanadiana"
+      },
+      {
+        "commune": "Antaretra"
+      },
+      {
+        "commune": "Tsaratanana"
+      },
+      {
+        "commune": "Ranomafana"
+      },
+      {
+        "commune": "Kelilalina"
+      },
+      {
+        "commune": "Androrangavola"
+      },
+      {
+        "commune": "Marotoko"
+      },
+      {
+        "commune": "Ambohimiera"
+      },
+      {
+        "commune": "Antsindra"
+      },
+      {
+        "commune": "Ambohimanga Du Sud"
+      },
+      {
+        "commune": "Analampasina"
+      },
+      {
+        "commune": "Fasintsara"
+      },
+      {
+        "commune": "Maroharatra"
+      }
+    ]
+  },
+  {
+    "district": "Nosy-Varika",
+    "region": "Vatovavy",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Nosy Varika"
+      },
+      {
+        "commune": "Ambahy"
+      },
+      {
+        "commune": "Andara"
+      },
+      {
+        "commune": "Fiadanana"
+      },
+      {
+        "commune": "Ambodirian'i Sahafary"
+      },
+      {
+        "commune": "Sahavato"
+      },
+      {
+        "commune": "Vohilava"
+      },
+      {
+        "commune": "Vohitrandriana"
+      },
+      {
+        "commune": "Vohidroa"
+      },
+      {
+        "commune": "Ambakobe"
+      },
+      {
+        "commune": "Soavina"
+      },
+      {
+        "commune": "Befody"
+      },
+      {
+        "commune": "Ambodiara"
+      },
+      {
+        "commune": "Ambodilafa"
+      },
+      {
+        "commune": "Androrangavola"
+      },
+      {
+        "commune": "Ampasinambo"
+      },
+      {
+        "commune": "Antanambao"
+      },
+      {
+        "commune": "Angodongodona"
+      }
+    ]
+  },
+  {
+    "district": "Mananjary",
+    "region": "Vatovavy",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Mananjary"
+      },
+      {
+        "commune": "Tsaravary"
+      },
+      {
+        "commune": "Ankatafana"
+      },
+      {
+        "commune": "Antsenavolo"
+      },
+      {
+        "commune": "Marosangy"
+      },
+      {
+        "commune": "Ambohimiarina II"
+      },
+      {
+        "commune": "Andranambolava"
+      },
+      {
+        "commune": "Vohilava"
+      },
+      {
+        "commune": "Mahela"
+      },
+      {
+        "commune": "Mahatsara Sud"
+      },
+      {
+        "commune": "Ambohitsara Est"
+      },
+      {
+        "commune": "Tsiatosika"
+      },
+      {
+        "commune": "Mahavoky Nord"
+      },
+      {
+        "commune": "Mahatsara Iefaka"
+      },
+      {
+        "commune": "Andonabe"
+      },
+      {
+        "commune": "Marokarima"
+      },
+      {
+        "commune": "Ambohinihaonana"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Marofototra"
+      },
+      {
+        "commune": "Andranomavo"
+      },
+      {
+        "commune": "Vatohandrina"
+      },
+      {
+        "commune": "Ambalahosy Nord"
+      },
+      {
+        "commune": "Ambodinonoka"
+      },
+      {
+        "commune": "Antaretra"
+      },
+      {
+        "commune": "Kianjavato"
+      },
+      {
+        "commune": "Sandrohy"
+      },
+      {
+        "commune": "Anosimparihy"
+      },
+      {
+        "commune": "Manakana Nord"
+      },
+      {
+        "commune": "Namorona"
+      }
+    ]
+  },
+  {
+    "district": "Manakara Atsimo",
+    "region": "Fitovinany",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Manakara"
+      },
+      {
+        "commune": "Tataho"
+      },
+      {
+        "commune": "Mangatsiotra"
+      },
+      {
+        "commune": "Marofarihy"
+      },
+      {
+        "commune": "Anosiala"
+      },
+      {
+        "commune": "Ambila"
+      },
+      {
+        "commune": "Sorombo"
+      },
+      {
+        "commune": "Mizilo Gara"
+      },
+      {
+        "commune": "Ambohitsara M"
+      },
+      {
+        "commune": "Sahasinaka"
+      },
+      {
+        "commune": "Sahanambohitra"
+      },
+      {
+        "commune": "Ambahatrazo"
+      },
+      {
+        "commune": "Amboanjo"
+      },
+      {
+        "commune": "Anorombato"
+      },
+      {
+        "commune": "Vohimasy"
+      },
+      {
+        "commune": "Lokomby"
+      },
+      {
+        "commune": "Vatana"
+      },
+      {
+        "commune": "Sakoana"
+      },
+      {
+        "commune": "Ambahive"
+      },
+      {
+        "commune": "Ambandrika"
+      },
+      {
+        "commune": "Ambalaroka"
+      },
+      {
+        "commune": "Vohimanitra"
+      },
+      {
+        "commune": "Mitanty"
+      },
+      {
+        "commune": "Analavory"
+      },
+      {
+        "commune": "Mavorano"
+      },
+      {
+        "commune": "Vohimasina Nord"
+      },
+      {
+        "commune": "Vohimasina Sud"
+      },
+      {
+        "commune": "Betampona"
+      },
+      {
+        "commune": "Vohilava"
+      },
+      {
+        "commune": "Bekatra"
+      },
+      {
+        "commune": "Vinanitelo"
+      },
+      {
+        "commune": "Ampasimanjeva"
+      },
+      {
+        "commune": "Ambotaka"
+      },
+      {
+        "commune": "Nihaonana"
+      },
+      {
+        "commune": "Fenomby"
+      },
+      {
+        "commune": "Ambalavero"
+      },
+      {
+        "commune": "Amborondra"
+      },
+      {
+        "commune": "Mahabako"
+      },
+      {
+        "commune": "Onilahy"
+      },
+      {
+        "commune": "Mahamaibe"
+      },
+      {
+        "commune": "Kianjanomby"
+      },
+      {
+        "commune": "Ampasimpotsy Sud"
+      },
+      {
+        "commune": "Anteza"
+      },
+      {
+        "commune": "Saharefo"
+      },
+      {
+        "commune": "Ampasimboraka"
+      }
+    ]
+  },
+  {
+    "district": "Vohipeno",
+    "region": "Fitovinany",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Vohindava"
+      },
+      {
+        "commune": "Ivato"
+      },
+      {
+        "commune": "Savana"
+      },
+      {
+        "commune": "Anoloka"
+      },
+      {
+        "commune": "Mahabo"
+      },
+      {
+        "commune": "Vohipeno"
+      },
+      {
+        "commune": "Vohitrindry"
+      },
+      {
+        "commune": "Ankarimbary"
+      },
+      {
+        "commune": "Lanivo"
+      },
+      {
+        "commune": "Nato"
+      },
+      {
+        "commune": "Mahasoabe"
+      },
+      {
+        "commune": "Onjatsy"
+      },
+      {
+        "commune": "Vohilany"
+      },
+      {
+        "commune": "Andemaka"
+      },
+      {
+        "commune": "Ifatsy"
+      },
+      {
+        "commune": "Antananabo"
+      },
+      {
+        "commune": "Ilakatra"
+      },
+      {
+        "commune": "Sahalava"
+      },
+      {
+        "commune": "Mahazoarivo"
+      }
+    ]
+  },
+  {
+    "district": "Ihosy",
+    "region": "Ihorombe",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ihosy"
+      },
+      {
+        "commune": "Ankily"
+      },
+      {
+        "commune": "Ambia"
+      },
+      {
+        "commune": "Tolohomiady"
+      },
+      {
+        "commune": "Irina"
+      },
+      {
+        "commune": "Sahambano"
+      },
+      {
+        "commune": "Analaliry"
+      },
+      {
+        "commune": "Mahasoa"
+      },
+      {
+        "commune": "Ambatolahy"
+      },
+      {
+        "commune": "Soamatasy"
+      },
+      {
+        "commune": "Zazafotsy"
+      },
+      {
+        "commune": "Antsoha"
+      },
+      {
+        "commune": "Sakalalina"
+      },
+      {
+        "commune": "Satrokala"
+      },
+      {
+        "commune": "Andiolava"
+      },
+      {
+        "commune": "Analavoka"
+      },
+      {
+        "commune": "Ranohira"
+      },
+      {
+        "commune": "Ilakaka"
+      },
+      {
+        "commune": "Menamaty Iloto"
+      }
+    ]
+  },
+  {
+    "district": "Farafangana",
+    "region": "Atsimo-Atsinanana",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Anosivelo"
+      },
+      {
+        "commune": "Anosy Tsararafa"
+      },
+      {
+        "commune": "Vohitromby"
+      },
+      {
+        "commune": "Ivandrika"
+      },
+      {
+        "commune": "Manambotra Atsimo"
+      },
+      {
+        "commune": "Mahavelo"
+      },
+      {
+        "commune": "Mahafasa Centre"
+      },
+      {
+        "commune": "Amporoforo"
+      },
+      {
+        "commune": "Iabohazo"
+      },
+      {
+        "commune": "Tangainony"
+      },
+      {
+        "commune": "Farafangana"
+      },
+      {
+        "commune": "Vohimasy"
+      },
+      {
+        "commune": "Beretra Bevoay"
+      },
+      {
+        "commune": "Ambohigogo"
+      },
+      {
+        "commune": "Maheriraty"
+      },
+      {
+        "commune": "Mahabo Mananivo"
+      },
+      {
+        "commune": "Ambohimandroso"
+      },
+      {
+        "commune": "Ankarana Miraihina"
+      },
+      {
+        "commune": "Evato"
+      },
+      {
+        "commune": "Etrotroka Atsimo"
+      },
+      {
+        "commune": "Ambalavato Nord"
+      },
+      {
+        "commune": "Efatsy"
+      },
+      {
+        "commune": "Tovona"
+      },
+      {
+        "commune": "Ambalatany"
+      },
+      {
+        "commune": "Namohora Iaborano"
+      },
+      {
+        "commune": "Sahamadio"
+      },
+      {
+        "commune": "Fenoarivo"
+      },
+      {
+        "commune": "Antseranambe"
+      },
+      {
+        "commune": "Ihorombe"
+      },
+      {
+        "commune": "Ambalavato Antevato"
+      },
+      {
+        "commune": "Vohilengo"
+      },
+      {
+        "commune": "Marovandrika"
+      }
+    ]
+  },
+  {
+    "district": "Ivohibe",
+    "region": "Ihorombe",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Ivohibe"
+      },
+      {
+        "commune": "Antambohobe"
+      },
+      {
+        "commune": "Maropaika"
+      },
+      {
+        "commune": "Ivongo"
+      }
+    ]
+  },
+  {
+    "district": "Iakora",
+    "region": "Ihorombe",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Iakora"
+      },
+      {
+        "commune": "Ranotsara Nord"
+      },
+      {
+        "commune": "Begogo"
+      }
+    ]
+  },
+  {
+    "district": "Vangaindrano",
+    "region": "Atsimo-Atsinanana",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Soamanova"
+      },
+      {
+        "commune": "Lopary"
+      },
+      {
+        "commune": "Bema"
+      },
+      {
+        "commune": "Vohitrambo"
+      },
+      {
+        "commune": "Anilobe"
+      },
+      {
+        "commune": "Vangaindrano"
+      },
+      {
+        "commune": "Ampasimalemy"
+      },
+      {
+        "commune": "Tsianofana"
+      },
+      {
+        "commune": "Bekaraoky"
+      },
+      {
+        "commune": "Tsiately"
+      },
+      {
+        "commune": "Lohafary"
+      },
+      {
+        "commune": "Ampataka"
+      },
+      {
+        "commune": "Matanga"
+      },
+      {
+        "commune": "Masianaka"
+      },
+      {
+        "commune": "Vohipaho"
+      },
+      {
+        "commune": "Bevata"
+      },
+      {
+        "commune": "Karimbary"
+      },
+      {
+        "commune": "Manambondro"
+      },
+      {
+        "commune": "Fenoambany"
+      },
+      {
+        "commune": "Isahara"
+      },
+      {
+        "commune": "Marokibo"
+      },
+      {
+        "commune": "Ranomena"
+      },
+      {
+        "commune": "Ambongo"
+      },
+      {
+        "commune": "Ambatolava"
+      },
+      {
+        "commune": "Iara"
+      },
+      {
+        "commune": "Vohimalaza"
+      },
+      {
+        "commune": "Vatanato"
+      },
+      {
+        "commune": "Amparihy Est"
+      },
+      {
+        "commune": "Sandravinany"
+      }
+    ]
+  },
+  {
+    "district": "Vondrozo",
+    "region": "Atsimo-Atsinanana",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Vondrozo"
+      },
+      {
+        "commune": "Manambidala"
+      },
+      {
+        "commune": "Anandravy"
+      },
+      {
+        "commune": "Mahatsinjo"
+      },
+      {
+        "commune": "Mahazoarivo"
+      },
+      {
+        "commune": "Iamonta"
+      },
+      {
+        "commune": "Vohimary"
+      },
+      {
+        "commune": "Antokonala"
+      },
+      {
+        "commune": "Ambohimana"
+      },
+      {
+        "commune": "Karianga"
+      },
+      {
+        "commune": "Manato"
+      },
+      {
+        "commune": "Ivato"
+      },
+      {
+        "commune": "Mahavelo"
+      },
+      {
+        "commune": "Andakana"
+      },
+      {
+        "commune": "Moroteza"
+      },
+      {
+        "commune": "Vohiboreka"
+      }
+    ]
+  },
+  {
+    "district": "Midongy-Atsimo",
+    "region": "Atsimo-Atsinanana",
+    "province": "Fianarantsoa",
+    "communes": [
+      {
+        "commune": "Nosifeno"
+      },
+      {
+        "commune": "Ankazovelo"
+      },
+      {
+        "commune": "Andranolalina"
+      },
+      {
+        "commune": "Maliorano"
+      },
+      {
+        "commune": "Ivondro"
+      },
+      {
+        "commune": "Soakibany"
+      }
+    ]
+  },
+  {
+    "district": "Toamasina I",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Ambodimanga"
+      },
+      {
+        "commune": "Anjoma"
+      },
+      {
+        "commune": "Morarano"
+      },
+      {
+        "commune": "Tanambao V"
+      },
+      {
+        "commune": "Ankirihiry"
+      }
+    ]
+  },
+  {
+    "district": "Brickaville",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Brickaville"
+      },
+      {
+        "commune": "Vohitranivona"
+      },
+      {
+        "commune": "Anivorano Est"
+      },
+      {
+        "commune": "Mahatsara"
+      },
+      {
+        "commune": "Andovoranto"
+      },
+      {
+        "commune": "Ambinaninony"
+      },
+      {
+        "commune": "Fetraomby"
+      },
+      {
+        "commune": "Vohipeno Razanaka"
+      },
+      {
+        "commune": "Ranomafana Est"
+      },
+      {
+        "commune": "Ampasimbe"
+      },
+      {
+        "commune": "Ambohimanana"
+      },
+      {
+        "commune": "Anjahamana"
+      },
+      {
+        "commune": "Fanasana"
+      },
+      {
+        "commune": "Ambalarondra"
+      },
+      {
+        "commune": "Maroseranana"
+      },
+      {
+        "commune": "Lohariandava"
+      },
+      {
+        "commune": "Andekaleka"
+      }
+    ]
+  },
+  {
+    "district": "Vatomandry",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Tanambao Vahatrakaka"
+      },
+      {
+        "commune": "Tsarasambo"
+      },
+      {
+        "commune": "Sahamatevina"
+      },
+      {
+        "commune": "Antanambao Mahatsara"
+      },
+      {
+        "commune": "Iamborano"
+      },
+      {
+        "commune": "Vatomandry"
+      },
+      {
+        "commune": "Ambodivoananto"
+      },
+      {
+        "commune": "Maintinandry"
+      },
+      {
+        "commune": "Tsivangiana"
+      },
+      {
+        "commune": "Ampasimazava"
+      },
+      {
+        "commune": "Ampasimadinika"
+      },
+      {
+        "commune": "Ifasina I"
+      },
+      {
+        "commune": "Ambalabe"
+      },
+      {
+        "commune": "Ambalavolo"
+      },
+      {
+        "commune": "Amboditavolo"
+      },
+      {
+        "commune": "Niherenana"
+      },
+      {
+        "commune": "Ilaka Est"
+      },
+      {
+        "commune": "Niarovana Caroline"
+      },
+      {
+        "commune": "Ifasina II"
+      }
+    ]
+  },
+  {
+    "district": "Mahanoro",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Mahanoro"
+      },
+      {
+        "commune": "Betsizaraina"
+      },
+      {
+        "commune": "Tsaravinany"
+      },
+      {
+        "commune": "Ambodiharina"
+      },
+      {
+        "commune": "Manjakandriana"
+      },
+      {
+        "commune": "Masomeloka"
+      },
+      {
+        "commune": "Ambinanidilana"
+      },
+      {
+        "commune": "Ambodibonara"
+      },
+      {
+        "commune": "Ankazotsifantatra"
+      },
+      {
+        "commune": "Ambinanindrano"
+      },
+      {
+        "commune": "Befotaka"
+      }
+    ]
+  },
+  {
+    "district": "Marolambo",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Marolambo"
+      },
+      {
+        "commune": "Betampona"
+      },
+      {
+        "commune": "Tanambao Rabemanana"
+      },
+      {
+        "commune": "Androrangavola"
+      },
+      {
+        "commune": "Anosiarivo I"
+      },
+      {
+        "commune": "Amboasary"
+      },
+      {
+        "commune": "Lohavanana"
+      },
+      {
+        "commune": "Ambodinonoka"
+      },
+      {
+        "commune": "Sahakevo"
+      },
+      {
+        "commune": "Andonabe Sud"
+      },
+      {
+        "commune": "Ambalapaiso II"
+      },
+      {
+        "commune": "Ambodivoangy"
+      },
+      {
+        "commune": "Ambohimilanja"
+      },
+      {
+        "commune": "Ambatofisaka II"
+      }
+    ]
+  },
+  {
+    "district": "Toamasina II",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Toamasina Suburbaine"
+      },
+      {
+        "commune": "Antetezambaro"
+      },
+      {
+        "commune": "Fanandrana"
+      },
+      {
+        "commune": "Ambodiriana"
+      },
+      {
+        "commune": "Ampasimadinika Manambolo"
+      },
+      {
+        "commune": "Amboditandroroho"
+      },
+      {
+        "commune": "Mahavelona (Foulpointe)"
+      },
+      {
+        "commune": "Sahambala"
+      },
+      {
+        "commune": "Ambodilazana"
+      },
+      {
+        "commune": "Ampasimbe Onibe"
+      },
+      {
+        "commune": "Mangabe"
+      },
+      {
+        "commune": "Amporoforo"
+      },
+      {
+        "commune": "Antenina"
+      },
+      {
+        "commune": "Andondabe"
+      },
+      {
+        "commune": "Ampisokina"
+      },
+      {
+        "commune": "Andranobolaha"
+      },
+      {
+        "commune": "Fito"
+      }
+    ]
+  },
+  {
+    "district": "Antanambao Manampontsy",
+    "region": "Atsinanana",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Saivaza"
+      },
+      {
+        "commune": "Antanandehibe"
+      },
+      {
+        "commune": "Manakana"
+      },
+      {
+        "commune": "Antanambao Manampontsy"
+      },
+      {
+        "commune": "Mahela"
+      }
+    ]
+  },
+  {
+    "district": "Sainte Marie",
+    "region": "Analanjirofo",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Sainte Marie"
+      }
+    ]
+  },
+  {
+    "district": "Maroantsetra",
+    "region": "Ambatosoa",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Maroantsetra"
+      },
+      {
+        "commune": "Anjanazana"
+      },
+      {
+        "commune": "Manambolo"
+      },
+      {
+        "commune": "Andranofotsy"
+      },
+      {
+        "commune": "Antakotako"
+      },
+      {
+        "commune": "Ankofa"
+      },
+      {
+        "commune": "Ankofabe"
+      },
+      {
+        "commune": "Antsirabe Sahatany"
+      },
+      {
+        "commune": "Rantabe"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Androndrono"
+      },
+      {
+        "commune": "Ambodimanga Rantabe"
+      },
+      {
+        "commune": "Anandrivola"
+      },
+      {
+        "commune": "Ambinanitelo"
+      },
+      {
+        "commune": "Anjahana"
+      },
+      {
+        "commune": "Ambanizana"
+      },
+      {
+        "commune": "Mahalevona"
+      },
+      {
+        "commune": "Voloina"
+      }
+    ]
+  },
+  {
+    "district": "Mananara-Avaratra",
+    "region": "Ambatosoa",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Mananara Avaratra"
+      },
+      {
+        "commune": "Ambodivoanio"
+      },
+      {
+        "commune": "Imorona"
+      },
+      {
+        "commune": "Antanambaobe"
+      },
+      {
+        "commune": "Antanananivo"
+      },
+      {
+        "commune": "Manambolosy"
+      },
+      {
+        "commune": "Ambodiampana"
+      },
+      {
+        "commune": "Sandrakatsy"
+      },
+      {
+        "commune": "Tanibe"
+      },
+      {
+        "commune": "Ambatoharanana"
+      },
+      {
+        "commune": "Vanono"
+      },
+      {
+        "commune": "Andasibe I"
+      },
+      {
+        "commune": "Antanambe"
+      },
+      {
+        "commune": "Saromaona"
+      }
+    ]
+  },
+  {
+    "district": "Soanierana Ivongo",
+    "region": "Analanjirofo",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Fotsialanana"
+      },
+      {
+        "commune": "Antanifotsy"
+      },
+      {
+        "commune": "Ambodiampana"
+      },
+      {
+        "commune": "Soanierana Ivongo"
+      },
+      {
+        "commune": "Andapafito"
+      },
+      {
+        "commune": "Ambahoabe"
+      },
+      {
+        "commune": "Manompana"
+      },
+      {
+        "commune": "Antenina"
+      }
+    ]
+  },
+  {
+    "district": "Ambato Boeni",
+    "region": "Boeny",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Andranofasika"
+      },
+      {
+        "commune": "Madirovalo"
+      },
+      {
+        "commune": "Anjiajia"
+      },
+      {
+        "commune": "Ambato Ambarimay"
+      },
+      {
+        "commune": "Ankijabe"
+      },
+      {
+        "commune": "Tsaramandroso"
+      },
+      {
+        "commune": "Ambondromamy"
+      },
+      {
+        "commune": "Ankirihitra"
+      },
+      {
+        "commune": "Andranomamy"
+      },
+      {
+        "commune": "Manerinerina"
+      },
+      {
+        "commune": "Sitampiky"
+      }
+    ]
+  },
+  {
+    "district": "Port-Berge (Boriziny-Vaovao)",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Andranomeva"
+      },
+      {
+        "commune": "Amparihy"
+      },
+      {
+        "commune": "Leanja"
+      },
+      {
+        "commune": "Marovato"
+      },
+      {
+        "commune": "Ambodimahabibo"
+      },
+      {
+        "commune": "Ambodivongo"
+      },
+      {
+        "commune": "Port Berge"
+      },
+      {
+        "commune": "Ambanjabe"
+      },
+      {
+        "commune": "Tsaratanana I"
+      },
+      {
+        "commune": "Tsarahasina"
+      },
+      {
+        "commune": "Tsiningia"
+      },
+      {
+        "commune": "Ambodisakoana"
+      },
+      {
+        "commune": "Tsinjomitondraka"
+      },
+      {
+        "commune": "Maevaranohely"
+      },
+      {
+        "commune": "Port Berge II"
+      }
+    ]
+  },
+  {
+    "district": "Besalampy",
+    "region": "Melaky",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Besalampy"
+      },
+      {
+        "commune": "Ampako"
+      },
+      {
+        "commune": "Marovoay Sud"
+      },
+      {
+        "commune": "Soanenga"
+      },
+      {
+        "commune": "Bekodoka"
+      },
+      {
+        "commune": "Ambolodia Sud"
+      },
+      {
+        "commune": "Ankasakasa Tsibiray"
+      },
+      {
+        "commune": "Mahabe"
+      }
+    ]
+  },
+  {
+    "district": "Fenerive Est",
+    "region": "Analanjirofo",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Fenerive Est"
+      },
+      {
+        "commune": "Ambodimanga II"
+      },
+      {
+        "commune": "Mahambo"
+      },
+      {
+        "commune": "Miorimivalana"
+      },
+      {
+        "commune": "Vohipeno"
+      },
+      {
+        "commune": "Antsiatsiaka"
+      },
+      {
+        "commune": "Mahanoro"
+      },
+      {
+        "commune": "Ampasina Maningory"
+      },
+      {
+        "commune": "Ambatoharanana"
+      },
+      {
+        "commune": "Vohilengo"
+      },
+      {
+        "commune": "Saranambana"
+      },
+      {
+        "commune": "Ampasimbe Manantsatrana"
+      }
+    ]
+  },
+  {
+    "district": "Beroroha",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Mandronarivo"
+      },
+      {
+        "commune": "Tanamary"
+      },
+      {
+        "commune": "Sakena"
+      },
+      {
+        "commune": "Beroroha"
+      },
+      {
+        "commune": "Bemavo"
+      },
+      {
+        "commune": "Fanjakana"
+      },
+      {
+        "commune": "Behisatsy"
+      },
+      {
+        "commune": "Marerano"
+      }
+    ]
+  },
+  {
+    "district": "Vavatenina",
+    "region": "Analanjirofo",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Vavatenina"
+      },
+      {
+        "commune": "Maromitety"
+      },
+      {
+        "commune": "Ambohibe"
+      },
+      {
+        "commune": "Ampasimazava"
+      },
+      {
+        "commune": "Anjahambe"
+      },
+      {
+        "commune": "Ambatoharanana"
+      },
+      {
+        "commune": "Andasibe"
+      },
+      {
+        "commune": "Miarinarivo"
+      },
+      {
+        "commune": "Sahatavy"
+      },
+      {
+        "commune": "Ambodimangavalo"
+      }
+    ]
+  },
+  {
+    "district": "Morombe",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Antanimieva"
+      },
+      {
+        "commune": "Basibasy"
+      },
+      {
+        "commune": "Cu Morombe"
+      },
+      {
+        "commune": "Befandefa"
+      },
+      {
+        "commune": "Ambahikily"
+      },
+      {
+        "commune": "Antongo Vaovao"
+      },
+      {
+        "commune": "Nosy Ambositra"
+      },
+      {
+        "commune": "Befandriana Sud"
+      }
+    ]
+  },
+  {
+    "district": "Ankazoabo",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Ankazoabo Sud"
+      },
+      {
+        "commune": "Berenty"
+      },
+      {
+        "commune": "Ilemby"
+      },
+      {
+        "commune": "Fotivolo"
+      },
+      {
+        "commune": "Tandrano"
+      },
+      {
+        "commune": "Andranomafana"
+      }
+    ]
+  },
+  {
+    "district": "Amparafaravola",
+    "region": "Alaotra-Mangoro",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Bedidy"
+      },
+      {
+        "commune": "Ambohimandroso"
+      },
+      {
+        "commune": "Sahamamy"
+      },
+      {
+        "commune": "Ambatomainty"
+      },
+      {
+        "commune": "Ampasikely"
+      },
+      {
+        "commune": "Amparafaravola"
+      },
+      {
+        "commune": "Andrebakely Sud"
+      },
+      {
+        "commune": "Ambohitrarivo"
+      },
+      {
+        "commune": "Anororo"
+      },
+      {
+        "commune": "Morarano Chrome"
+      },
+      {
+        "commune": "Ranomainty"
+      },
+      {
+        "commune": "Andilana Nord"
+      },
+      {
+        "commune": "Ambodimanga"
+      },
+      {
+        "commune": "Vohimena"
+      },
+      {
+        "commune": "Andrebakely Nord"
+      },
+      {
+        "commune": "Ambohijanahary"
+      },
+      {
+        "commune": "Tanambe"
+      },
+      {
+        "commune": "Beanana"
+      },
+      {
+        "commune": "Vohitsara"
+      },
+      {
+        "commune": "Amboavory"
+      }
+    ]
+  },
+  {
+    "district": "Ambatondrazaka",
+    "region": "Alaotra-Mangoro",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Feramanga Nord"
+      },
+      {
+        "commune": "Ambatondrazaka Suburbaine"
+      },
+      {
+        "commune": "Ambandrika"
+      },
+      {
+        "commune": "Ampitatsimo"
+      },
+      {
+        "commune": "Ambohitsilaozana"
+      },
+      {
+        "commune": "Ambatondrazaka"
+      },
+      {
+        "commune": "Ilafy"
+      },
+      {
+        "commune": "Manakambahiny Andrefana"
+      },
+      {
+        "commune": "Antsangasanga"
+      },
+      {
+        "commune": "Ambatosoratra"
+      },
+      {
+        "commune": "Andilanatoby"
+      },
+      {
+        "commune": "Andromba"
+      },
+      {
+        "commune": "Manakambahiny Antsinanana"
+      },
+      {
+        "commune": "Soalazaina"
+      },
+      {
+        "commune": "Tanambao Besakay"
+      },
+      {
+        "commune": "Bejofo"
+      },
+      {
+        "commune": "Didy"
+      },
+      {
+        "commune": "Imerimandroso"
+      },
+      {
+        "commune": "Amparihintsokatra"
+      },
+      {
+        "commune": "Antanandava"
+      }
+    ]
+  },
+  {
+    "district": "Moramanga",
+    "region": "Alaotra-Mangoro",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Moramanga"
+      },
+      {
+        "commune": "Ambohibary"
+      },
+      {
+        "commune": "Ampasimpotsy Gara"
+      },
+      {
+        "commune": "Andasibe"
+      },
+      {
+        "commune": "Anosibe Ifody"
+      },
+      {
+        "commune": "Vodiriana"
+      },
+      {
+        "commune": "Morarano Gara"
+      },
+      {
+        "commune": "Belavabary"
+      },
+      {
+        "commune": "Sabotsy Anjiro"
+      },
+      {
+        "commune": "Ambohidronono"
+      },
+      {
+        "commune": "Beforona"
+      },
+      {
+        "commune": "Ambatovola"
+      },
+      {
+        "commune": "Lakato"
+      },
+      {
+        "commune": "Amboasary"
+      },
+      {
+        "commune": "Fierenana"
+      },
+      {
+        "commune": "Mandialaza"
+      },
+      {
+        "commune": "Antaniditra"
+      },
+      {
+        "commune": "Ampasipotsy Mandialaza"
+      },
+      {
+        "commune": "Antanandava"
+      },
+      {
+        "commune": "Mangarivotra"
+      },
+      {
+        "commune": "Andaingo"
+      }
+    ]
+  },
+  {
+    "district": "Andilamena",
+    "region": "Alaotra-Mangoro",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Andilamena"
+      },
+      {
+        "commune": "Bemaitso"
+      },
+      {
+        "commune": "Antanimenabaka"
+      },
+      {
+        "commune": "Tanananifololahy"
+      },
+      {
+        "commune": "Maroadabo"
+      },
+      {
+        "commune": "Marovato"
+      },
+      {
+        "commune": "Miarinarivo"
+      },
+      {
+        "commune": "Maitsokely"
+      }
+    ]
+  },
+  {
+    "district": "Anosibe-An'ala",
+    "region": "Alaotra-Mangoro",
+    "province": "Toamasina",
+    "communes": [
+      {
+        "commune": "Anosibe An'ala"
+      },
+      {
+        "commune": "Ampasimaneva"
+      },
+      {
+        "commune": "Tsaravinany"
+      },
+      {
+        "commune": "Longozabe"
+      },
+      {
+        "commune": "Ambatoharanana"
+      },
+      {
+        "commune": "Ampandroantraka"
+      },
+      {
+        "commune": "Tratramarina"
+      },
+      {
+        "commune": "Antandrokomby"
+      },
+      {
+        "commune": "Ambalaomby"
+      },
+      {
+        "commune": "Niarovana Marosampanana"
+      }
+    ]
+  },
+  {
+    "district": "Mahajanga I",
+    "region": "Boeny",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Mahajanga"
+      },
+      {
+        "commune": "Mahabibo"
+      }
+    ]
+  },
+  {
+    "district": "Marovoay",
+    "region": "Boeny",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Ambolomoty"
+      },
+      {
+        "commune": "Marovoay"
+      },
+      {
+        "commune": "Tsararano"
+      },
+      {
+        "commune": "Ankazomborona"
+      },
+      {
+        "commune": "Manaratsandry"
+      },
+      {
+        "commune": "Antanimasaka"
+      },
+      {
+        "commune": "Bemaharivo"
+      },
+      {
+        "commune": "Ankaraobato"
+      },
+      {
+        "commune": "Marovoay Ville"
+      },
+      {
+        "commune": "Marovoay Banlieue"
+      },
+      {
+        "commune": "Antanambao Andranolava"
+      },
+      {
+        "commune": "Anosinalainolona"
+      }
+    ]
+  },
+  {
+    "district": "Soalala",
+    "region": "Boeny",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Soalala"
+      },
+      {
+        "commune": "Ambohipaky"
+      },
+      {
+        "commune": "Andranomavo"
+      }
+    ]
+  },
+  {
+    "district": "Mitsinjo",
+    "region": "Boeny",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Mitsinjo"
+      },
+      {
+        "commune": "Antseza"
+      },
+      {
+        "commune": "Antongomena Bevary"
+      },
+      {
+        "commune": "Matsakabanja"
+      },
+      {
+        "commune": "Katsepy"
+      },
+      {
+        "commune": "Bekipay"
+      },
+      {
+        "commune": "Ambarimaninga"
+      }
+    ]
+  },
+  {
+    "district": "Mahajanga II",
+    "region": "Boeny",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Bekobay"
+      },
+      {
+        "commune": "Andranoboka"
+      },
+      {
+        "commune": "Mahajamba Usine"
+      },
+      {
+        "commune": "Ambalabe Befanjava"
+      },
+      {
+        "commune": "Belobaka"
+      },
+      {
+        "commune": "Boanamary"
+      },
+      {
+        "commune": "Ambalakida"
+      },
+      {
+        "commune": "Betsako"
+      },
+      {
+        "commune": "Mariarano"
+      }
+    ]
+  },
+  {
+    "district": "Mandritsara",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Mandritsara"
+      },
+      {
+        "commune": "Antanandava"
+      },
+      {
+        "commune": "Amboaboa"
+      },
+      {
+        "commune": "Manampaneva"
+      },
+      {
+        "commune": "Ambarikorano"
+      },
+      {
+        "commune": "Andratamarina"
+      },
+      {
+        "commune": "Ambaripaika"
+      },
+      {
+        "commune": "Antsoha"
+      },
+      {
+        "commune": "Tsaratanana"
+      },
+      {
+        "commune": "Kalandy"
+      },
+      {
+        "commune": "Antsirabe Centre"
+      },
+      {
+        "commune": "Antsiatsiaka"
+      },
+      {
+        "commune": "Ambodiamontana Kianga"
+      },
+      {
+        "commune": "Ambalakirajy"
+      },
+      {
+        "commune": "Tsarajomoka"
+      },
+      {
+        "commune": "Antsatramidola"
+      },
+      {
+        "commune": "Ankiakabe-Fonoko"
+      },
+      {
+        "commune": "Antanambaon'amberina"
+      },
+      {
+        "commune": "Ampatakamaroreny"
+      },
+      {
+        "commune": "Ankiabe-Salohy"
+      },
+      {
+        "commune": "Pont Sofia"
+      },
+      {
+        "commune": "Ambodiadabo"
+      },
+      {
+        "commune": "Amborondolo"
+      },
+      {
+        "commune": "Marotandrano"
+      },
+      {
+        "commune": "Ambilombe"
+      },
+      {
+        "commune": "Andohajango"
+      },
+      {
+        "commune": "Anjiabe"
+      },
+      {
+        "commune": "Ambohisoa"
+      }
+    ]
+  },
+  {
+    "district": "Analalava",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Ambaliha"
+      },
+      {
+        "commune": "Maromandia"
+      },
+      {
+        "commune": "Marovatolena"
+      },
+      {
+        "commune": "Andribavontsona"
+      },
+      {
+        "commune": "Angoaka Sud"
+      },
+      {
+        "commune": "Marovantaza"
+      },
+      {
+        "commune": "Ankaramy"
+      },
+      {
+        "commune": "Antonibe"
+      },
+      {
+        "commune": "Mahadrodroka"
+      },
+      {
+        "commune": "Analalava"
+      },
+      {
+        "commune": "Ambarijeby Sud"
+      },
+      {
+        "commune": "Ambolobozo"
+      },
+      {
+        "commune": "Befotaka Nord"
+      }
+    ]
+  },
+  {
+    "district": "Befandriana Nord",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Befandriana Nord"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Ambodimotso Sud"
+      },
+      {
+        "commune": "Tsiamalao"
+      },
+      {
+        "commune": "Maroamalona"
+      },
+      {
+        "commune": "Tsarahonenana"
+      },
+      {
+        "commune": "Matsondakana"
+      },
+      {
+        "commune": "Antsakanalabe"
+      },
+      {
+        "commune": "Ambararata"
+      },
+      {
+        "commune": "Ambolidibe Est"
+      },
+      {
+        "commune": "Ankarongana"
+      },
+      {
+        "commune": "Antsakabary"
+      }
+    ]
+  },
+  {
+    "district": "Antsohihy",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Antsohihy"
+      },
+      {
+        "commune": "Ankerika"
+      },
+      {
+        "commune": "Ampandriankilandy"
+      },
+      {
+        "commune": "Anjalazala"
+      },
+      {
+        "commune": "Anahidrano"
+      },
+      {
+        "commune": "Ambodimandresy"
+      },
+      {
+        "commune": "Anjiamangirana"
+      },
+      {
+        "commune": "Ambodimanary"
+      },
+      {
+        "commune": "Antsahabe"
+      },
+      {
+        "commune": "Ambodimadiro"
+      },
+      {
+        "commune": "Andreba"
+      },
+      {
+        "commune": "Maroala"
+      }
+    ]
+  },
+  {
+    "district": "Bealanana",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Bealanana"
+      },
+      {
+        "commune": "Beandrarezona"
+      },
+      {
+        "commune": "Antananivo Haut"
+      },
+      {
+        "commune": "Antsamaka"
+      },
+      {
+        "commune": "Ambatosia"
+      },
+      {
+        "commune": "Ambodiampana"
+      },
+      {
+        "commune": "Ambatoriha Est"
+      },
+      {
+        "commune": "Ambovonomby"
+      },
+      {
+        "commune": "Analila"
+      },
+      {
+        "commune": "Anjozoromadosy"
+      },
+      {
+        "commune": "Mangindrano"
+      },
+      {
+        "commune": "Ambararatabe Nord"
+      },
+      {
+        "commune": "Ambodisikidy"
+      },
+      {
+        "commune": "Ambararata Sofia"
+      },
+      {
+        "commune": "Marotolana"
+      },
+      {
+        "commune": "Ambodiadabo M"
+      },
+      {
+        "commune": "Ankazotokana"
+      },
+      {
+        "commune": "Ambalaromba"
+      }
+    ]
+  },
+  {
+    "district": "Mampikony",
+    "region": "Sofia",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Mampikony I"
+      },
+      {
+        "commune": "Mampikony II"
+      },
+      {
+        "commune": "Ambohitoaka"
+      },
+      {
+        "commune": "Ankiririky"
+      },
+      {
+        "commune": "Bekoratsaka"
+      },
+      {
+        "commune": "Malakialina"
+      },
+      {
+        "commune": "Betaramahamay"
+      },
+      {
+        "commune": "Komajia"
+      },
+      {
+        "commune": "Ampasimatera"
+      },
+      {
+        "commune": "Ambodihazoambo"
+      }
+    ]
+  },
+  {
+    "district": "Maevatanana",
+    "region": "Betsiboka",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Maevatanana I"
+      },
+      {
+        "commune": "Maevatanana II"
+      },
+      {
+        "commune": "Beratsimanina"
+      },
+      {
+        "commune": "Bemokotra"
+      },
+      {
+        "commune": "Mahazoma"
+      },
+      {
+        "commune": "Antsiafabositra"
+      },
+      {
+        "commune": "Antanimbary"
+      },
+      {
+        "commune": "Tsararano"
+      },
+      {
+        "commune": "Ambalajia"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Mangabe"
+      },
+      {
+        "commune": "Madiromirafy"
+      },
+      {
+        "commune": "Ambalanjanakomby"
+      },
+      {
+        "commune": "Marokoro"
+      },
+      {
+        "commune": "Maria"
+      },
+      {
+        "commune": "Andriba"
+      },
+      {
+        "commune": "Mahatsinjo"
+      }
+    ]
+  },
+  {
+    "district": "Tsaratanana",
+    "region": "Betsiboka",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Tsaratanana"
+      },
+      {
+        "commune": "Bekapaika"
+      },
+      {
+        "commune": "Tsararova"
+      },
+      {
+        "commune": "Betrandraka"
+      },
+      {
+        "commune": "Keliloha"
+      },
+      {
+        "commune": "Sarobaratra"
+      },
+      {
+        "commune": "Ampandrana"
+      },
+      {
+        "commune": "Andriamena"
+      },
+      {
+        "commune": "Ambakireny"
+      },
+      {
+        "commune": "Brieville"
+      },
+      {
+        "commune": "Sakoamadinika"
+      },
+      {
+        "commune": "Manakana"
+      }
+    ]
+  },
+  {
+    "district": "Kandreho",
+    "region": "Betsiboka",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Andasibe"
+      },
+      {
+        "commune": "Kandreho"
+      },
+      {
+        "commune": "Ambaliha"
+      },
+      {
+        "commune": "Behazomaty"
+      },
+      {
+        "commune": "Antanimbaribe"
+      },
+      {
+        "commune": "Betaimboay"
+      }
+    ]
+  },
+  {
+    "district": "Antsalova",
+    "region": "Melaky",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Antsalova"
+      },
+      {
+        "commune": "Soahany"
+      },
+      {
+        "commune": "Masoarivo"
+      },
+      {
+        "commune": "Trangahy"
+      },
+      {
+        "commune": "Bekopaka"
+      }
+    ]
+  },
+  {
+    "district": "Maintirano",
+    "region": "Melaky",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Maintirano"
+      },
+      {
+        "commune": "Mafaijijo"
+      },
+      {
+        "commune": "Andabotoka"
+      },
+      {
+        "commune": "Betanatanana"
+      },
+      {
+        "commune": "Andrea"
+      },
+      {
+        "commune": "Ankisatra"
+      },
+      {
+        "commune": "Marohazo"
+      },
+      {
+        "commune": "Antsondrodava"
+      },
+      {
+        "commune": "Belitsaky"
+      },
+      {
+        "commune": "Tambohorano"
+      },
+      {
+        "commune": "Veromanga"
+      },
+      {
+        "commune": "Maromavo"
+      },
+      {
+        "commune": "Andranovao"
+      },
+      {
+        "commune": "Antsaidoha Bebao"
+      },
+      {
+        "commune": "Berevo/ranobe"
+      },
+      {
+        "commune": "Bebaboky Sud"
+      },
+      {
+        "commune": "Bemokotra Sud"
+      }
+    ]
+  },
+  {
+    "district": "Toliary-I",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Tanambao I"
+      },
+      {
+        "commune": "Tanambao II Tsf Nord"
+      },
+      {
+        "commune": "Mahavatse I"
+      },
+      {
+        "commune": "Mahavatse II"
+      },
+      {
+        "commune": "Betania"
+      },
+      {
+        "commune": "Besakoa"
+      }
+    ]
+  },
+  {
+    "district": "Morafenobe",
+    "region": "Melaky",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Morafenobe"
+      },
+      {
+        "commune": "Andramy"
+      },
+      {
+        "commune": "Beravina"
+      }
+    ]
+  },
+  {
+    "district": "Ambatomainty",
+    "region": "Melaky",
+    "province": "Mahajanga",
+    "communes": [
+      {
+        "commune": "Ambatomainty"
+      },
+      {
+        "commune": "Bemarivo"
+      },
+      {
+        "commune": "Sarodrano"
+      },
+      {
+        "commune": "Marotsialeha"
+      }
+    ]
+  },
+  {
+    "district": "Betioky Atsimo",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Ankazomanga Ouest"
+      },
+      {
+        "commune": "Maroarivo Ankazomanga"
+      },
+      {
+        "commune": "Beantake"
+      },
+      {
+        "commune": "Masiaboay"
+      },
+      {
+        "commune": "Antohabato"
+      },
+      {
+        "commune": "Betioky Atsimo"
+      },
+      {
+        "commune": "Sakamasay"
+      },
+      {
+        "commune": "Ambatry Mitsinjo"
+      },
+      {
+        "commune": "Tameantsoa"
+      },
+      {
+        "commune": "Tongobory"
+      },
+      {
+        "commune": "Besely"
+      },
+      {
+        "commune": "Vatolatsaka"
+      },
+      {
+        "commune": "Ankazombalala"
+      },
+      {
+        "commune": "Marosavoa"
+      },
+      {
+        "commune": "Salobe"
+      },
+      {
+        "commune": "Tanambao Haut"
+      },
+      {
+        "commune": "Belamoty"
+      },
+      {
+        "commune": "Antsavoa"
+      },
+      {
+        "commune": "Ankilivalo"
+      },
+      {
+        "commune": "Soamanonga"
+      },
+      {
+        "commune": "Fenoandala"
+      },
+      {
+        "commune": "Soaserana"
+      },
+      {
+        "commune": "Bezaha"
+      },
+      {
+        "commune": "Manalobe"
+      },
+      {
+        "commune": "Andranomangatsiaka"
+      },
+      {
+        "commune": "Montifeno"
+      },
+      {
+        "commune": "Lazarivo"
+      }
+    ]
+  },
+  {
+    "district": "Ampanihy Ouest",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Ankilizato"
+      },
+      {
+        "commune": "Ankiliabo"
+      },
+      {
+        "commune": "Amborompotsy"
+      },
+      {
+        "commune": "Ampanihy Ouest"
+      },
+      {
+        "commune": "Maniry"
+      },
+      {
+        "commune": "Antaly"
+      },
+      {
+        "commune": "Ankilimivory"
+      },
+      {
+        "commune": "Ejeda"
+      },
+      {
+        "commune": "Belafike Haut"
+      },
+      {
+        "commune": "Beahitse"
+      },
+      {
+        "commune": "Gogogogo"
+      },
+      {
+        "commune": "Androka"
+      },
+      {
+        "commune": "Vohitany"
+      },
+      {
+        "commune": "Beroy Atsimo"
+      },
+      {
+        "commune": "Fotadrevo"
+      },
+      {
+        "commune": "Itampolo"
+      }
+    ]
+  },
+  {
+    "district": "Sakaraha",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Sakaraha"
+      },
+      {
+        "commune": "Miary Taheza"
+      },
+      {
+        "commune": "Miary Lamatihy"
+      },
+      {
+        "commune": "Mahaboboka"
+      },
+      {
+        "commune": "Amboronabo"
+      },
+      {
+        "commune": "Bereketa"
+      },
+      {
+        "commune": "Andamasiny Vineta"
+      },
+      {
+        "commune": "Mihavatsy"
+      },
+      {
+        "commune": "Andranolava"
+      },
+      {
+        "commune": "Ambinany"
+      },
+      {
+        "commune": "Mikoboka"
+      },
+      {
+        "commune": "Mitsinjo"
+      }
+    ]
+  },
+  {
+    "district": "Toliary-II",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Mitsinjo Betanimena"
+      },
+      {
+        "commune": "Belalanda"
+      },
+      {
+        "commune": "Betsinjaka"
+      },
+      {
+        "commune": "Saint Augustin"
+      },
+      {
+        "commune": "Anakao"
+      },
+      {
+        "commune": "Soalara Sud"
+      },
+      {
+        "commune": "Ambolofoty"
+      },
+      {
+        "commune": "Ankilimalinike"
+      },
+      {
+        "commune": "Miary Ambohibola"
+      },
+      {
+        "commune": "Behompy"
+      },
+      {
+        "commune": "Maromiandra"
+      },
+      {
+        "commune": "Ambohimahavelona"
+      },
+      {
+        "commune": "Andranohinaly"
+      },
+      {
+        "commune": "Antanimena Onilahy"
+      },
+      {
+        "commune": "Manorofify"
+      },
+      {
+        "commune": "Marofoty"
+      },
+      {
+        "commune": "Tsianisiha"
+      },
+      {
+        "commune": "Manombo Sud"
+      },
+      {
+        "commune": "Andranovory"
+      },
+      {
+        "commune": "Milenaka"
+      },
+      {
+        "commune": "Ankililoaka"
+      },
+      {
+        "commune": "Analamisampy"
+      },
+      {
+        "commune": "Beheloka"
+      }
+    ]
+  },
+  {
+    "district": "Tsihombe",
+    "region": "Androy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Tsihombe"
+      },
+      {
+        "commune": "Nikoly"
+      },
+      {
+        "commune": "Betanty (Faux Cap)"
+      },
+      {
+        "commune": "Anjampaly"
+      },
+      {
+        "commune": "Marovato"
+      },
+      {
+        "commune": "Antaritarika"
+      },
+      {
+        "commune": "Imongy"
+      }
+    ]
+  },
+  {
+    "district": "Beloha",
+    "region": "Androy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Tranovaho"
+      },
+      {
+        "commune": "Kopoky"
+      },
+      {
+        "commune": "Marolinta"
+      },
+      {
+        "commune": "Tranoroa"
+      },
+      {
+        "commune": "Behabobo"
+      },
+      {
+        "commune": "Beloha"
+      }
+    ]
+  },
+  {
+    "district": "Ambovombe-Androy",
+    "region": "Androy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Ambovombe"
+      },
+      {
+        "commune": "Tsimananada"
+      },
+      {
+        "commune": "Erada"
+      },
+      {
+        "commune": "Anjeky Ankilikira"
+      },
+      {
+        "commune": "Ambanisarika"
+      },
+      {
+        "commune": "Analamary"
+      },
+      {
+        "commune": "Ambohimalaza"
+      },
+      {
+        "commune": "Ambonaivo"
+      },
+      {
+        "commune": "Maroalomainty"
+      },
+      {
+        "commune": "Maroalopoty"
+      },
+      {
+        "commune": "Ambondro"
+      },
+      {
+        "commune": "Ambazoa"
+      },
+      {
+        "commune": "Sihanamaro"
+      },
+      {
+        "commune": "Marovato Befeno"
+      },
+      {
+        "commune": "Antanimora Atsimo"
+      },
+      {
+        "commune": "Imanombo"
+      },
+      {
+        "commune": "Andalatanosy"
+      },
+      {
+        "commune": "Ampamata"
+      },
+      {
+        "commune": "Jafaro"
+      }
+    ]
+  },
+  {
+    "district": "Benenitra",
+    "region": "Atsimo-Andrefana",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Benenitra"
+      },
+      {
+        "commune": "Ianapera"
+      },
+      {
+        "commune": "Ambalavato"
+      },
+      {
+        "commune": "Ehara"
+      }
+    ]
+  },
+  {
+    "district": "Bekily",
+    "region": "Androy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Antsakoamaro"
+      },
+      {
+        "commune": "Ambatosola"
+      },
+      {
+        "commune": "Tsirandrany"
+      },
+      {
+        "commune": "Tsikolaky"
+      },
+      {
+        "commune": "Manakompy"
+      },
+      {
+        "commune": "Morafeno Bekily"
+      },
+      {
+        "commune": "Ankaranabo Nord"
+      },
+      {
+        "commune": "Besakoa"
+      },
+      {
+        "commune": "Anja Nord"
+      },
+      {
+        "commune": "Ambahita"
+      },
+      {
+        "commune": "Maroviro"
+      },
+      {
+        "commune": "Belindo Mahasoa"
+      },
+      {
+        "commune": "Beteza"
+      },
+      {
+        "commune": "Tanandava"
+      },
+      {
+        "commune": "Bekitro"
+      },
+      {
+        "commune": "Beraketa"
+      },
+      {
+        "commune": "Vohimanga"
+      },
+      {
+        "commune": "Bevitiky"
+      },
+      {
+        "commune": "Anivorano Mitsinjo"
+      }
+    ]
+  },
+  {
+    "district": "Taolagnaro",
+    "region": "Anosy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Fort-Dauphin"
+      },
+      {
+        "commune": "Ampasy Nahampoana"
+      },
+      {
+        "commune": "Mandromondromotra"
+      },
+      {
+        "commune": "Soanierana"
+      },
+      {
+        "commune": "Ifarantsa"
+      },
+      {
+        "commune": "Isaka-Ivondro"
+      },
+      {
+        "commune": "Mandiso"
+      },
+      {
+        "commune": "Manambaro"
+      },
+      {
+        "commune": "Sarisambo"
+      },
+      {
+        "commune": "Ankaramena"
+      },
+      {
+        "commune": "Ranopiso"
+      },
+      {
+        "commune": "Ambatoabo"
+      },
+      {
+        "commune": "Ankariera"
+      },
+      {
+        "commune": "Analapatsy"
+      },
+      {
+        "commune": "Andranobory"
+      },
+      {
+        "commune": "Mahatalaky"
+      },
+      {
+        "commune": "Iaboakoho"
+      },
+      {
+        "commune": "Enaniliha"
+      },
+      {
+        "commune": "Fenoevo-Efita"
+      },
+      {
+        "commune": "Enakara-Haut"
+      },
+      {
+        "commune": "Analamary"
+      },
+      {
+        "commune": "Soavary"
+      },
+      {
+        "commune": "Ranomafana"
+      },
+      {
+        "commune": "Emagnobo"
+      },
+      {
+        "commune": "Bevoay"
+      },
+      {
+        "commune": "Ampasimena"
+      },
+      {
+        "commune": "Manantenina"
+      }
+    ]
+  },
+  {
+    "district": "Betroka",
+    "region": "Anosy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Ambalasoa"
+      },
+      {
+        "commune": "Ivahona"
+      },
+      {
+        "commune": "Analamary"
+      },
+      {
+        "commune": "Ianabinda"
+      },
+      {
+        "commune": "Benato Toby"
+      },
+      {
+        "commune": "Mahabo"
+      },
+      {
+        "commune": "Beampombo I"
+      },
+      {
+        "commune": "Jangany"
+      },
+      {
+        "commune": "Mahasoa Est"
+      },
+      {
+        "commune": "Bekorobo"
+      },
+      {
+        "commune": "Betroka"
+      },
+      {
+        "commune": "Tsaraitso"
+      },
+      {
+        "commune": "Naninora"
+      },
+      {
+        "commune": "Iaborotra"
+      },
+      {
+        "commune": "Isoanala"
+      },
+      {
+        "commune": "Beampombo II"
+      },
+      {
+        "commune": "Nanarena Besakoa"
+      },
+      {
+        "commune": "Ianakafy"
+      },
+      {
+        "commune": "Andriandampy"
+      },
+      {
+        "commune": "Sakamahily"
+      },
+      {
+        "commune": "Ambatomivary"
+      }
+    ]
+  },
+  {
+    "district": "Amboasary-Atsimo",
+    "region": "Anosy",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Amboasary Atsimo"
+      },
+      {
+        "commune": "Behara"
+      },
+      {
+        "commune": "Tanandava Sud"
+      },
+      {
+        "commune": "Sampona"
+      },
+      {
+        "commune": "Ifotaka"
+      },
+      {
+        "commune": "Tranomaro"
+      },
+      {
+        "commune": "Maromby"
+      },
+      {
+        "commune": "Marotsiraka"
+      },
+      {
+        "commune": "Tomboarivo"
+      },
+      {
+        "commune": "Ebelo"
+      },
+      {
+        "commune": "Ranobe"
+      },
+      {
+        "commune": "Elonty"
+      },
+      {
+        "commune": "Esira"
+      },
+      {
+        "commune": "Mahaly"
+      },
+      {
+        "commune": "Manevy"
+      },
+      {
+        "commune": "Tsivory"
+      }
+    ]
+  },
+  {
+    "district": "Manja",
+    "region": "Menabe",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Manja"
+      },
+      {
+        "commune": "Beharona"
+      },
+      {
+        "commune": "Anontsibe Centre"
+      },
+      {
+        "commune": "Soaserana"
+      },
+      {
+        "commune": "Ankiliabo"
+      },
+      {
+        "commune": "Andranopasy"
+      }
+    ]
+  },
+  {
+    "district": "Mahabo",
+    "region": "Menabe",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Mahabo"
+      },
+      {
+        "commune": "Ankilivalo"
+      },
+      {
+        "commune": "Analamitsivalana"
+      },
+      {
+        "commune": "Befotaka"
+      },
+      {
+        "commune": "Ampanihy"
+      },
+      {
+        "commune": "Mazavasoa"
+      },
+      {
+        "commune": "Ankilizato"
+      },
+      {
+        "commune": "Ambia"
+      },
+      {
+        "commune": "Mandabe"
+      },
+      {
+        "commune": "Malaimbandy"
+      },
+      {
+        "commune": "Beronono"
+      }
+    ]
+  },
+  {
+    "district": "Morondava",
+    "region": "Menabe",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Morondava"
+      },
+      {
+        "commune": "Bemanonga"
+      },
+      {
+        "commune": "Analaiva"
+      },
+      {
+        "commune": "Befasy"
+      },
+      {
+        "commune": "Belo Sur Mer"
+      }
+    ]
+  },
+  {
+    "district": "Belo Sur Tsiribihina",
+    "region": "Menabe",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Belo Sur Tsiribihina"
+      },
+      {
+        "commune": "Andimaky Manambolo"
+      },
+      {
+        "commune": "Bemarivo Ankirondro"
+      },
+      {
+        "commune": "Tsimafana"
+      },
+      {
+        "commune": "Beroboka Nord"
+      },
+      {
+        "commune": "Tsaraotana"
+      },
+      {
+        "commune": "Masoarivo"
+      },
+      {
+        "commune": "Aboalimena"
+      },
+      {
+        "commune": "Ankalalobe"
+      },
+      {
+        "commune": "Ambiky"
+      },
+      {
+        "commune": "Berevo"
+      },
+      {
+        "commune": "Antsoha"
+      },
+      {
+        "commune": "Belinta"
+      },
+      {
+        "commune": "Ankiroroky"
+      }
+    ]
+  },
+  {
+    "district": "Miandrivazo",
+    "region": "Menabe",
+    "province": "Toliara",
+    "communes": [
+      {
+        "commune": "Miandrivazo"
+      },
+      {
+        "commune": "Dabolava"
+      },
+      {
+        "commune": "Bemahatazana"
+      },
+      {
+        "commune": "Ampanihy"
+      },
+      {
+        "commune": "Anosimena"
+      },
+      {
+        "commune": "Manandaza"
+      },
+      {
+        "commune": "Ankotrofotsy"
+      },
+      {
+        "commune": "Isalo"
+      },
+      {
+        "commune": "Ambatolahy"
+      },
+      {
+        "commune": "Manambina"
+      },
+      {
+        "commune": "Itondy"
+      },
+      {
+        "commune": "Ankavandra"
+      },
+      {
+        "commune": "Soaloka"
+      },
+      {
+        "commune": "Betsipolitra"
+      },
+      {
+        "commune": "Ankondromena"
+      }
+    ]
+  },
+  {
+    "district": "Antsiranana II",
+    "region": "Diana",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Ramena"
+      },
+      {
+        "commune": "Sakaramy"
+      },
+      {
+        "commune": "Antanamitarana"
+      },
+      {
+        "commune": "Joffre Ville"
+      },
+      {
+        "commune": "Antsahampano"
+      },
+      {
+        "commune": "Anivorano Nord"
+      },
+      {
+        "commune": "Antsoha"
+      },
+      {
+        "commune": "Bobasakoa"
+      },
+      {
+        "commune": "Ambondrona"
+      },
+      {
+        "commune": "Bobakilandy"
+      },
+      {
+        "commune": "Mosorolava"
+      },
+      {
+        "commune": "Mahavanona"
+      },
+      {
+        "commune": "Mangaoka"
+      },
+      {
+        "commune": "Andrafiabe"
+      },
+      {
+        "commune": "Anketrakabe"
+      },
+      {
+        "commune": "Sadjoavato"
+      },
+      {
+        "commune": "Antsalaka"
+      },
+      {
+        "commune": "Andranovondronina"
+      },
+      {
+        "commune": "Andranofanjava"
+      },
+      {
+        "commune": "Mahalina"
+      },
+      {
+        "commune": "Ankarongana"
+      }
+    ]
+  },
+  {
+    "district": "Ambilobe",
+    "region": "Diana",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Tanambao Marivorahona"
+      },
+      {
+        "commune": "Ambakirano"
+      },
+      {
+        "commune": "Ambatoben'anjavy"
+      },
+      {
+        "commune": "Antsaravibe"
+      },
+      {
+        "commune": "Antsohimbondrona"
+      },
+      {
+        "commune": "Ambilobe"
+      },
+      {
+        "commune": "Mantaly"
+      },
+      {
+        "commune": "Ampondralava"
+      },
+      {
+        "commune": "Anjiabe Ambony"
+      },
+      {
+        "commune": "Ambodibonara"
+      },
+      {
+        "commune": "Beramanja"
+      },
+      {
+        "commune": "Betsiaka"
+      },
+      {
+        "commune": "Ambarakaraka"
+      },
+      {
+        "commune": "Anaborano Ifasy"
+      },
+      {
+        "commune": "Manambato"
+      }
+    ]
+  },
+  {
+    "district": "Antsiranana I",
+    "region": "Diana",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Diego Suarez"
+      }
+    ]
+  },
+  {
+    "district": "Ambanja",
+    "region": "Diana",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Antsatsaka"
+      },
+      {
+        "commune": "Antranokarany"
+      },
+      {
+        "commune": "Djangoa"
+      },
+      {
+        "commune": "Antsakoamanondro"
+      },
+      {
+        "commune": "Ambalahonko"
+      },
+      {
+        "commune": "Ankingameloka"
+      },
+      {
+        "commune": "Bemaneviky Haut Sambirano"
+      },
+      {
+        "commune": "Ambodimanga Ramena"
+      },
+      {
+        "commune": "Maevatanana"
+      },
+      {
+        "commune": "Antafiambotry"
+      },
+      {
+        "commune": "Maherivaratra"
+      },
+      {
+        "commune": "Marovato"
+      },
+      {
+        "commune": "Ambohitrandriana"
+      },
+      {
+        "commune": "Ambohimarina"
+      },
+      {
+        "commune": "Ambaliha"
+      },
+      {
+        "commune": "Marotolana"
+      },
+      {
+        "commune": "Bemaneviky Ouest"
+      },
+      {
+        "commune": "Anorontsangana"
+      },
+      {
+        "commune": "Antsirabe"
+      },
+      {
+        "commune": "Ankatafa"
+      },
+      {
+        "commune": "Ambanja"
+      },
+      {
+        "commune": "Benavony"
+      },
+      {
+        "commune": "Ambohimena"
+      }
+    ]
+  },
+  {
+    "district": "Nosy-Be",
+    "region": "Diana",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Hell-Ville"
+      },
+      {
+        "commune": "Ampangorina"
+      },
+      {
+        "commune": "Ambatozavavy"
+      },
+      {
+        "commune": "Bemanondrobe"
+      },
+      {
+        "commune": "Dzamandzar"
+      }
+    ]
+  },
+  {
+    "district": "Antalaha",
+    "region": "Sava",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Antalaha Ambonivohitra"
+      },
+      {
+        "commune": "Ampahana"
+      },
+      {
+        "commune": "Ampohibe"
+      },
+      {
+        "commune": "Antombana"
+      },
+      {
+        "commune": "Antsahanoro"
+      },
+      {
+        "commune": "Antananambo"
+      },
+      {
+        "commune": "Marofinaritra"
+      },
+      {
+        "commune": "Sarahandrano"
+      },
+      {
+        "commune": "Andampy"
+      },
+      {
+        "commune": "Ambalabe"
+      },
+      {
+        "commune": "Ampanavoana"
+      },
+      {
+        "commune": "Ambinanifaho"
+      },
+      {
+        "commune": "Ambohitralanana"
+      },
+      {
+        "commune": "Lanjarivo"
+      },
+      {
+        "commune": "Antsambalahy"
+      },
+      {
+        "commune": "Vinanivao"
+      }
+    ]
+  },
+  {
+    "district": "Sambava",
+    "region": "Sava",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Sambava Cu"
+      },
+      {
+        "commune": "Ambohimalaza"
+      },
+      {
+        "commune": "Farahalana"
+      },
+      {
+        "commune": "Nosiarina"
+      },
+      {
+        "commune": "Ambodivoara"
+      },
+      {
+        "commune": "Anjinjaomby"
+      },
+      {
+        "commune": "Morafeno"
+      },
+      {
+        "commune": "Analamaho"
+      },
+      {
+        "commune": "Ambohimitsinjo"
+      },
+      {
+        "commune": "Anjangoveratra"
+      },
+      {
+        "commune": "Andratamarina"
+      },
+      {
+        "commune": "Marogaona"
+      },
+      {
+        "commune": "Marojala"
+      },
+      {
+        "commune": "Antsambaharo"
+      },
+      {
+        "commune": "Andrahanjo"
+      },
+      {
+        "commune": "Bemanevika"
+      },
+      {
+        "commune": "Amboangibe"
+      },
+      {
+        "commune": "Andrembona"
+      },
+      {
+        "commune": "Antindra"
+      },
+      {
+        "commune": "Ambodiampana"
+      },
+      {
+        "commune": "Maroambihy"
+      },
+      {
+        "commune": "Ambatoafo"
+      },
+      {
+        "commune": "Anjialava"
+      },
+      {
+        "commune": "Tanambao Daoud"
+      },
+      {
+        "commune": "Antsahavaribe"
+      },
+      {
+        "commune": "Bevonotra"
+      }
+    ]
+  },
+  {
+    "district": "Andapa",
+    "region": "Sava",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Matsohely"
+      },
+      {
+        "commune": "Andranomena"
+      },
+      {
+        "commune": "Ambalamanasy II"
+      },
+      {
+        "commune": "Ambodiangezoka"
+      },
+      {
+        "commune": "Betsakotsako Andranotsara"
+      },
+      {
+        "commune": "Andapa"
+      },
+      {
+        "commune": "Tanandava"
+      },
+      {
+        "commune": "Ankiakabe Nord"
+      },
+      {
+        "commune": "Belaoka Marovato"
+      },
+      {
+        "commune": "Ambodimanga I"
+      },
+      {
+        "commune": "Marovato"
+      },
+      {
+        "commune": "Andrakata"
+      },
+      {
+        "commune": "Bealampona"
+      },
+      {
+        "commune": "Belaoka Lokoho"
+      },
+      {
+        "commune": "Anoviara"
+      },
+      {
+        "commune": "Doany"
+      },
+      {
+        "commune": "Anjialavabe"
+      },
+      {
+        "commune": "Antsahamena"
+      }
+    ]
+  },
+  {
+    "district": "Vohemar",
+    "region": "Sava",
+    "province": "Antsiranana",
+    "communes": [
+      {
+        "commune": "Vohemar"
+      },
+      {
+        "commune": "Ampondra"
+      },
+      {
+        "commune": "Fanambana"
+      },
+      {
+        "commune": "Milanoa"
+      },
+      {
+        "commune": "Bobakindro"
+      },
+      {
+        "commune": "Daraina"
+      },
+      {
+        "commune": "Ambalasatrana"
+      },
+      {
+        "commune": "Tsarabaria"
+      },
+      {
+        "commune": "Nosibe"
+      },
+      {
+        "commune": "Andravory"
+      },
+      {
+        "commune": "Andrafainkona"
+      },
+      {
+        "commune": "Ampanefena"
+      },
+      {
+        "commune": "Ambodisambalahy"
+      },
+      {
+        "commune": "Ambinanin'andravory"
+      },
+      {
+        "commune": "Amboriala"
+      },
+      {
+        "commune": "Maromokotra Loky"
+      },
+      {
+        "commune": "Antsirabe Nord"
+      },
+      {
+        "commune": "Ampisikinana"
+      },
+      {
+        "commune": "Belambo"
+      }
+    ]
+  }
+]

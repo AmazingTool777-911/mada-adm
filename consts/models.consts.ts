@@ -81,6 +81,9 @@ export const ADM_GEOJSON_FILES_PATHS: string[] = [
   "data/ndjson/fokontanys.ndjson",
 ];
 
+/**
+ * The number of entries for each administrative level, indexed by level index (0-4).
+ */
 export const ADM_LEVEL_ENTRIES_COUNT_BY_CODE: Map<AdmLevelCode, number> =
   new Map<AdmLevelCode, number>([
     [AdmLevelCode.PROVINCE, 6],
@@ -144,3 +147,77 @@ export const PROVINCE_BY_REGION_MAP: Map<string, ProvinceName> = new Map([
   ["Androy", ProvinceName.TOLIARA],
   ["Anosy", ProvinceName.TOLIARA],
 ]);
+
+/**
+ * The directory where the ADM data catalogs are generated.
+ */
+export const ADM_CATALOGS_DIR = "data/catalogs";
+
+/**
+ * The directory where the ADM data catalogs are generated.
+ */
+export const ADM_CATALOGS_GENERATED_DIR = "data/catalogs/.generated";
+
+/**
+ * The CSV catalog file of ADM territories data for each administrative level.
+ */
+export const ADM_CSV_CATALOG_FILE_BY_LEVEL: Map<AdmLevelCode, string> = new Map(
+  [
+    [AdmLevelCode.PROVINCE, "provinces.csv"],
+    [AdmLevelCode.REGION, "regions.csv"],
+    [AdmLevelCode.DISTRICT, "districts.csv"],
+    [AdmLevelCode.COMMUNE, "communes.csv"],
+    [AdmLevelCode.FOKONTANY, "fokontanys.csv"],
+  ],
+);
+
+/**
+ * The fokontanys JSON data catalogs files by ADM level.
+ */
+export const ADM_FOKONTANYS_JSON_CATALOG_FILE_BY_CODE: Map<
+  AdmLevelCode,
+  string
+> = new Map([
+  [AdmLevelCode.FOKONTANY, "fokontanys.json"],
+  [AdmLevelCode.COMMUNE, "fokontanys-by-commune.json"],
+  [AdmLevelCode.DISTRICT, "fokontanys-by-district.json"],
+  [AdmLevelCode.REGION, "fokontanys-by-region.json"],
+  [AdmLevelCode.PROVINCE, "fokontanys-by-province.json"],
+]);
+
+/**
+ * The communes JSON data catalogs files by ADM level.
+ */
+export const ADM_COMMUNES_JSON_CATALOG_FILE_BY_CODE: Map<AdmLevelCode, string> =
+  new Map([
+    [AdmLevelCode.COMMUNE, "communes.json"],
+    [AdmLevelCode.DISTRICT, "communes-by-district.json"],
+    [AdmLevelCode.REGION, "communes-by-region.json"],
+    [AdmLevelCode.PROVINCE, "communes-by-province.json"],
+  ]);
+
+/**
+ * The districts JSON data catalogs files by ADM level.
+ */
+export const ADM_DISTRICTS_JSON_CATALOG_FILE_BY_CODE: Map<
+  AdmLevelCode,
+  string
+> = new Map([
+  [AdmLevelCode.DISTRICT, "districts.json"],
+  [AdmLevelCode.REGION, "districts-by-region.json"],
+  [AdmLevelCode.PROVINCE, "districts-by-province.json"],
+]);
+
+/**
+ * The regions JSON data catalogs files by ADM level.
+ */
+export const ADM_REGIONS_JSON_CATALOG_FILE_BY_CODE: Map<AdmLevelCode, string> =
+  new Map([
+    [AdmLevelCode.REGION, "regions.json"],
+    [AdmLevelCode.PROVINCE, "regions-by-province.json"],
+  ]);
+
+/**
+ * The provinces JSON data catalog file.
+ */
+export const ADM_PROVINCES_JSON_CATALOG_FILE = "provinces.json";

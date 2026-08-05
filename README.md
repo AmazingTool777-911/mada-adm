@@ -423,7 +423,7 @@ progress visualization.
 **Example Usage:**
 
 ```bash
-mada-adm --db-type postgres \
+deno task cli --db-type postgres \
   --pg.host localhost --pg.user admin --pg.password secret \
   --processing-workers-count 4 --queue-batch-size 50
 ```
@@ -474,7 +474,7 @@ All options are optional.
 
 #### Query sub-command: `query`
 
-**CLI Execution:** `mada-adm query <search>`\
+**CLI Execution:** `deno task cli query <search>`\
 **Local Execution:** `deno task cli:query <search>`
 
 Queries the administrative boundaries data inside the database.
@@ -499,20 +499,20 @@ Queries the administrative boundaries data inside the database.
 **Examples:**
 
 ```bash
-mada-adm query "Ambohi" --page-size 9
+deno task cli:query "Ambohi" --page-size 9
 ```
 
 That command searches for any ADM territory that starts with the word "Ambohi"
 and returns 9 results per page.
 
 ```bash
-mada-adm query 6 --type id --level district
+deno task cli:query 6 --type id --level district
 ```
 
 That command searches for the district with the **ID** of `6`.
 
 ```bash
-mada-adm query "-18.9189 47.55295" --type coordinates --level commune
+deno task cli:query "-18.9189 47.55295" --type coordinates --level commune
 ```
 
 That command searches for the commune that is located at the geographic
@@ -638,23 +638,23 @@ identifier options to correctly locate the administrative boundary:
 
 - **Update a value (Province):**
   ```bash
-  mada-adm update-field province value --province "Antananarivo" --value "Tananarive"
+  deno task cli:update-field province value --province "Antananarivo" --value "Tananarive"
   ```
 - **Update GeoJSON (Region via file):**
   ```bash
-  mada-adm update-field region geojson --region "Analamanga" --value-file "analamanga.json"
+  deno task cli:update-field region geojson --region "Analamanga" --value-file "analamanga.json"
   ```
 - **Update a value (District):**
   ```bash
-  mada-adm update-field district value --district "Ambohidratrimo" --value "Ambohidratrimo New"
+  deno task cli:update-field district value --district "Ambohidratrimo" --value "Ambohidratrimo New"
   ```
 - **Update GeoJSON (Commune via path):**
   ```bash
-  mada-adm update-field commune geojson --commune.value "Ivato" --commune.district "Ambohidratrimo"  --value-path "/tmp/ivato.json"
+  deno task cli:update-field commune geojson --commune.value "Ivato" --commune.district "Ambohidratrimo"  --value-path "/tmp/ivato.json"
   ```
 - **Update a value (Fokontany):**
   ```bash
-  mada-adm update-field fokontany value --fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --value "Ivato City"
+  deno task cli:update-field fokontany value --fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --value "Ivato City"
   ```
 
 ## Map Viewer

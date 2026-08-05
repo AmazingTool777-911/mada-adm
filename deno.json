@@ -5,6 +5,7 @@
     "cli:set-config": "deno -E --env -N -R -W --allow-ffi -S commands/index.ts set-config",
     "cli:update-field": "deno -E --env -N -R -W --allow-ffi -S commands/index.ts update-field",
     "cli:clear": "deno -E --env -N -R -W --allow-ffi -S commands/index.ts clear",
+    "cli:query": "deno -E --env -N -R -W --allow-ffi -S commands/index.ts query",
     "compile:windows:x86_64": "deno compile --self-extracting --target x86_64-pc-windows-msvc --output ./bin/x86_64-pc-windows-msvc/mada-adm --include commands/workers --include data/inputs --exclude commands/.args --exclude db/.ca-certificates --exclude db/.sqlite --exclude redis/.ca-certificates -E -N -R -W --allow-ffi -S commands/index.ts",
     "compile:macos:x86_64": "deno compile --self-extracting --target x86_64-apple-darwin --output ./bin/x86_64-apple-darwin/mada-adm --include commands/workers --include data/inputs --exclude commands/.args --exclude db/.ca-certificates --exclude db/.sqlite --exclude redis/.ca-certificates -E -N -R -W --allow-ffi -S commands/index.ts",
     "compile:macos:arm64": "deno compile --self-extracting --target aarch64-apple-darwin --output ./bin/aarch64-apple-darwin/mada-adm --include commands/workers --include data/inputs --exclude commands/.args --exclude db/.ca-certificates --exclude db/.sqlite --exclude redis/.ca-certificates -E -N -R -W --allow-ffi -S commands/index.ts",
@@ -17,6 +18,7 @@
     "map-viewer:start": "cd ./map-viewer && deno task start",
     "rest-api:start": "cd ./rest-api && deno task start",
     "extract-adm-inputs": "deno run --allow-env --allow-net --allow-read --allow-write --env scripts/extract-adm-inputs/extract-adm-inputs.script.ts",
+    "generate-catalogs": "deno run -R -W ./scripts/generate-data-catalogs.script.ts",
     "test": "deno test -R -E --env"
   },
   "imports": {

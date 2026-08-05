@@ -4,3 +4,13 @@ data/catalogs/province filter=lfs diff=lfs merge=lfs -text
 data/catalogs/region filter=lfs diff=lfs merge=lfs -text
 data/catalogs/commune filter=lfs diff=lfs merge=lfs -text
 data/catalogs/district filter=lfs diff=lfs merge=lfs -text
+readme-images/current-location-pin.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/data-sources.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/main-command.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/topo-icon-2.png filter=lfs diff=lfs merge=lfs -text
+readme-images/workers.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/cascade-mode.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/custom-location-pin.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/global-mode.gif filter=lfs diff=lfs merge=lfs -text
+readme-images/landing-ss.PNG filter=lfs diff=lfs merge=lfs -text
+readme-images/topo-icon-1.png filter=lfs diff=lfs merge=lfs -text

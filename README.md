@@ -15,12 +15,46 @@ seeding.
 
 - [Overview](#overview)
 - [Getting Started](#getting-started)
-- [Project Structure & Content](#project-structure--content)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Testing](#testing)
+  - [Compiling](#compiling)
+  - [Using the Compiled Executable](#using-the-compiled-executable)
+  - [Running CLI Tasks](#running-cli-tasks)
+    - [Local Execution (Deno)](#local-execution-deno)
+    - [Docker Execution](#docker-execution)
+- [Database Support](#database-support)
 - [Fundamental Concepts & Architecture](#fundamental-concepts--architecture)
+  - [Worker Pipeline](#worker-pipeline)
+  - [Batching & Efficiency](#batching--efficiency)
+  - [Schema Flexibility & Configuration](#schema-flexibility--configuration)
+  - [Indexing & Collation](#indexing--collation)
+    - [Text Indexing Summary](#text-indexing-summary)
+  - [Fault Tolerance: Redis vs In-Memory](#fault-tolerance-redis-vs-in-memory)
 - [CLI Commands & Usage](#cli-commands--usage)
+  - [Global Options & Environment Variables](#global-options--environment-variables)
+    - [Common Options](#common-options)
+    - [PostgreSQL Configuration](#postgresql-configuration)
+    - [MySQL Configuration](#mysql-configuration)
+    - [SQLite Configuration](#sqlite-configuration)
+    - [MongoDB Configuration](#mongodb-configuration)
+  - [Commands](#commands)
+    - [Root / Index / Main command](#root--index--main-command)
+    - [Query sub-command: `query`](#query-sub-command-query)
+    - [Set database configuration sub-command: `set-config`](#set-database-configuration-sub-command-set-config)
+    - [Clear database sub-command: `clear`](#clear-database-sub-command-clear)
+    - [Update a record's field sub-command: `update-field`](#update-a-records-field-sub-command-update-field)
+- [Map Viewer](#map-viewer)
+- [Data catalogs](#data-catalogs)
 - [Current Status](#current-status)
 - [Known Issues & Future Improvements](#known-issues--future-improvements)
+  - [Progress Bar Rendering:](#progress-bar-rendering)
+  - [Topological Data Inconsistencies:](#topological-data-inconsistencies)
+  - [Full REST API](#full-rest-api)
 - [License & Attribution](#license--attribution)
+  - [Software License](#software-license)
+  - [Data License & Attribution](#data-license--attribution)
+    - [Requirements for Derived Works](#requirements-for-derived-works)
 
 ## Getting Started
 
@@ -35,14 +69,19 @@ Follow these steps to set up the project locally.
 2. **Deno**: The project is built with Deno. You need to have it installed on
    your machine.
    - [Install Deno](https://docs.deno.com/runtime/getting_started/installation/)
-3. **Database Software**: This project supports PostgreSQL, SQLite, MySQL, and
-   MongoDB.
-4. **Redis**: Used for job orchestration, progress tracking, and resumable
-   state. This is required if using the default configuration.
+3. **Database Software**: This project supports either of **PostgreSQL**,
+   **SQLite**, **MySQL**, or **MongoDB**.
+   - [Download PostgreSQL](https://www.postgresql.org/download/)
+   - [Download SQLite](https://sqlite.org/download.html)
+   - [Download MySQL](https://www.mysql.com/downloads/)
+   - [Use MongoDB](https://www.mongodb.com/)
+4. **Redis (optional)**: Used for job orchestration, progress tracking, and
+   resumable state of the data seeding task.
+   - [Download Redis](https://redis.io/downloads/)
 
 > [!TIP]
 > **Skip the setup?** If you have Docker installed, you can bypass the local
-> installation of Deno and Redis by using the
+> installation of both **Deno** and **Redis** by using the
 > [Docker setup](#running-with-docker).
 
 ### Installation
@@ -50,7 +89,6 @@ Follow these steps to set up the project locally.
 1. **Clone the repository** (make sure Git LFS is installed first):
    ```bash
    git clone <repository-url>
-   cd mada-adm
    ```
 
 2. **Install dependencies**: Run the following command to install the project
@@ -120,6 +158,9 @@ deno task cli --db-type postgres \
   --processing-workers-count 4 --queue-batch-size 10
 ```
 
+You can view the full CLI commands reference in the
+[CLI Commands & Usage](#cli-commands--usage) section.
+
 #### Docker Execution
 
 ```bash
@@ -154,10 +195,10 @@ where available. Minimum supported versions are listed below.
 This repository serves as a centralized hub for administrative data and the
 logic required to process it:
 
-- **CLI Source Code**: The Deno source code for the command-line interface
-  (found in `/commands/`).
-- **CLI Executables**: The compiled standalone executables for different
-  platforms (found in `/bin/`).
+- **CLI commands (`/commands/`)**: The Deno source code for the command-line
+  interface's commands.
+- **CLI Executables (`bin/`)**: The compiled standalone executables for
+  different platforms.
 - **Raw Sources (`data/geojson/`)**: Original GeoJSON spatial data files
   collected from external sources.
 - **Intermediate Format (`data/ndjson/`)**: Raw sources converted into Newline
@@ -166,27 +207,20 @@ logic required to process it:
 - **Seeding Inputs (`data/inputs/`)**: The final, optimized, and schema-aware
   datasets generated by the extraction scripts, ready to be ingested by the CLI
   index command.
-- **Extraction Scripts**: Utility scripts (found in `/scripts/`) used to
-  orchestrate the transition from raw GeoJSON to the final seeding inputs.
-- **Data Catalogs**: Structured references for administrative metadata.
-
-> [!WARNING]
-> **Data Quality & Topological Inconsistencies:** The current official GeoJSON
-> data for regions is not fully topologically inclusive of the geometrical
-> boundaries of the underlying districts. This results in visual inconsistencies
-> between these parent-child levels, likely due to oversimplified or outdated
-> source features.
->
-> If you have access to a more accurate official dataset for Madagascar's
-> regional boundaries, contributions are highly welcome. Alternatively, we are
-> planning a manual merge of district features to reconstruct accurate region
-> and province boundaries. If you would like to help with this task, please
-> reach out or submit a PR.
+- **Data Catalogs (`data/catalogs/`)**: Catalogs of the administrative
+  boundaries data, structured and organized in hierarchy, found in both _CSV_
+  and _JSON_ formats, and generated from the seeding inputs.
+- **Utility Scripts (`scripts/`)**: Utility scripts used to generate both the
+  seeding inputs and the data catalogs.
+- **Map Viewer (`map-viewer/`)**: A mini web application to visualize and query
+  the seeded administrative boundaries.
+- **REST API (`rest-api/`)**: A REST API to query the seeded administrative
+  boundaries, also used by the map viewer.
 
 ## Fundamental Concepts & Architecture
 
-Understanding the internal mechanics of the seeding process helps in optimizing
-performance and ensuring data integrity.
+Understanding the internal mechanics of the **seeding process (main command)**
+helps in optimizing performance and ensuring data integrity.
 
 ### Worker Pipeline
 
@@ -197,17 +231,19 @@ administrative hierarchy efficiently:
    Their primary role is to resolve foreign keys for child administrative levels
    (e.g., finding the `regionId` for a district) by querying the already-seeded
    parent data. This stage is computationally intensive and can be parallelized
-   using `--processing-workers-count`.
+   with multiple workers by using `--processing-workers-count`.
 2. **Insert Worker**: A single, unique worker responsible for performing the
    final database writes. Using a single worker for insertion prevents
    overwhelming the database with concurrent write requests and maintains
    transaction integrity.
 
+![Workers architecture](/readme-images/workers.gif)
+
 ### Batching & Efficiency
 
-To reduce database round-trips, ADM data is processed and inserted in batches.
-You can configure the batch size using `--queue-batch-size` to balance memory
-usage and insertion speed.
+To reduce database round-trips, the ADM data are processed and inserted in
+batches. You can configure the batch size using `--queue-batch-size` to balance
+memory usage and insertion speed.
 
 ### Schema Flexibility & Configuration
 
@@ -218,8 +254,8 @@ needs.
 > [!TIP]
 > To better understand how these configurations impact the resulting database
 > schema and the relationships between administrative levels, you can open the
-> [diagrams/database.drawio](file:///home/tolotra/it/projects/mada-adm/diagrams/database.drawio)
-> file with [Draw.io](https://app.diagrams.net/).
+> `diagrams/database.drawio` file
+> ([see here](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/tree/main/diagrams)).
 >
 > The document contains multiple pages, each representing a different state of
 > these configuration values.
@@ -242,11 +278,15 @@ following database-level conventions:
   regions, etc.) use case-insensitive Unicode collations. This enables flexible
   exact matches and reliable `<prefix>%` wildcard queries regardless of casing
   or accents.
-- **B-Tree Indexes**: All primary identification fields and foreign key columns
-  are indexed using B-tree structures. This ensures that the hierarchical
-  relationship lookups remain fast even as the dataset grows, while also
-  providing a foundation for basic text-search queries. Advanced full-text
+- **B-Tree Indexes**: All primary identification text fields and foreign key
+  columns are indexed using **B-tree** structures. This ensures that the
+  hierarchical relationship lookups remain fast even as the dataset grows, while
+  also providing a foundation for basic text-search queries. Advanced full-text
   indexing strategies are left as an implementation choice for the end-user.
+
+> [!NOTE] The indexing strategies for every table for each database type have
+> been scrutinized through the database's **query planner** such that the
+> existing queries are the most optimized in average.
 
 #### Text Indexing Summary
 
@@ -274,7 +314,15 @@ global and scoped configurations.
 
 These options can be provided either as CLI flags or environment variables. If
 both are provided, the CLI flags take precedence. They apply globally across all
-commands. All options are optional.
+commands. All options are optional. The global options are generally concerned
+with the **database connection parameters**, the database **database type**, and
+a **debug flag**.
+
+> [!TIP]
+> Since the global options can be repetitive across the main command and
+> multiple sub-commands, the recommended workflow is to set those global options
+> as environment variables so that the main command and the sub-commands'
+> options are filled only with their command-scoped options.
 
 #### Common Options
 
@@ -285,32 +333,38 @@ commands. All options are optional.
 
 #### PostgreSQL Configuration
 
-| CLI Flag            | Environment Variable | Description                                                           | Default     |
-| :------------------ | :------------------- | :-------------------------------------------------------------------- | :---------- |
-| `--pg.schema`       | `PG_SCHEMA`          | The PostgreSQL schema to use (e.g. public).                           | `public`    |
-| `--pg.url`          | `PG_URL`             | The URL to connect to the PostgreSQL database.                        | -           |
-| `--pg.host`         | `PG_HOST`            | Hostname or IP address of the PostgreSQL server.                      | `localhost` |
-| `--pg.port`         | `PG_PORT`            | Port number of the PostgreSQL server.                                 | `5432`      |
-| `--pg.user`         | `PG_USER`            | Username for authenticating with the PostgreSQL server.               | `postgres`  |
-| `--pg.password`     | `PG_PASSWORD`        | Password for authenticating with the PostgreSQL server.               | `""`        |
-| `--pg.database`     | `PG_DATABASE`        | Name of the database to be used.                                      | `postgres`  |
-| `--pg.ssl`          | `PG_SSL`             | Whether to use SSL for the connection.                                | `false`     |
-| `--pg.ca-cert-file` | `PG_CA_CERT_FILE`    | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
-| `--pg.ca-cert-path` | `PG_CA_CERT_PATH`    | Full path to the CA cert file.                                        | -           |
+| CLI Flag                | Environment Variable  | Description                                                           | Default     |
+| :---------------------- | :-------------------- | :-------------------------------------------------------------------- | :---------- |
+| `--pg.schema`           | `PG_SCHEMA`           | The PostgreSQL schema to use (e.g. public).                           | `public`    |
+| `--pg.url`              | `PG_URL`              | The URL to connect to the PostgreSQL database.                        | -           |
+| `--pg.host`             | `PG_HOST`             | Hostname or IP address of the PostgreSQL server.                      | `localhost` |
+| `--pg.port`             | `PG_PORT`             | Port number of the PostgreSQL server.                                 | `5432`      |
+| `--pg.user`             | `PG_USER`             | Username for authenticating with the PostgreSQL server.               | `postgres`  |
+| `--pg.password`         | `PG_PASSWORD`         | Password for authenticating with the PostgreSQL server.               | `""`        |
+| `--pg.database`         | `PG_DATABASE`         | Name of the database to be used.                                      | `postgres`  |
+| `--pg.ssl`              | `PG_SSL`              | Whether to use SSL for the connection.                                | `false`     |
+| `--pg.ca-cert-file`     | `PG_CA_CERT_FILE`     | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
+| `--pg.ca-cert-path`     | `PG_CA_CERT_PATH`     | Full path to the CA cert file.                                        | -           |
+| `--pg.connection-limit` | `PG_CONNECTION_LIMIT` | Maximum number of connections in the PostgreSQL pool                  | `10`        |
 
 #### MySQL Configuration
 
-| CLI Flag               | Environment Variable | Description                                                           | Default     |
-| :--------------------- | :------------------- | :-------------------------------------------------------------------- | :---------- |
-| `--mysql.url`          | `MYSQL_URL`          | The URL to connect to the MySQL database.                             | -           |
-| `--mysql.host`         | `MYSQL_HOST`         | Hostname or IP address of the MySQL server.                           | `localhost` |
-| `--mysql.port`         | `MYSQL_PORT`         | Port number of the MySQL server.                                      | `3306`      |
-| `--mysql.user`         | `MYSQL_USER`         | Username for authenticating with the MySQL server.                    | `root`      |
-| `--mysql.password`     | `MYSQL_PASSWORD`     | Password for authenticating with the MySQL server.                    | `""`        |
-| `--mysql.database`     | `MYSQL_DATABASE`     | Name of the database to be used.                                      | `mysql`     |
-| `--mysql.ssl`          | `MYSQL_SSL`          | Whether to use SSL for the connection.                                | `false`     |
-| `--mysql.ca-cert-file` | `MYSQL_CA_CERT_FILE` | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)** | -           |
-| `--mysql.ca-cert-path` | `MYSQL_CA_CERT_PATH` | Full path to the CA cert file.                                        | -           |
+| CLI Flag                   | Environment Variable     | Description                                                                                                            | Default     |
+| :------------------------- | :----------------------- | :--------------------------------------------------------------------------------------------------------------------- | :---------- |
+| `--mysql.url`              | `MYSQL_URL`              | The URL to connect to the MySQL database.                                                                              | -           |
+| `--mysql.host`             | `MYSQL_HOST`             | Hostname or IP address of the MySQL server.                                                                            | `localhost` |
+| `--mysql.port`             | `MYSQL_PORT`             | Port number of the MySQL server.                                                                                       | `3306`      |
+| `--mysql.user`             | `MYSQL_USER`             | Username for authenticating with the MySQL server.                                                                     | `root`      |
+| `--mysql.password`         | `MYSQL_PASSWORD`         | Password for authenticating with the MySQL server.                                                                     | `""`        |
+| `--mysql.database`         | `MYSQL_DATABASE`         | Name of the database to be used.                                                                                       | `mysql`     |
+| `--mysql.ssl`              | `MYSQL_SSL`              | Whether to use SSL for the connection.                                                                                 | `false`     |
+| `--mysql.ca-cert-file`     | `MYSQL_CA_CERT_FILE`     | Filename of the CA cert under `db/.ca-certificates/`. **(Deno only)**                                                  | -           |
+| `--mysql.ca-cert-path`     | `MYSQL_CA_CERT_PATH`     | Full path to the CA cert file.                                                                                         | -           |
+| `--mysql.key-file`         | `MYSQL_KEY_FILE`         | Filename of the client key under `db.ca-certificates/`. **Note**: This only works when running from the Deno codebase. | -           |
+| `--mysql.key-path`         | `MYSQL_KEY_PATH`         | Full path to the client key file on disk.                                                                              | -           |
+| `--mysql.connection-limit` | `MYSQL_CONNECTION_LIMIT` | Maximum number of connections in the MySQL connections pool.                                                           | `10`        |
+| `--mysql.max-idle`         | `MYSQL_MAX_IDLE`         | Maximum number of idle connections in the MySQL connections pool.                                                      | -           |
+| `--mysql.idle-timeout`     | `MYSQL_IDLE_TIMEOUT`     | The maximum time a connection can sit unused in the pool before being closed.                                          | -           |
 
 #### SQLite Configuration
 
@@ -321,14 +375,17 @@ commands. All options are optional.
 
 #### MongoDB Configuration
 
-| CLI Flag                    | Environment Variable      | Description                                           | Default                     |
-| :-------------------------- | :------------------------ | :---------------------------------------------------- | :-------------------------- |
-| `--mongo.uri`               | `MONGO_URI`               | The URI to connect to the MongoDB database.           | `mongodb://localhost:27017` |
-| `--mongo.database`          | `MONGO_DATABASE`          | Name of the target MongoDB database.                  | `mada-adm`                  |
-| `--mongo.pool-size`         | `MONGO_POOL_SIZE`         | Maximum number of connections in the pool.            | `10`                        |
-| `--mongo.tls`               | `MONGO_TLS`               | Whether to use TLS for the connection.                | `false`                     |
-| `--mongo.tls-ca-path`       | `MONGO_TLS_CA_PATH`       | Full path to the CA certificate file.                 | -                           |
-| `--mongo.tls-cert-key-path` | `MONGO_TLS_CERT_KEY_PATH` | Full path to the client certificate and key PEM file. | -                           |
+| CLI Flag                                    | Environment Variable                | Description                                                      | Default                     |
+| :------------------------------------------ | :---------------------------------- | :--------------------------------------------------------------- | :-------------------------- |
+| `--mongo.uri`                               | `MONGO_URI`                         | The URI to connect to the MongoDB database.                      | `mongodb://localhost:27017` |
+| `--mongo.database`                          | `MONGO_DATABASE`                    | Name of the target MongoDB database.                             | `mada-adm`                  |
+| `--mongo.pool-size`                         | `MONGO_POOL_SIZE`                   | Maximum number of connections in the pool.                       | `10`                        |
+| `--mongo.tls`                               | `MONGO_TLS`                         | Whether to use TLS for the connection.                           | `false`                     |
+| `--mongo.tls-ca-path`                       | `MONGO_TLS_CA_PATH`                 | Full path to the CA certificate file.                            | -                           |
+| `--mongo.tls-cert-key-path`                 | `MONGO_TLS_CERT_KEY_PATH`           | Full path to the client certificate and key PEM file.            | -                           |
+| `--mongo.tls-certificate-key-file-password` | `MONGO_TLS_CERT_PASSWORD`           | Password for the client certificate key file if it is encrypted. | -                           |
+| `--mongo.tls-allow-invalid-certificates`    | `MONGO_TLS_CERT_PASSWORD`           | Whether to allow invalid certificates for the connection.        | `false`                     |
+| `--mongo.tls-allow-invalid-hostnames`       | `MONGO_TLS_ALLOW_INVALID_HOSTNAMES` | Whether to allow invalid hostnames for the connection.           | `false`                     |
 
 > [!IMPORTANT]
 > **MongoDB Replica Set:** Since the seeding pipeline utilizes multi-document
@@ -340,11 +397,21 @@ commands. All options are optional.
 > `--pg.ca-cert-file`) resolve paths relative to the internal project structure.
 > These **do not work** in the compiled binary because internal directories are
 > encapsulated. In the binary, always use the corresponding `-path` option with
-> a full path.
+> an **absolute full path**.
 
 ### Commands
 
-#### `mada-adm` (Index / Main Command)
+This section describes the CLI commands and their options. The CLI can be run in
+either of the following ways:
+
+- **Local Execution:** `deno task cli [arguments] [options]`: Run the CLI from
+  the Deno codebase (requires Deno to be installed either on the local machine
+  or inside Docker).
+- **Executable Execution:** `mada-adm [arguments] [options]`: Run the CLI from
+  the compiled binary (requires the compiled binary `mada-adm` or `mada-adm.exe`
+  for Windows to be present in the current working directory).
+
+#### Root / Index / Main command
 
 **CLI Execution:** `mada-adm [options]`\
 **Local Execution:** `deno task cli [options]`
@@ -366,6 +433,8 @@ workers and a batch size of 50 records per database round-trip._
 
 > **Note:** Resumable jobs are only supported when Redis is enabled. If the job
 > is executed entirely in-memory, it will restart from scratch if interrupted.
+
+![Seeding command example](/readme-images/main-command.gif)
 
 **Command-Scoped Options / Env Variables** These options control the job
 orchestration (Redis or In-Memory queues) specifically for the seeding pipeline.
@@ -394,6 +463,7 @@ All options are optional.
 
 | CLI Flag                                  | Environment Variable                    | Description                                              | Default |
 | :---------------------------------------- | :-------------------------------------- | :------------------------------------------------------- | :------ |
+| `--processing-workers-count`              | `PROCESSING_WORKERS_COUNT`              | Number of concurrent processing workers to spawn.        | `2`     |
 | `--queue-batch-size`                      | `QUEUE_BATCH_SIZE`                      | Batch size for processing messages concurrently.         | `1`     |
 | `--queue-max-retries`                     | `QUEUE_MAX_RETRIES`                     | Maximum number of retries per batch in case of an error. | `3`     |
 | `--in-memory-processing-hwm`              | `IN_MEMORY_PROCESSING_HWM`              | High water mark for in-memory processing workers.        | `1`     |
@@ -401,11 +471,54 @@ All options are optional.
 | `--worker-healthcheck-interval`           | `WORKER_HEALTHCHECK_INTERVAL`           | Interval for worker healthcheck in milliseconds.         | `10000` |
 | `--worker-pending-min-duration-threshold` | `WORKER_PENDING_MIN_DURATION_THRESHOLD` | Threshold for claiming pending messages in milliseconds. | `60000` |
 | `--xread-block-duration`                  | `XREAD_BLOCK_DURATION`                  | Duration in milliseconds for XREAD BLOCK calls in Redis. | `5000`  |
-| `--processing-workers-count`              | `PROCESSING_WORKERS_COUNT`              | Number of concurrent processing workers to spawn.        | `2`     |
 
-### Sub-Commands
+#### Query sub-command: `query`
 
-#### `set-config`
+**CLI Execution:** `mada-adm query <search>`\
+**Local Execution:** `deno task cli:query <search>`
+
+Queries the administrative boundaries data inside the database.
+
+**Arguments:**
+
+- `<search>`: The search term. Can be an **ADM territory name**, an **ID**, or
+  **geographic coordinates**. If passing coordinates, they must be **valid**
+  geographic coordinates values; wrap them inside double quotes `""` if
+  space-separated.
+
+**Options:**
+
+- `--type <type>`: The type of the query. Value: `name` (default), `id`, or
+  `coordinates`. For `coordinates`, the search term must be **valid** geographic
+  coordinates; wrap them inside double quotes `""` if space-separated.
+- `--level <level>`: The administrative level to query (`province`, `region`,
+  `district`, `commune`, `fokontany`). Required for **ID** query type.
+- `--page-size <pageSize>`: The number of records to return per page in the
+  results of a query by **ADM territory name**.
+
+**Examples:**
+
+```bash
+mada-adm query "Ambohi" --page-size 9
+```
+
+That command searches for any ADM territory that starts with the word "Ambohi"
+and returns 9 results per page.
+
+```bash
+mada-adm query 6 --type id --level district
+```
+
+That command searches for the district with the **ID** of `6`.
+
+```bash
+mada-adm query "-18.9189 47.55295" --type coordinates --level commune
+```
+
+That command searches for the commune that is located at the geographic
+coordinates `-18.9189 47.55295`.
+
+#### Set database configuration sub-command: `set-config`
 
 **CLI Execution:** `mada-adm set-config`\
 **Local Execution:** `deno task cli:set-config`
@@ -419,7 +532,7 @@ configurations from overriding each other. This allows you to work safely in the
 same database while running automated tests, performing experimentations, or
 maintaining separate project schemas without destructive interference.
 
-#### `clear`
+#### Clear database sub-command: `clear`
 
 **CLI Execution:** `mada-adm clear`\
 **Local Execution:** `deno task cli:clear`
@@ -427,7 +540,7 @@ maintaining separate project schemas without destructive interference.
 Drops all ADM tables and the configuration table from the database, effectively
 resetting the project state.
 
-#### `update-field`
+#### Update a record's field sub-command: `update-field`
 
 **CLI Execution:** `mada-adm update-field <adm-level> <field> [options]`\
 **Local Execution:** `deno task cli:update-field <adm-level> <field> [options]`
@@ -437,8 +550,8 @@ existing ADM record in the database.
 
 **Arguments:**
 
-- `<adm-level>`: The ADM level of the record (e.g. `province`, `region`,
-  `district`, `commune`, `fokontany`).
+- `<adm-level>`: The ADM level of the record (`province`, `region`, `district`,
+  `commune`, `fokontany`).
 - `<field>`: The specific field to update. Can be one of:
   - `value`: Updates the name/value of the administrative record (i.e., the
     `province` column for a province level, `region` for a region level, etc.).
@@ -513,15 +626,15 @@ existing ADM record in the database.
 Depending on the `<adm-level>` argument provided, you must provide the following
 identifier options to correctly locate the administrative boundary:
 
-| `<adm-level>` | Required Identifier Options                                                              | Example                                                                                                                              |
-| :------------ | :--------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
-| `province`    | `--province`                                                                             | `--province "Antananarivo"`                                                                                                          |
-| `region`      | `--region`                                                                               | `--region "Analamanga"`                                                                                                              |
-| `district`    | `--district.value`, `--district.region`                                                  | `--district.value "Ambohidratrimo" --district.region "Analamanga"`                                                                   |
-| `commune`     | `--commune.value`, `--commune.district`, `--commune.region`                              | `--commune.value "Ivato" --commune.district "Ambohidratrimo" --commune.region "Analamanga"`                                          |
-| `fokontany`   | `--fokontany.value`, `--fokontany.commune`, `--fokontany.district`, `--fokontany.region` | `--fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --fokontany.region "Analamanga"` |
+| `<adm-level>` | Required Identifier Options                                        | Example                                                                                              |
+| :------------ | :----------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| `province`    | `--province`                                                       | `--province "Antananarivo"`                                                                          |
+| `region`      | `--region`                                                         | `--region "Analamanga"`                                                                              |
+| `district`    | `--district`                                                       | `--district "Ambohidratrimo"`                                                                        |
+| `commune`     | `--commune.value`, `--commune.district`                            | `--commune.value "Ivato" --commune.district "Ambohidratrimo"`                                        |
+| `fokontany`   | `--fokontany.value`, `--fokontany.commune`, `--fokontany.district` | `--fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo"` |
 
-#### Examples
+**Examples:**
 
 - **Update a value (Province):**
   ```bash
@@ -533,42 +646,74 @@ identifier options to correctly locate the administrative boundary:
   ```
 - **Update a value (District):**
   ```bash
-  mada-adm update-field district value --district.value "Ambohidratrimo" --district.region "Analamanga" --value "Ambohidratrimo New"
+  mada-adm update-field district value --district "Ambohidratrimo" --value "Ambohidratrimo New"
   ```
 - **Update GeoJSON (Commune via path):**
   ```bash
-  mada-adm update-field commune geojson --commune.value "Ivato" --commune.district "Ambohidratrimo" --commune.region "Analamanga" --value-path "/tmp/ivato.json"
+  mada-adm update-field commune geojson --commune.value "Ivato" --commune.district "Ambohidratrimo"  --value-path "/tmp/ivato.json"
   ```
 - **Update a value (Fokontany):**
   ```bash
-  mada-adm update-field fokontany value --fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --fokontany.region "Analamanga" --value "Ivato City"
+  mada-adm update-field fokontany value --fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --value "Ivato City"
   ```
 
-## Current Status
+## Map Viewer
 
-- **Extraction Pipeline**: Fully functional pipeline for seeding and indexing
-  Madagascar's administrative boundaries data from optimized GeoJSON sources,
-  with supported sub-commands for configuration management (`set-config`), data
-  resetting (`clear`), and field-level updates (`update-field`).
-- **Database Adapters**: Native support for PostgreSQL, SQLite, MySQL, and
-  MongoDB.
+A mini **web application** to **visualize** and **query** the seeded
+administrative boundaries data onto a **map**. You can also **pin** custom
+locations to the map.
 
-### Coming Soon
+![Landing page of the Map Viewer web app](/readme-images/landing-ss.PNG)
 
-- **Map Viewer**: A mini web application to visualize and query the seeded
-  administrative boundaries.
-- **Data Catalog**: A comprehensive, public-facing catalog of administrative
-  metadata.
+This is a workspace member of the project and its codebase can be found inside
+the `map-viewer/` directory
+([see here for more details](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/tree/main/map-viewer)).
+
+## Data catalogs
+
+There are also **data catalogs** generated from the _seeding inputs_ that
+represent the administrative boundaries data **in hierarachy** for each level in
+both the **CSV** format and the **JSON** format. They can be found inside the
+`data/catalogs/` directory
+([see here for more details](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/tree/main/data/catalogs)).
 
 ## Known Issues & Future Improvements
 
-- **Progress Bar Rendering**: The real-time terminal progress bar may
-  occasionally flicker or render inconsistently depending on the terminal
-  emulator and environment (e.g., within certain CI/CD logs or simplified
-  shells).
-- **Topological Data Inconsistencies**: As mentioned in the
-  [Data Quality remark](#project-structure--content), some boundary
-  misalignments exist between regions and districts.
+### Progress Bar Rendering:
+
+The real-time terminal progress bar may occasionally flicker or render
+inconsistently depending on the terminal emulator and environment.
+
+### Topological Data Inconsistencies:
+
+The current official GeoJSON data for regions is **not fully topologically
+inclusive** of the geometrical boundaries of the underlying districts. This
+results in visual inconsistencies between these parent-child levels, likely due
+to oversimplified or outdated source features.
+
+In the images below, you can see how the boundaries of some districts (in
+orange) slightly overflow from the boundaries of their parent region Analamanga
+(in green).
+
+![Topological boundaries inconsistencies between the region Analamanga and its
+underlying districts 2](/readme-images/topo-icon-2.png)
+
+![Topological boundaries inconsistencies between the region Analamanga and its
+underlying districts 1](/readme-images/topo-icon-1.png)
+
+If you have access to a more accurate official dataset for Madagascar's regional
+boundaries, **contributions** are highly welcome. Alternatively, we are planning
+a manual merge of district features to reconstruct accurate region and province
+boundaries. If you would like to help with this task, please reach out or submit
+a **PR**.
+
+### Full REST API
+
+The current **REST API** that lies inside the `rest-api/` directory is only
+**limited** to the endpoints that are needed by the _**Map Viewer**_ web
+application. It is possible that there may be a need to fully extend the REST
+API in the future to support various flexible use cases for a general purpose
+**administrative boundaries data API**.
 
 ## License & Attribution
 

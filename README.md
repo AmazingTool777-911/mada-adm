@@ -431,8 +431,9 @@ deno task cli --db-type postgres \
 _In this example, we connect to a PostgreSQL database with 4 parallel processing
 workers and a batch size of 50 records per database round-trip._
 
-> **Note:** Resumable jobs are only supported when Redis is enabled. If the job
-> is executed entirely in-memory, it will restart from scratch if interrupted.
+> [!WARNING]
+> **Resumable** jobs are only supported when Redis is **enabled**. If the job is
+> executed fully in-memory, it will restart from scratch if interrupted.
 
 ![Seeding command example](/readme-images/main-command.gif)
 
@@ -492,9 +493,12 @@ Queries the administrative boundaries data inside the database.
   `coordinates`. For `coordinates`, the search term must be **valid** geographic
   coordinates; wrap them inside double quotes `""` if space-separated.
 - `--level <level>`: The administrative level to query (`province`, `region`,
-  `district`, `commune`, `fokontany`). Required for **ID** query type.
+  `district`, `commune`, `fokontany`). Required for **id** query type.
 - `--page-size <pageSize>`: The number of records to return per page in the
   results of a query by **ADM territory name**.
+
+Here is a recording of the `query` sub-command in action:
+![Example of a query](/readme-images/query-sub-command.gif)
 
 **Examples:**
 
@@ -525,6 +529,9 @@ coordinates `-18.9189 47.55295`.
 
 Interactively sets or updates the Mada ADM configuration stored in the database.
 
+Here is a recording of the `set-config` sub-command in action:
+![Example of the set-config command](/readme-images/set-config-sub-command.gif)
+
 **💡 Why use `set-config`?** This command is extremely useful for keeping
 different environments isolated. By changing the configuration (e.g. setting
 unique table prefixes), you can prevent different sets of tables or
@@ -539,6 +546,9 @@ maintaining separate project schemas without destructive interference.
 
 Drops all ADM tables and the configuration table from the database, effectively
 resetting the project state.
+
+Here is a recording of the `clear` sub-command in action:
+![Example of the clear command](/readme-images/clear-sub-command.gif)
 
 #### Update a record's field sub-command: `update-field`
 
@@ -633,6 +643,9 @@ identifier options to correctly locate the administrative boundary:
 | `district`    | `--district`                                                       | `--district "Ambohidratrimo"`                                                                        |
 | `commune`     | `--commune.value`, `--commune.district`                            | `--commune.value "Ivato" --commune.district "Ambohidratrimo"`                                        |
 | `fokontany`   | `--fokontany.value`, `--fokontany.commune`, `--fokontany.district` | `--fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo"` |
+
+Here is a recording of the `update-field` sub-command in action:
+![Example of the update-field command](/readme-images/update-field-sub-command.gif)
 
 **Examples:**
 

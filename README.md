@@ -51,6 +51,7 @@ seeding.
   - [Progress Bar Rendering:](#progress-bar-rendering)
   - [Topological Data Inconsistencies:](#topological-data-inconsistencies)
   - [Full REST API](#full-rest-api)
+  - [Support for more database adapters](#support-for-more-database-adapters)
 - [License & Attribution](#license--attribution)
   - [Software License](#software-license)
   - [Data License & Attribution](#data-license--attribution)
@@ -443,6 +444,10 @@ All options are optional.
 
 **Redis Options**
 
+> 💡 When **Redis** is enabled, the seeding job uses its
+> [Redis Streams API](https://redis.io/docs/latest/develop/data-types/streams/)
+> to persist and process the administrative boundaries data items in batches.
+
 | CLI Flag               | Environment Variable | Description                                                                  | Default     |
 | :--------------------- | :------------------- | :--------------------------------------------------------------------------- | :---------- |
 | `--disable-redis`      | `DISABLE_REDIS`      | Disable Redis connection. Uses the in-memory queue instead.                  | `false`     |
@@ -498,6 +503,7 @@ Queries the administrative boundaries data inside the database.
   results of a query by **ADM territory name**.
 
 Here is a recording of the `query` sub-command in action:
+
 ![Example of a query](/readme-images/query-sub-command.gif)
 
 **Examples:**
@@ -530,14 +536,15 @@ coordinates `-18.9189 47.55295`.
 Interactively sets or updates the Mada ADM configuration stored in the database.
 
 Here is a recording of the `set-config` sub-command in action:
+
 ![Example of the set-config command](/readme-images/set-config-sub-command.gif)
 
-**💡 Why use `set-config`?** This command is extremely useful for keeping
-different environments isolated. By changing the configuration (e.g. setting
-unique table prefixes), you can prevent different sets of tables or
-configurations from overriding each other. This allows you to work safely in the
-same database while running automated tests, performing experimentations, or
-maintaining separate project schemas without destructive interference.
+> **💡 Why use `set-config`?** This command is extremely useful for keeping
+> different environments isolated. By changing the configuration (e.g. setting
+> unique table prefixes), you can prevent different sets of tables or
+> configurations from overriding each other. This allows you to work safely in
+> the same database while running automated tests, performing experimentations,
+> or maintaining separate project schemas without destructive interference.
 
 #### Clear database sub-command: `clear`
 
@@ -548,6 +555,7 @@ Drops all ADM tables and the configuration table from the database, effectively
 resetting the project state.
 
 Here is a recording of the `clear` sub-command in action:
+
 ![Example of the clear command](/readme-images/clear-sub-command.gif)
 
 #### Update a record's field sub-command: `update-field`
@@ -645,6 +653,7 @@ identifier options to correctly locate the administrative boundary:
 | `fokontany`   | `--fokontany.value`, `--fokontany.commune`, `--fokontany.district` | `--fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo"` |
 
 Here is a recording of the `update-field` sub-command in action:
+
 ![Example of the update-field command](/readme-images/update-field-sub-command.gif)
 
 **Examples:**
@@ -727,6 +736,15 @@ The current **REST API** that lies inside the `rest-api/` directory is only
 application. It is possible that there may be a need to fully extend the REST
 API in the future to support various flexible use cases for a general purpose
 **administrative boundaries data API**.
+
+### Support for more database adapters
+
+Currently, the project supports **PostgreSQL**, **SQLite**, **MySQL**, and
+**MongoDB**. However, depending on the future needs for the support for other
+database types such as
+[Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server) or
+[Oracle Database](https://www.oracle.com/database), it may be necessary to
+extend the project to support these databases.
 
 ## License & Attribution
 

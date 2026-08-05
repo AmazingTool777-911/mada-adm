@@ -15,7 +15,10 @@ with a **SSR** layer, all powered by [Vite](https://vitejs.dev/).
 The UI styling is done with the [Tailwind CSS](https://tailwindcss.com/) based
 framework [daiyUI](https://daisyui.com).
 
-The map library being used is [Maplibre GL JS](https://maplibre.org).
+The map library being used is [Maplibre GL JS](https://maplibre.org) coupled
+with [OpenFreeMap](https://openfreemap.org/) and
+[Esri World Imagery](https://www.esri.com/en-us/arcgis/products/arcgis-online/overview)
+as the base map tiles layers providers.
 
 ## Getting Started
 

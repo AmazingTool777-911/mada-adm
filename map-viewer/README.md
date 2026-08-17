@@ -36,6 +36,12 @@ deno task install
 deno task rest-api:start
 ```
 
+> [!IMPORTANT]
+> Make sure to start the **REST API** before starting the web application.
+>
+> Then, set the `FRESH_PUBLIC_REST_API_BASE_URL` environment variable to the
+> **base URL** of the **REST API** you just started.
+
 3. Start the web application in **development mode**:
 
 ```bash
@@ -120,3 +126,8 @@ located in the root directory of the project if you use a `.env` file.
 | `FRESH_PUBLIC_UNREFERENCED_ADM_GEOJSON_CLEANUP_INTERVAL` | The interval in milliseconds to wait for a geolocation response before cleaning up unreferenced ADM GeoJSON data.                                 | `300`                   |
 | `FRESH_PUBLIC_GEOLOCATION_TIMEOUT`                       | The maximum time in milliseconds to wait for a geolocation response.                                                                              | `10000`                 |
 | `FRESH_PUBLIC_GEOLOCATION_COORDINDATE_EPSILON`           | The maximum distance in meters between two consecutive geolocation coordinates to be considered as a new coordinate entry. (1.1 meters precision) | `0.00001`               |
+| `PROVINCE_ADM_GEOJSON_VERSION`                           | Version integers for the static ADM GeoJSON layer of the provinces.                                                                               | `1`                     |
+| `REGION_ADM_GEOJSON_VERSION`                             | Version integers for the static ADM GeoJSON layer of the regions.                                                                                 | `1`                     |
+| `DISTRICT_ADM_GEOJSON_VERSION`                           | Version integers for the static ADM GeoJSON layer of the districts.                                                                               | `1`                     |
+| `COMMUNE_ADM_GEOJSON_VERSION`                            | Version integers for the static ADM GeoJSON layer of the communes.                                                                                | `1`                     |
+| `FOKONTANY_ADM_GEOJSON_VERSION`                          | Version integers for the static ADM GeoJSON layer of the fokontanys.                                                                              | `1`                     |

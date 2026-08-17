@@ -28,3 +28,9 @@ deno task rest-api:start
 | Variable Name   | Description                      | Default Value |
 | :-------------- | :------------------------------- | :------------ |
 | `REST_API_PORT` | The port the API will listen on. | `8000`        |
+
+The environment variables that define the **database connection parameters** are
+the same
+[global options environment variables](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/tree/main#global-options--environment-variables)
+that are used by the `mada-adm` **CLI** tool found in the root `.env` file or
+provided through the **shell environment**.

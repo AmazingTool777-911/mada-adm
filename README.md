@@ -924,10 +924,6 @@ Also, **inaccuracies** might exist in the project's **inputs** data
   `Ambohidratrimo` in the **region** of `Bongolava` while its **official parent
   region** is `Analamanga`.
 
-In any case, **public data contributions** are highly welcomed in order to
-contribute to a better **base input data** for the project by submitting a
-**Pull Request (PR)**.
-
 ### Topological Data Inconsistencies:
 
 The current official GeoJSON data for regions is **not fully topologically
@@ -945,11 +941,11 @@ underlying districts 2](/readme-images/topo-icon-2.png)
 ![Topological boundaries inconsistencies between the region Analamanga and its
 underlying districts 1](/readme-images/topo-icon-1.png)
 
-If you have in your possessioon a more accurate official dataset for
-Madagascar's regional boundaries, **public contributions** are highly welcome.
-Alternatively, we are planning a manual merge of all the district features to
-reconstruct accurate regions and provinces boundaries data. If you would like to
-help with this task, please reach out or submit a **PR**.
+> **💡 Note:** If you are in any capacity able to **contribute** to the project,
+> whether it is a matter of introducing **changes to the codebase**, or
+> contributing **missing or accurate data** to the project, you can do that by
+> either submitting a **Pull Request (PR)**, opening an **issue**, or by
+> **contacting us** directly.
 
 ### Full REST API
 

@@ -1,8 +1,8 @@
 bin/
 commands/.args/
 db/.sqlite/
-db/.ca-certificates/
-redis/.ca-certificates/
+db/.pki/
+redis/.pki/
 .git/
 .env
 data/inputs/.generated

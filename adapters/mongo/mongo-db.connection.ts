@@ -1,7 +1,7 @@
 import * as path from "@std/path";
 import { type Db, MongoClient, ServerApiVersion } from "mongodb";
 
-import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
+import { DB_PKI_ASSETS_DIR, DbType } from "@scope/consts/db";
 import type {
   DbConnection,
   DbConnectionParams,
@@ -88,8 +88,8 @@ export class MongoDbConnection implements DbConnection {
     const uri = config.uri;
 
     const dbCaCertificatesDir = import.meta.dirname
-      ? path.join(import.meta.dirname, "../../", DB_CA_CERTIFICATES_DIR)
-      : path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR);
+      ? path.join(import.meta.dirname, "../../", DB_PKI_ASSETS_DIR)
+      : path.join(Deno.cwd(), DB_PKI_ASSETS_DIR);
 
     const tlsCAFile = config.tlsCaFile
       ? path.join(dbCaCertificatesDir, config.tlsCaFile)

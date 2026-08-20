@@ -131,7 +131,11 @@ import type {
   QueueWorkersMediator,
   WorkerPool,
 } from "@scope/lib/workers-mediators";
-import { injectRedisConnection, type RedisConnection } from "@scope/redis";
+import {
+  injectRedisConnection,
+  type RedisConnection,
+  type RedisConnectionParams,
+} from "@scope/redis";
 import type {
   GlobalCliConfig,
   GlobalCliConfigResolved,
@@ -739,8 +743,8 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           colors.gray(`   Redis Host: ${redisConfig.host}:${redisConfig.port}`),
         );
 
-        await redis.connect(
-          redisConfig.url || {
+        const redisConnectionParams: RedisConnectionParams = redisConfig.url ||
+          {
             host: redisConfig.host,
             port: redisConfig.port,
             username: redisConfig.user,
@@ -753,7 +757,10 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
             keyPath: redisConfig.keyPath,
             caCertFile: redisConfig.caCertFile,
             caCertPath: redisConfig.caCertPath,
-          },
+          };
+
+        await redis.connect(
+          redisConnectionParams,
         );
         console.log(
           colors.green.bold(`✅ Redis connection established successfully!\n`),
@@ -767,14 +774,7 @@ export class CliIndexCommand extends Command<GlobalCliConfig, void> {
           AdmRecord
         >(
           redis.client,
-          redisConfig.url || {
-            host: redisConfig.host,
-            port: redisConfig.port,
-            username: redisConfig.user,
-            password: redisConfig.password,
-            db: redisConfig.db,
-            ssl: redisConfig.ssl,
-          },
+          redisConnectionParams,
           {
             processingContextKey: "seed-adm:processing:context",
             processingStreamKey: "seed-adm:processing:stream",

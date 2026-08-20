@@ -11,16 +11,16 @@ export enum DbType {
 }
 
 /**
- * Directory under `db/` where CA certificate files are stored for secure
+ * Directory under `db/` where CA Public-Key Infrastructure (PKI) assets are stored for secure
  * database adapter connections.
  */
-export const DB_CA_CERTIFICATES_DIR: string = "db/.ca-certificates";
+export const DB_PKI_ASSETS_DIR: string = "db/.pki";
 
 /**
- * Directory under `redis/` where certificate files are stored for secure
+ * Directory under `redis/` where Public-Key Infrastructure (PKI) assets are stored for secure
  * Redis connections.
  */
-export const REDIS_CA_CERTIFICATES_DIR: string = "redis/.ca-certificates";
+export const REDIS_PKI_ASSETS_DIR: string = "redis/.pki";
 
 /**
  * Directory under `db/` where SQLite database files are stored.

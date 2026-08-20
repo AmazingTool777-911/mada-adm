@@ -2,7 +2,7 @@ import * as path from "@std/path";
 
 import { RedisClient } from "@iuioiua/redis";
 
-import { REDIS_CA_CERTIFICATES_DIR } from "@scope/consts/db";
+import { REDIS_PKI_ASSETS_DIR } from "@scope/consts/db";
 
 /**
  * Configuration for a Redis connection.
@@ -116,8 +116,8 @@ export class RedisConnection {
 
       if (typeof params !== "string") {
         const redisCaCertificatesDir = import.meta.dirname
-          ? path.join(import.meta.dirname, "../", REDIS_CA_CERTIFICATES_DIR)
-          : path.join(Deno.cwd(), REDIS_CA_CERTIFICATES_DIR);
+          ? path.join(import.meta.dirname, "../", REDIS_PKI_ASSETS_DIR)
+          : path.join(Deno.cwd(), REDIS_PKI_ASSETS_DIR);
         const resolvePath = (file?: string, full?: string) => {
           if (file) {
             return path.join(redisCaCertificatesDir, file);

@@ -2,7 +2,7 @@ import * as path from "@std/path";
 import mysql from "mysql2/promise";
 import type { Pool } from "mysql2/promise";
 
-import { DB_CA_CERTIFICATES_DIR, DbType } from "@scope/consts/db";
+import { DB_PKI_ASSETS_DIR, DbType } from "@scope/consts/db";
 import type {
   DbConnection,
   DbConnectionParams,
@@ -82,8 +82,8 @@ export class MySQLDbConnection implements DbConnection {
         const resolvePath = (file?: string, fullPath?: string) => {
           if (file) {
             const dbCaCertificatesDir = import.meta.dirname
-              ? path.join(import.meta.dirname, "../../", DB_CA_CERTIFICATES_DIR)
-              : path.join(Deno.cwd(), DB_CA_CERTIFICATES_DIR);
+              ? path.join(import.meta.dirname, "../../", DB_PKI_ASSETS_DIR)
+              : path.join(Deno.cwd(), DB_PKI_ASSETS_DIR);
             return path.join(dbCaCertificatesDir, file);
           }
           return fullPath ? path.resolve(fullPath) : undefined;

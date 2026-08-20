@@ -12,8 +12,8 @@ services:
       - ./bin:/app/bin
       - ./commands/.args:/app/commands/.args
       - ./db/.sqlite:/app/db/.sqlite
-      - ./db/.ca-certificates:/app/db/.ca-certificates
-      - ./redis/.ca-certificates:/app/redis/.ca-certificates
+      - ./db/.pki:/app/db/.pki
+      - ./redis/.pki:/app/redis/.pki
     depends_on:
       - redis
     networks:
@@ -22,7 +22,7 @@ services:
   redis:
     image: redis:alpine3.23
     ports:
-      - "6380:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
     networks:

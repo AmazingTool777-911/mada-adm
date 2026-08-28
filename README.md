@@ -755,12 +755,12 @@ workers and a batch size of 50 records per database round-trip._
 > [!WARNING]
 > When using the **compiled executables** and if you want to specify **PKI
 > files** such as a _client certificate_, a _client key_, or a _CA certificate_,
-> you must specify those files using the options that expect **full paths** such
-> as `--redis-cert-path`, `--redis-key-path`, or `--redis-ca-cert-path` instead
-> of the options that expect only **local files** inside of the `redis/.pki`
-> directory `--redis-cert-file`, `--redis-key-file`, or `--redis-ca-cert-file`
-> because the local directory `redis/.pki` is no longer accessible by the
-> compiled executables.
+> you must specify those files using the options that expect **full paths**
+> namely `--redis-cert-path`, `--redis-key-path`, or `--redis-ca-cert-path`
+> instead of the options that expect only **local files** inside of the
+> `redis/.pki` directory namely `--redis-cert-file`, `--redis-key-file`, or
+> `--redis-ca-cert-file` because the local directory `redis/.pki` is no longer
+> accessible by the compiled executables.
 
 **Queue & Worker Options**
 

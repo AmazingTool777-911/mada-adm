@@ -107,8 +107,13 @@ You can also use the **CLI tool** by running the **CLI tasks** defined in the
 root `deno.json` by using **Deno**.
 
 ```bash
-# Example: Launching the data integration pipeline with a PostreSQL database
+# Main command: Launches the data integration pipeline of the administrative boundaries data into a Postgres database
 deno task cli --db-type postgres \
+  --pg.user myuser --pg.password mypass --pg.database mada_adm \
+  --processing-workers-count 4 --queue-batch-size 10
+
+# Sub-command: Queries for administrative territories that start with the word "Ambohi" and returns 9 results per page
+deno task cli:query "Ambohi" --page-size 9 \
   --pg.user myuser --pg.password mypass --pg.database mada_adm \
   --processing-workers-count 4 --queue-batch-size 10
 ```

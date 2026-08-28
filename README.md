@@ -40,7 +40,7 @@ includes other toolings such as a **REST API** and a **web GUI** for
     - [SQLite Configuration](#sqlite-configuration)
     - [MongoDB Configuration](#mongodb-configuration)
   - [Commands](#commands)
-    - [Root / Index / Main command](#root--index--main-command)
+    - [Main / Root / Index command](#main--root--index-command)
     - [Query sub-command: `query`](#query-sub-command-query)
     - [Set database configuration sub-command: `set-config`](#set-database-configuration-sub-command-set-config)
     - [Clear database sub-command: `clear`](#clear-database-sub-command-clear)
@@ -735,22 +735,32 @@ workers and a batch size of 50 records per database round-trip._
 
 **Redis connection Options**
 
-| CLI Flag               | Environment Variable | Description                                                                  | Default     |
-| :--------------------- | :------------------- | :--------------------------------------------------------------------------- | :---------- |
-| `--disable-redis`      | `DISABLE_REDIS`      | Disable Redis connection. Uses the in-memory queue instead.                  | `false`     |
-| `--redis.url`          | `REDIS_URL`          | Full Redis connection URL.                                                   | -           |
-| `--redis.host`         | `REDIS_HOST`         | Hostname or IP address of the Redis server.                                  | `localhost` |
-| `--redis.port`         | `REDIS_PORT`         | TCP port the Redis server listens on.                                        | `6379`      |
-| `--redis.user`         | `REDIS_USERNAME`     | Username for Redis authentication.                                           | -           |
-| `--redis.password`     | `REDIS_PASSWORD`     | Password for Redis authentication.                                           | -           |
-| `--redis.db`           | `REDIS_DB`           | Database index.                                                              | -           |
-| `--redis.ssl`          | `REDIS_SSL`          | Enable TLS/SSL for the connection.                                           | `false`     |
-| `--redis.cert-file`    | `REDIS_CERT_FILE`    | Filename of the client cert under `redis/.ca-certificates/`. **(Deno only)** | -           |
-| `--redis.cert-path`    | `REDIS_CERT_PATH`    | Full path to the client certificate file.                                    | -           |
-| `--redis.key-file`     | `REDIS_KEY_FILE`     | Filename of the client key under `redis/.ca-certificates/`. **(Deno only)**  | -           |
-| `--redis.key-path`     | `REDIS_KEY_PATH`     | Full path to the client key file.                                            | -           |
-| `--redis.ca-cert-file` | `REDIS_CA_CERT_FILE` | Filename of the CA cert under `redis/.ca-certificates/`. **(Deno only)**     | -           |
-| `--redis.ca-cert-path` | `REDIS_CA_CERT_PATH` | Full path to the CA cert file for Redis.                                     | -           |
+| CLI Flag               | Environment Variable | Description                                                      | Default     |
+| :--------------------- | :------------------- | :--------------------------------------------------------------- | :---------- |
+| `--disable-redis`      | `DISABLE_REDIS`      | Disable Redis connection. Uses the in-memory queue instead.      | `false`     |
+| `--redis.url`          | `REDIS_URL`          | Full Redis connection URL.                                       | -           |
+| `--redis.host`         | `REDIS_HOST`         | Hostname or IP address of the Redis server.                      | `localhost` |
+| `--redis.port`         | `REDIS_PORT`         | TCP port the Redis server listens on.                            | `6379`      |
+| `--redis.user`         | `REDIS_USERNAME`     | Username for Redis authentication.                               | -           |
+| `--redis.password`     | `REDIS_PASSWORD`     | Password for Redis authentication.                               | -           |
+| `--redis.db`           | `REDIS_DB`           | Database index.                                                  | -           |
+| `--redis.ssl`          | `REDIS_SSL`          | Enable TLS/SSL for the connection.                               | `false`     |
+| `--redis.cert-file`    | `REDIS_CERT_FILE`    | Filename of the client cert under `redis/.pki/`. **(Deno only)** | -           |
+| `--redis.cert-path`    | `REDIS_CERT_PATH`    | Full path to the client certificate file.                        | -           |
+| `--redis.key-file`     | `REDIS_KEY_FILE`     | Filename of the client key under `redis/.pki/`. **(Deno only)**  | -           |
+| `--redis.key-path`     | `REDIS_KEY_PATH`     | Full path to the client key file.                                | -           |
+| `--redis.ca-cert-file` | `REDIS_CA_CERT_FILE` | Filename of the CA cert under `redis/.pki/`. **(Deno only)**     | -           |
+| `--redis.ca-cert-path` | `REDIS_CA_CERT_PATH` | Full path to the CA cert file for Redis.                         | -           |
+
+> [!WARNING]
+> When using the **compiled executables** and if you want to specify **PKI
+> files** such as a _client certificate_, a _client key_, or a _CA certificate_,
+> you must specify those files using the options whose name end with `*-path`
+> such as `--redis-cert-path`, `--redis-key-path`, or `--redis-ca-cert-path`
+> instead of the options whose name end with `*-file` such as
+> `--redis-cert-file`, `--redis-key-file`, or `--redis-ca-cert-file` because the
+> local directory `redis/.pki` is no longer accessible by the compiled
+> executables.
 
 **Queue & Worker Options**
 
@@ -1005,9 +1015,10 @@ To start the **Map Viewer** server in development mode, you run:
 deno task map-viewer:dev
 ```
 
-> [!IMPORTANT] Make sure that the `FRESH_PUBLIC_REST_API_BASE_URL` **environment
-> variable** is set to the actual **URL of the REST API** that feeds the **Map
-> Viewer** web application.
+> [!IMPORTANT]
+> Make sure that the `FRESH_PUBLIC_REST_API_BASE_URL` **environment variable**
+> is set to the actual **URL of the REST API** that feeds the **Map Viewer** web
+> application.
 
 To build the **Map Viewer** for production, you run:
 

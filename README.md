@@ -1,11 +1,11 @@
-# Madagascar Administrative Boundaries (Mada ADM)
+# Madagascar Administrative Boundaries - Mada ADM
 
-A Deno-based utility app that allows your existing database to directly
-incorporate **Madagascar's administrative boundaries data** for all levels such
-as **Province**, **Region**, **District**, **Commune**, and **Fokontany**; also
-available as a **CLI executable**. It also includes tooling such as a **REST
-API** and a **web GUI** for **visualizing** and **exploring** the data onto a
-**map**.
+A [Deno](https://deno.com/)-based **CLI tool** that allows your existing
+database to directly incorporate **Madagascar's administrative boundaries data**
+for all adminsitrative levels such as **Province**, **Region**, **District**,
+**Commune**, and **Fokontany**; also available as a **CLI executable**. It also
+includes other toolings such as a **REST API** and a **web GUI** for
+**visualizing** and **exploring** the data onto a **map**.
 
 ## Table of Contents
 
@@ -13,12 +13,11 @@ API** and a **web GUI** for **visualizing** and **exploring** the data onto a
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+  - [Running CLI Tasks](#running-cli-tasks)
   - [Testing](#testing)
   - [Compiling](#compiling)
   - [Using the Compiled Executable](#using-the-compiled-executable)
-  - [Running CLI Tasks](#running-cli-tasks)
-    - [Local Execution (Deno)](#local-execution-deno)
-    - [Docker Execution](#docker-execution)
+  - [Usage with Docker](#usage-with-docker)
 - [Database Support](#database-support)
 - [Fundamental Concepts & Architecture](#fundamental-concepts--architecture)
   - [Worker Pipeline](#worker-pipeline)
@@ -80,14 +79,14 @@ Follow these steps to set up the project locally.
    - [Download SQLite](https://sqlite.org/download.html)
    - [Download MySQL](https://www.mysql.com/downloads/)
    - [Use MongoDB](https://www.mongodb.com/)
-4. **Redis (optional)**: Used for job orchestration, progress tracking, and
-   resumable state of the data seeding task.
+4. **Redis (optional)**: Used as a persisted message broker when processing the
+   records from the dataset inputs.
    - [Download Redis](https://redis.io/downloads/)
 
 > [!TIP]
-> **Skip the setup?** If you have Docker installed, you can bypass the local
-> installation of both **Deno** and **Redis** by using the
-> [Docker setup](#running-with-docker).
+> **Skip the setup?** If you have **Docker** installed, you can bypass the local
+> installation of both **Deno**, **Redis**, and **SQLite (+ SpatiaLite)** by
+> using the [Docker setup](#running-with-docker).
 
 ### Installation
 
@@ -102,6 +101,21 @@ Follow these steps to set up the project locally.
    deno install
    ```
 
+### Running CLI Tasks
+
+You can also use the **CLI tool** by running the **CLI tasks** defined in the
+root `deno.json` by using **Deno**.
+
+```bash
+# Example: Launching the data integration pipeline with a PostreSQL database
+deno task cli --db-type postgres \
+  --pg.user myuser --pg.password mypass --pg.database mada_adm \
+  --processing-workers-count 4 --queue-batch-size 10
+```
+
+You can view the full CLI commands reference in the
+[CLI Commands & Usage](#cli-commands--usage) section.
+
 ### Testing
 
 To ensure everything is set up correctly, you can run the test suite:
@@ -112,19 +126,38 @@ deno task test
 
 ### Compiling
 
-To compile the project into standalone CLI executables for different platforms:
+To compile the project into standalone **CLI executables** for different host
+platforms:
 
 ```bash
 # Compile for all major platforms
 deno task compile:all
+```
 
-# Compile specifically for the current platform's architecture
+The compiled binaries have the name of `mada-adm` (or `mada-adm.exe` for a
+Windows based compilation target) and are placed in the `bin/<platform>`
+directory for each platform respectively.
+
+Here is the reference of the **supported host platforms targets** along with the
+**compilation commands** as well as the **compiled binaries path**:
+
+| Host OS | Target Architecture | Compilation Command                | Compiled Binary Path                       |
+| :------ | :------------------ | :--------------------------------- | :----------------------------------------- |
+| Windows | x86_64              | `deno task compile:windows:x86_64` | `bin/x86_64-pc-windows-msvc/mada-adm.exe`  |
+| Windows | arm64               | `deno task compile:windows:arm64`  | `bin/aarch64-pc-windows-msvc/mada-adm.exe` |
+| macOS   | x86_64              | `deno task compile:macos:x86_64`   | `bin/x86_64-apple-darwin/mada-adm`         |
+| macOS   | arm64               | `deno task compile:macos:arm64`    | `bin/aarch64-apple-darwin/mada-adm`        |
+| Linux   | x86_64              | `deno task compile:linux:x86_64`   | `bin/x86_64-unknown-linux-gnu/mada-adm`    |
+| Linux   | arm64               | `deno task compile:linux:arm64`    | `bin/aarch64-unknown-linux-gnu/mada-adm`   |
+
+To compile the project for the **current platform's architecture**, you run:
+
+```bash
 deno task compile
 ```
 
-The compiled binaries are placed in `bin/<platform>/mada-adm` (or `mada-adm.exe`
-on Windows). The `compile` task outputs to the `bin/current-platform/`
-directory.
+The compiled binary is placed in `bin/current-platform/mada-adm` (or
+`mada-adm.exe` for a Windows based compilation target).
 
 ### Using the Compiled Executable
 
@@ -150,34 +183,40 @@ You can optionally add the output directory to your system's `PATH` to run
 > run them. You will need to manually allow or trust the application within your
 > system settings to proceed.
 
-### Running CLI Tasks
+### Usage with Docker
 
-You can run the main CLI task using Deno or Docker.
+The root directory of the project contains 2 docker related files:
 
-#### Local Execution (Deno)
+- `docker-compose.yml`
+- `Dockerfile`
+
+Thus, there are **2 ways** of using the project with Docker:
+
+- **Docker Compose (recommended)**: **Start** (and **Build** if run for the
+  first time) the project's services defined by `docker-compose.yml` with the
+  `docker-compose up` command. It runs 2 services: `app` for project itself and
+  `redis` for the **Redis database instance**.
+- **Standalone Docker Container**: **Build** the project's Docker image by using
+  the `docker build` command. Then, **run** the image's container by using the
+  `docker run` command. In that case, you are responsible for provisioning your
+  own **Redis database instance** if required.
+
+> **💡 Note:** In both cases, **SQLite** and its **Spatialite** extension are
+> already installed inside the project's Docker image.
+
+Now, assuming that the project's container is up and running, after accessing
+the container's shell, you can execute **CLI tasks** from within the container.
 
 ```bash
-# Example: Seeding with PostgreSQL
+# Running the CLI's main command (data integration pipeline) from within the container
+docker compose exec app \
 deno task cli --db-type postgres \
   --pg.user myuser --pg.password mypass --pg.database mada_adm \
   --processing-workers-count 4 --queue-batch-size 10
 ```
 
-You can view the full CLI commands reference in the
-[CLI Commands & Usage](#cli-commands--usage) section.
-
-#### Docker Execution
-
-```bash
-# Build and start services (app + redis)
-docker compose up -d
-
-# Run the seeding command
-docker compose exec app deno task cli --db-type postgres --pg.user user --pg.password pass --pg.database mada_adm
-```
-
-Environment variables defined in a `.env` file are automatically injected into
-the container.
+> **Environment variables:** The root `.env` file is automatically injected into
+> the container's **environment variables**.
 
 ## Database Support
 
@@ -192,8 +231,9 @@ where available. Minimum supported versions are listed below.
 | **MongoDB**    | 2.4          | Native                                                           |
 
 > [!IMPORTANT]
-> You are responsible for ensuring that the database and its spatial extensions
-> are correctly installed and configured before running the CLI.
+> You are responsible for ensuring that the **database** and its **spatial
+> extensions** are correctly **installed** and **configured** before using the
+> **CLI**.
 
 ## Project Structure & Content
 
@@ -229,62 +269,116 @@ understand and remember because the main features of the tool rely on them.
 
 ### Worker Pipeline
 
-The **data integration process (main command)** uses a **two-stage worker
-pipeline** to handle the administrative hierarchy efficiently:
+The notion of **worker pipeline** mostly applies to the **data integration
+pipeline** of the **administrative boundaries data** into a **database** that is
+launched by the **main command of the CLI tool**.
 
-1. **Processing Workers**: These workers parallelize the task of gathering data.
-   Their primary role is to resolve foreign keys for child administrative levels
-   (e.g., finding the `regionId` for a district) by querying the already-seeded
-   parent data. This stage is computationally intensive and can be parallelized
-   with multiple workers by using `--processing-workers-count`.
-2. **Insert Worker**: A single, unique worker responsible for performing the
-   final database writes. Using a single worker for insertion prevents
-   overwhelming the database with concurrent write requests and maintains
-   transaction integrity.
+The **pipeline** is done in **two (2) stages**:
+
+- **Processing stage**
+- **Insertion stage**
+
+Those **stages** are performed by **workers**.
+
+A **worker** is a **child process** of the main program that handles **a
+simultaneous unit of work at a time** handed down by the main program.
+
+The **processing stage** is responsible for **resolving foreign keys** from the
+database of **previously inserted data** that belong to **parent tables** such
+that **foreign keys relationships** can be established before _insertion_. This
+stage is broken down into **parallel tasks** that are executed by **multiple
+workers** in order to **speed up the pipeline's completion time** as well as to
+**make efficient use of the computer's resources**. You can configure the number
+of **parallel workers** with the `--processing-workers-count` option.
+
+The **insertion stage** is only responsible for **inserting** the **resolved
+data** from the _processing workers_ into the database. This stage is executed
+by a **only one worker**.
+
+The following is an illustration of how that **2-stage pipeline** actually plays
+out assuming that we are working with _SQL_:
 
 ![Workers architecture](/readme-images/workers.gif)
 
 ### Batching & Efficiency
 
-To **reduce** database communications round-trips, the ADM data records are
-processed and inserted in **n-batches**. You can configure the batch size using
-`--queue-batch-size` to balance memory usage and insertion speed.
+The notion of **Batching & Efficiency** also mostly applies to the **data
+integration pipeline**.
+
+To **reduce** the amount of **round-trips to the database**, the **records**
+being **queried to** and **inserted to** the database are **batched together**
+such that the _workers_ make a **single database query** with **n-records** at a
+time. The **amount of records being batched together** is specified by the
+`--queue-batch-size` option.
+
+Here is a simplified _sequence diagram_ of how a **worker** processes **N
+records** while **not batching** the **database queries**:
+
+![Workers architecture](/readme-images/not-batched.gif)
+
+In contrast, here is a simplified _sequence diagram_ of how a **worker**
+processes **N records** while **batching** the **database queries** into **one
+single query**:
+
+![Workers architecture](/readme-images/batched.gif)
 
 ### Fault Tolerance: Redis vs In-Memory
 
-- **Redis (Default)**: Provides a **resumable**, **fault-tolerant** state. If a
-  pipeline is interrupted, it can pick up exactly where it left off, all thanks
-  to the
-  [Redis Streams API](https://redis.io/resources/architecture-diagrams/redis-streams/).
-- **In-Memory**: Used when Redis is **disabled** (`--disable-redis`). It is
-  simpler but lacks persistence; interrupting a job means it must restart from
-  scratch the pipeline lies **entirely in memory**.
+That notion of **Fault Tolerance: Redis vs In-Memory** mostly applies to the
+**data integration pipeline** as well.
 
-That choice between those two preferences applies to the **data integration
-pipeline (main command)**.
+By default, the **data integration pipeline** expects an **external Redis
+database instance** that serves as a **message broker** thanks to the
+[Redis Streams API](https://redis.io/resources/architecture-diagrams/redis-streams/)
+by **persisting** and **queueing** the **records from the dataset inputs** as
+**messages** to be pushed to the **pipeline workers**.
+
+As result, we have **2 modes** of running the **data pipeline**:
+
+- **Redis enabled (Default)**: Provides a **resumable**, **fault-tolerant**
+  state such that when a pipeline is **interrupted**, it can **pick up** exactly
+  **at where it left off**.
+- **In-Memory**: The **Redis database instance** is **omitted** so the
+  **pipeline** is done **entirely in-memory**. In that case, we do not have any
+  means of **state recovery**. Thus, any **interruption** will always result in
+  a **complete restart** of the pipeline.
 
 ### Database Schema Flexibility & Configuration
 
-The project uses a configuration system stored in the `mada_adm_configs` table
-(or in the `madaAdmConfigs` table / collection for _camelCase_ based database
-engines) to allow users to adapt the schema to their needs.
+To store the **administrative boundaries data**, the project creates and uses
+the following set of tables:
 
-| Property               | Description                                                                                                                                 |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| `tablesPrefix`         | String prefix for all ADM tables/collections (e.g., `app_`).                                                                                |
-| `isFkRepeated`         | If `true`, child ADM levels tables store foreign keys of all ancestors (not just the immediate parent) **except** the province foreign key. |
-| `isProvinceRepeated`   | If `true`, the province name is explicitly included in all sub-levels.                                                                      |
-| `isProvinceFkRepeated` | If `true`, the province ID is explicitly included as a FK in all sub-levels.                                                                |
-| `hasGeojson`           | Enables/disables the storage of the **spatial geometries (GeoJSON)** for the ADM boundaries by having a `geojson` column in every table.    |
-| `hasAdmLevel`          | Includes an explicit `admLevel` column in every table (0 for province, 1 for region, 2 for district, 3 for commune, 4 for fokontany).       |
+- **Configuration table**: A table named `mada_adm_configs` (or
+  `madaAdmConfigs`) that stores a set of **configuration properties values**
+  that dictates the **schema definitions** of the **administrative levels
+  tables**.
+- **Administrative levels tables (ADM Tables)**: A set of tables named
+  `provinces`, `regions`, `districts`, `communes`, and `fokontanys` that store
+  the **administrative boundaries data** for **each administrative level**.
+  Those tables names can also include a string **prefix** when a **tables
+  prefix** value was specified in the _configuration table_.
+
+Here are the **configuration properties** that the project uses to adapt the
+schema to the needs of the user:
+
+| Property               | Description                                                                                                                                                                      |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tablesPrefix`         | **String prefix** for all ADM tables/collections (e.g., `app_`). Has the value of `null` when no prefix is applied.                                                              |
+| `isFkRepeated`         | If `true`, **child ADM levels tables** store the **foreign keys** of **all the ADM tables of all the parent administrative levels** except the _province foreign key_.           |
+| `isProvinceRepeated`   | If `true`, the **province** name is explicitly included in **all the ADM tables**.                                                                                               |
+| `isProvinceFkRepeated` | If `true`, the **province id foreign key** is explicitly included in **all the ADM tables below the province administrative level**.                                             |
+| `hasGeojson`           | If `true`, a `geojson` column that stores the **spatial geometry data** of the **administative boundaries on a map** is included in **all the ADM tables**.                      |
+| `hasAdmLevel`          | If `true`, a `has_adm_level` (or `hasAdmLevel`) column that stores the **a numerical code of the administrative level** (from `0` to `4`) is included in **all the ADM tables**. |
 
 Let us take a look at how the database schema looks like when each of those
 database configuration properties are applied.
 
 #### Base configuration:
 
-With the **base configuration** applied, the tables names have no prefix and all
-the remaining properties are set to `false`.
+With the **base configuration** applied, all the ADM tables names have **no
+prefix**, all the child ADM tables include **only the immediate parent
+administrative level table's foreign key**, and all the remaining properties are
+set to `false`.
 
 | Property               | Value   |
 | :--------------------- | :------ |
@@ -301,8 +395,8 @@ Here is a screenshot of the database schema with the base configuration applied:
 
 #### Prefixed table names configuration:
 
-When the `tablesPrefix` configuration property is set to a non-empty string, the
-tables names become prefixed with the provided value.
+When the `tablesPrefix` configuration property is set to a **non-empty string**,
+the tables names become **prefixed** with the provided value.
 
 Here is a screenshot of the database schema with the prefixed configuration
 applied:
@@ -322,9 +416,9 @@ With its database schema configuration values being:
 
 #### `isFkRepeated` set to `true`:
 
-When the `isFkRepeated` configuration property is set to `true`, the child ADM
-levels tables store foreign keys of all ancestors (not just the immediate
-parent) **except** the province foreign key.
+When the `isFkRepeated` configuration property is set to `true`, **all child ADM
+levels tables** store foreign keys of all ancestors (not just the immediate
+parent) **except** the _province foreign key_.
 
 Here is a screenshot of the database schema with the `isFkRepeated`
 configuration property is set to `true`:
@@ -344,9 +438,9 @@ With its database schema configuration values being:
 
 #### `isProvinceRepeated` set to `true`:
 
-When the `isProvinceRepeated` configuration property is set to `true`, the
-province name is explicitly included in all sub-levels tables within the
-`province` column.
+When the `isProvinceRepeated` configuration property is set to `true`, a
+`province` column that stores the **province name** is included in **all ADM
+tables**.
 
 Here is a screenshot of the database schema with the `isProvinceRepeated`
 configuration property is set to `true`:
@@ -366,9 +460,9 @@ With its database schema configuration values being:
 
 #### `isProvinceFkRepeated` set to `true`:
 
-When the `isProvinceFkRepeated` configuration property is set to `true`, the
-province ID is explicitly included as a foreign key in all sub-levels tables by
-the `province_id` (or `provinceId`) column.
+When the `isProvinceFkRepeated` configuration property is set to `true`, a
+**province id foreign key** is included in **all ADM tables below the province
+administrative level**.
 
 Here is a screenshot of the database schema with the `isProvinceFkRepeated`
 configuration property is set to `true`:
@@ -389,8 +483,8 @@ With its database schema configuration values being:
 #### `hasGeojson` set to `true`:
 
 When the `hasGeojson` configuration property is set to `true`, the `geojson`
-column is included in every ADM table to store the **spatial geometries data**
-of the administrative boundaries of the territories.
+column is included in **every ADM table** to store the **spatial geometry data**
+of the **administrative boundaries** on a map.
 
 Here is a screenshot of the database schema with the `hasGeojson` configuration
 property is set to `true`:
@@ -410,11 +504,12 @@ With its database schema configuration values being:
 
 #### `hasAdmLevel` set to `true`:
 
-When the `hasAdmLevel` configuration property is set to `true`, the `admLevel`
-column is included in every ADM table.
+When the `hasAdmLevel` configuration property is set to `true`, the `adm_level`
+(or `admLevel`) column that stores a **numerical code of the administrative
+level** is included in **every ADM table**.
 
-Here is the mapping of the `admLevel` column's value to the corresponding ADM
-level:
+Here is the mapping of the values of the **numerical code** to the corresponding
+**administrative level**:
 
 | ADM Level | Value |
 | :-------- | :---- |
@@ -448,17 +543,17 @@ following database-level conventions:
 - **B-Tree Indexes**: All **primary identification text fields** and **foreign
   key columns** are indexed using **B-tree** structures. This ensures that the
   hierarchical relationship lookups remain fast even as the dataset grows, while
-  also providing a foundation for basic _text-search_ queries. _Advanced
+  also providing a foundation for basic _prefix text search_ queries. _Advanced
   full-text indexing strategies_ are left as an **implementation choice** for
   the end-user.
 - **Case-Insensitive Unicode Collation**: Text columns (like names of provinces,
-  regions, etc.) use **case-insensitive Unicode** collations. This enables
-  flexible exact matches and reliable `<prefix>%` wildcard queries regardless of
-  casing or accents.
+  regions, etc.) use both **Case-Insensitive and Unicode collations**. This
+  enables **flexible exact matches** and reliable _prefix text search_ queries
+  regardless of _casing_ or _accents_.
 
 > **💡 Note:** The indexing strategies for every table for each database type
 > have been scrutinized through the database's **query planner** such that the
-> existing queries are the most optimized in average.
+> existing queries are **the most optimized in average**.
 
 #### Text Collation Summary
 
@@ -474,21 +569,27 @@ following database-level conventions:
 The **CLI tool** is the primary feature of the project. We interact with the
 **CLI** through a **main command** as well as a set of **sub-commands**.
 
-There are **options** and **arguments** that can be provided to those commands.
-The **options** are divided into **global options** and **command-scoped
-options**; the **global options** apply to both the **main command** and **all
-sub-commands**, while the **command-scoped options** apply only to the
-**sub-commands** they are defined in.
+**Additional values** such as **options** and **arguments** that can be provided
+to those commands.
+
+There are **2 types of options**:
+
+- **Global options**: Apply to both the **main command** and the **all
+  sub-commands**.
+- **Command-scoped options**: Apply only to the **sub-commands** they are
+  defined in.
 
 Those are the content that will be covered in this section.
 
 ### Global Options & Environment Variables
 
-These options can be provided either as **CLI flags** or **environment
-variables**. If both are provided, the **CLI flags** take precedence. They apply
-globally across both the **main command** and **all sub-commands**. All options
-are optional. The **global options** are generally concerned with the **database
-connection parameters**, the database **database type**, and a **debug flag**.
+**Global options** are **additional values** that apply to both the **main
+command** and the **sub-commands**. They are **all optional** with **default
+values**. Those options are mostly concerned with the **database connection
+parameters**.
+
+**Global options** can be provided as either **CLI flags** or **environment
+variables**. When both are applied, the **CLI flags** always take precedence.
 
 > [!TIP]
 > Since the **global options** can be repetitive across the **main command** and
@@ -567,35 +668,50 @@ connection parameters**, the database **database type**, and a **debug flag**.
 > transactions to ensure data consistency, the target MongoDB instance **must**
 > be configured as a **Replica Set**. Single-node instances without replica set
 > configuration do not support transactions.
->
-> **Note on File Paths:** Options ending in `-file` (e.g `--sqlite.db-file`,
+
+> [!WARNING]
+> **File options:** Options ending in `-file` (e.g `--sqlite.db-file`,
 > `--pg.ca-cert-file`) resolve paths **relative** to the internal project
 > structure. However, those options **do not work** with the **compiled
 > executables** because those internal directories are no longer accessible when
 > compiled. Therefore, when working with the **compiled executables**,
 > **always** use the **equivalent** `--**-path`-like option with an **absolute
 > full path**.
+>
+> For instance, if you want to specify a custom **SQLite database file** using
+> the compiled executable, you must use the `--sqlite.db-path` instead of
+> `--sqlite.db-file`.
+>
+> Another example is when you want to specify a **PostgreSQL CA certificate
+> file** using the compiled executable, you must use the `--pg.ca-cert-path`
+> option instead of `--pg.ca-cert-file`.
 
 ### Commands
 
-This section describes the CLI commands and their options. The CLI can be run in
-either of the following ways:
+This section describes the **CLI commands** and their **options**.
+
+The CLI can be run in either of the following ways:
 
 - **Local Execution:** `deno task cli [arguments] [options]`: Run the CLI from
   the Deno codebase (requires Deno to be installed either on the local machine
   or inside Docker).
 - **Executable Execution:** `mada-adm [arguments] [options]`: Run the CLI from
-  the compiled binary (requires the compiled binary `mada-adm` or `mada-adm.exe`
-  for Windows to be present in the current working directory).
+  the compiled binary. Once the binary executable is compiled after running
+  `deno task compile`, the executable is named `mada-adm` (or `mada-adm.exe` if
+  the compilation target platform was _Windows_).
 
-#### Main / Root / Index command
+#### Main / Root / Index command:
 
 **CLI Execution:** `mada-adm [options]`\
 **Local Execution:** `deno task cli [options]`
 
-The core CLI command for **integrating** the administrative boundaries data into
-the database. It features a **resumable**, **fault-tolerant** architecture with
-real-time **terminal progress** visualization.
+The **core CLI command** that launches the **data integration pipeline** of the
+**administrative boundaries data** into the **database**.
+
+You can pass **options** related to the **workers**, the **batching**, and
+**Redis** for a **fault-tolerant** pipeline. The **options** that are **scoped
+to only the main command** can be provided as both **CLI flags** or
+**environment variables** just like the **global options**.
 
 **Example Usage:**
 
@@ -617,15 +733,7 @@ workers and a batch size of 50 records per database round-trip._
 
 ![Seeding command example](/readme-images/main-command.gif)
 
-**Command-Scoped Options / Env Variables** These options control the job
-orchestration (Redis or In-Memory queues) for the data integration pipeline. All
-options are optional.
-
-**Redis Options**
-
-> 💡 When **Redis** is enabled, the seeding job uses its
-> [Redis Streams API](https://redis.io/docs/latest/develop/data-types/streams/)
-> to persist and process the administrative boundaries data items in batches.
+**Redis connection Options**
 
 | CLI Flag               | Environment Variable | Description                                                                  | Default     |
 | :--------------------- | :------------------- | :--------------------------------------------------------------------------- | :---------- |
@@ -646,16 +754,16 @@ options are optional.
 
 **Queue & Worker Options**
 
-| CLI Flag                                  | Environment Variable                    | Description                                              | Default |
-| :---------------------------------------- | :-------------------------------------- | :------------------------------------------------------- | :------ |
-| `--processing-workers-count`              | `PROCESSING_WORKERS_COUNT`              | Number of concurrent processing workers to spawn.        | `2`     |
-| `--queue-batch-size`                      | `QUEUE_BATCH_SIZE`                      | Batch size for processing messages concurrently.         | `1`     |
-| `--queue-max-retries`                     | `QUEUE_MAX_RETRIES`                     | Maximum number of retries per batch in case of an error. | `3`     |
-| `--in-memory-processing-hwm`              | `IN_MEMORY_PROCESSING_HWM`              | High water mark for in-memory processing workers.        | `1`     |
-| `--in-memory-insert-hwm`                  | `IN_MEMORY_INSERT_HWM`                  | High water mark for the in-memory insert worker.         | `1`     |
-| `--worker-healthcheck-interval`           | `WORKER_HEALTHCHECK_INTERVAL`           | Interval for worker healthcheck in milliseconds.         | `10000` |
-| `--worker-pending-min-duration-threshold` | `WORKER_PENDING_MIN_DURATION_THRESHOLD` | Threshold for claiming pending messages in milliseconds. | `60000` |
-| `--xread-block-duration`                  | `XREAD_BLOCK_DURATION`                  | Duration in milliseconds for XREAD BLOCK calls in Redis. | `5000`  |
+| CLI Flag                                  | Environment Variable                    | Description                                                                        | Default |
+| :---------------------------------------- | :-------------------------------------- | :--------------------------------------------------------------------------------- | :------ |
+| `--processing-workers-count`              | `PROCESSING_WORKERS_COUNT`              | Number of concurrent processing workers to spawn.                                  | `2`     |
+| `--queue-batch-size`                      | `QUEUE_BATCH_SIZE`                      | Batch size for processing messages concurrently.                                   | `1`     |
+| `--queue-max-retries`                     | `QUEUE_MAX_RETRIES`                     | Maximum number of retries per batch in case of an error.                           | `3`     |
+| `--in-memory-processing-hwm`              | `IN_MEMORY_PROCESSING_HWM`              | High water mark for in-memory processing workers.                                  | `1`     |
+| `--in-memory-insert-hwm`                  | `IN_MEMORY_INSERT_HWM`                  | High water mark for the in-memory insert worker.                                   | `1`     |
+| `--worker-healthcheck-interval`           | `WORKER_HEALTHCHECK_INTERVAL`           | Interval for worker healthcheck in milliseconds.                                   | `10000` |
+| `--worker-pending-min-duration-threshold` | `WORKER_PENDING_MIN_DURATION_THRESHOLD` | Threshold for claiming pending messages from Redis Streams' queue in milliseconds. | `60000` |
+| `--xread-block-duration`                  | `XREAD_BLOCK_DURATION`                  | Duration in milliseconds for XREAD BLOCK calls in Redis Streams' queue.            | `5000`  |
 
 #### Query sub-command: `query`:
 
@@ -666,7 +774,7 @@ Queries the administrative boundaries data inside the database.
 
 **Arguments:**
 
-- `<search>`: The search term. Can be an **ADM territory name**, an **ID**, or
+- `<search>`: The search term. Can be an **ADM territory name**, an **id**, or
   **geographic coordinates**. If passing coordinates, they must be **valid**
   geographic coordinates values; wrap them inside double quotes `""` if
   space-separated.
@@ -752,71 +860,73 @@ existing ADM record in the database.
 - `<field>`: The specific field to update. Can be one of:
   - `value`: Updates the name/value of the administrative record (i.e., the
     `province` column for a province level, `region` for a region level, etc.).
-  - `geojson`: Updates the spatial geometry of the administrative boundary. The
-    data provided must be a valid GeoJSON **Geometry** object (not a Feature or
-    FeatureCollection). If the provided data is not in the correct form, a
-    validation error will be thrown. Examples of expected data formats:
-
-    **Polygon:**
-    ```json
-    {
-      "type": "Polygon",
-      "coordinates": [
-        [
-          [47.534, -18.879],
-          [47.538, -18.879],
-          [47.538, -18.883],
-          [47.534, -18.883],
-          [47.534, -18.879]
-        ]
-      ]
-    }
-    ```
-
-    **MultiPolygon:**
-    ```json
-    {
-      "type": "MultiPolygon",
-      "coordinates": [
-        [
-          [
-            [47.534, -18.879],
-            [47.538, -18.879],
-            [47.538, -18.883],
-            [47.534, -18.883],
-            [47.534, -18.879]
-          ]
-        ],
-        [
-          [
-            [47.540, -18.885],
-            [47.544, -18.885],
-            [47.544, -18.889],
-            [47.540, -18.889],
-            [47.540, -18.885]
-          ]
-        ]
-      ]
-    }
-    ```
+  - `geojson`: Updates the spatial geometry of the administrative boundary.
 
 **Value Options:**
 
 - `--value <value>`: The literal value to set for the field.
-- **When updating the `geojson` geometry feature**, it is mandatory to provide
-  the value in a file because the content is usually too large for the terminal
-  to handle directly. How you provide this file depends on how you run the tool:
-  - **Running via Deno (`deno task cli:update-field`)**: By default, it looks
-    for a file at `commands/.args/value.txt`. You can specify alternatives
-    using:
-    - `--value-file <filename>`: Filename under `commands/.args` to read the
-      value from.
-    - `--value-path <path>`: Full absolute or relative path to the file to read
-      the value from.
-  - **Running the compiled CLI executable**: The `commands/.args/` directory is
-    bundled inside the executable, so `--value-file` cannot be used with local
-    files. You **must** use `--value-path <path>` to provide the full path to an
-    external file.
+- `--value-file <filename>`: Only applies to the update of the `geojson`
+  geometry data field. It points to a file that contains the **geometry data
+  (GeoJSON format)** that should be the new value of the `geojson` field. The
+  provided file is expected to be found within the `commands/.args/` directory.
+  By default, it looks for a file at `commands/.args/value.txt` if not provided.
+- `--value-path <path>`: Same as `--value-file` but for a full absolute path to
+  the **geometry data file**. When using the compiled CLI executable, only
+  `--value-path <path>` must used instead of `--value-file <filename>` since the
+  `commands/.args/` directory is no longer accessible when compiled.
+
+> [!WARNING]
+> The file provided by `--value-file` or `--value-path` must be a valid
+> **GeoJSON Geometry** object (not a _Feature_ or _FeatureCollection_). If the
+> provided data is not in the correct format, a validation error will be thrown.
+
+Here are some samples of the **GeoJSON geometry data** that can be provided
+inside the file specified by `--value-file` or `--value-path`:
+
+When a **polygon** geometry is provided:
+
+```json
+{
+  "type": "Polygon",
+  "coordinates": [
+    [
+      [47.534, -18.879],
+      [47.538, -18.879],
+      [47.538, -18.883],
+      [47.534, -18.883],
+      [47.534, -18.879]
+    ]
+  ]
+}
+```
+
+When a **multi-polygon** geometry is provided:
+
+```json
+{
+  "type": "MultiPolygon",
+  "coordinates": [
+    [
+      [
+        [47.534, -18.879],
+        [47.538, -18.879],
+        [47.538, -18.883],
+        [47.534, -18.883],
+        [47.534, -18.879]
+      ]
+    ],
+    [
+      [
+        [47.540, -18.885],
+        [47.544, -18.885],
+        [47.544, -18.889],
+        [47.540, -18.889],
+        [47.540, -18.885]
+      ]
+    ]
+  ]
+}
+```
 
 **Identification Options:**
 
@@ -837,23 +947,25 @@ Here is a recording of the `update-field` sub-command in action:
 
 **Examples:**
 
-- **Update a value (Province):**
+- Updates the name of the `Antananarivo` province to `Tananarive`:
   ```bash
   deno task cli:update-field province value --province "Antananarivo" --value "Tananarive"
   ```
-- **Update GeoJSON (Region via file):**
+- Update the `geojson` field of the `Analamanga` region with the GeoJSON data
+  contained in the `commands/.args/analamanga.json` file:
   ```bash
   deno task cli:update-field region geojson --region "Analamanga" --value-file "analamanga.json"
   ```
-- **Update a value (District):**
+- Updates the name of the `Ambohidratrimo` district to `Ambohidratrimo New`:
   ```bash
   deno task cli:update-field district value --district "Ambohidratrimo" --value "Ambohidratrimo New"
   ```
-- **Update GeoJSON (Commune via path):**
+- Updates the `geojson` field of the `Ivato` commune with the GeoJSON data
+  contained in the `/tmp/ivato.json` file:
   ```bash
   deno task cli:update-field commune geojson --commune.value "Ivato" --commune.district "Ambohidratrimo"  --value-path "/tmp/ivato.json"
   ```
-- **Update a value (Fokontany):**
+- Updates the name of the `Ivato Centre` fokontany to `Ivato City`:
   ```bash
   deno task cli:update-field fokontany value --fokontany.value "Ivato Centre" --fokontany.commune "Ivato" --fokontany.district "Ambohidratrimo" --value "Ivato City"
   ```
@@ -869,6 +981,12 @@ It is possible that there may be a need to fully extend the REST API in the
 future to support various flexible use cases for a general purpose
 **administrative boundaries data API**.
 
+To lauch the **REST API** server, you run:
+
+```bash
+deno task rest-api:start
+```
+
 ## Map Viewer
 
 A mini **web application** to **visualize** and **query** the seeded
@@ -880,6 +998,28 @@ locations to the map.
 This is a workspace member of the project and its codebase can be found inside
 the `map-viewer/` directory
 ([see here for more details](https://github.com/AmazingTool777-911/madagascar-administrative-boundaries/tree/main/map-viewer)).
+
+To start the **Map Viewer** server in development mode, you run:
+
+```bash
+deno task map-viewer:dev
+```
+
+> [!IMPORTANT] Make sure that the `FRESH_PUBLIC_REST_API_BASE_URL` **environment
+> variable** is set to the actual **URL of the REST API** that feeds the **Map
+> Viewer** web application.
+
+To build the **Map Viewer** for production, you run:
+
+```bash
+deno task map-viewer:build
+```
+
+To start the **Map Viewer** server in **production mode**, you run:
+
+```bash
+deno task map-viewer:start
+```
 
 ## Data catalogs
 

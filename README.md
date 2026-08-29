@@ -75,18 +75,22 @@ Follow these steps to set up the project locally.
    - [Install Deno](https://docs.deno.com/runtime/getting_started/installation/)
 3. **Database Software**: This project supports either of **PostgreSQL**,
    **SQLite**, **MySQL**, or **MongoDB**.
-   - [Download PostgreSQL](https://www.postgresql.org/download/)
-   - [Download SQLite](https://sqlite.org/download.html)
-   - [Download MySQL](https://www.mysql.com/downloads/)
-   - [Use MongoDB](https://www.mongodb.com/)
+   - **PostgreSQL (+ PostGIS)**:
+     [Download PostgreSQL](https://www.postgresql.org/download/) +
+     [Install PostGIS](https://postgis.net/documentation/getting_started/)
+   - **SQLite (+ SpatiaLite)**:
+     [Download SQLite](https://sqlite.org/download.html) +
+     [Install SpatiaLite](https://docs.djangoproject.com/fr/6.1/ref/contrib/gis/install/spatialite/#installing-spatialite)
+   - **MySQL**: [Download MySQL](https://www.mysql.com/downloads/)
+   - **MongoDB**: [Use MongoDB](https://www.mongodb.com/)
 4. **Redis (optional)**: Used as a persisted message broker when processing the
    records from the dataset inputs.
    - [Download Redis](https://redis.io/downloads/)
 
 > [!TIP]
 > **Skip the setup?** If you have **Docker** installed, you can bypass the local
-> installation of both **Deno**, **Redis**, and **SQLite (+ SpatiaLite)** by
-> using the [Docker setup](#running-with-docker).
+> installation of **Deno**, **Redis**, and **SQLite (+ SpatiaLite)** altogether
+> on your local machine by working with the [Docker setup](#usage-with-docker).
 
 ### Installation
 
@@ -118,7 +122,7 @@ deno task cli:query "Ambohi" --page-size 9 \
   --processing-workers-count 4 --queue-batch-size 10
 ```
 
-You can view the full CLI commands reference in the
+You can view the full **CLI commands reference** in the
 [CLI Commands & Usage](#cli-commands--usage) section.
 
 ### Testing
@@ -182,11 +186,11 @@ You can optionally add the output directory to your system's `PATH` to run
 `mada-adm` from any location without specifying the full path.
 
 > [!WARNING]
-> **Unsigned Binaries:** The compiled executables are not digitally signed.
-> Depending on your operating system (e.g., Windows SmartScreen or macOS
-> Gatekeeper), you may encounter security warnings or blocks when attempting to
-> run them. You will need to manually allow or trust the application within your
-> system settings to proceed.
+> **Unsigned Binaries:** The compiled executables are **not digitally signed**.
+> Depending on your operating system (e.g., _Windows SmartScreen_ or _macOS
+> Gatekeeper_), you may encounter **security warnings** or **blocks** when
+> attempting to run them. You will need to manually **allow** or **trust** the
+> application within your system settings to proceed.
 
 ### Usage with Docker
 
@@ -207,10 +211,11 @@ Thus, there are **2 ways** of using the project with Docker:
   own **Redis database instance** if required.
 
 > **💡 Note:** In both cases, **SQLite** and its **Spatialite** extension are
-> already installed inside the project's Docker image.
+> already installed inside the **project's Docker image**.
 
-Now, assuming that the project's container is up and running, after accessing
-the container's shell, you can execute **CLI tasks** from within the container.
+Now, assuming that the **project's container** is up and running, after
+accessing the _container's shell_, you can execute **CLI tasks** from within the
+container.
 
 ```bash
 # Running the CLI's main command (data integration pipeline) from within the container

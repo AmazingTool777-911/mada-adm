@@ -1102,13 +1102,6 @@ underlying districts 2](/readme-images/topo-icon-2.png)
 ![Topological boundaries inconsistencies between the region Analamanga and its
 underlying districts 1](/readme-images/topo-icon-1.png)
 
-> [!TIP]
-> If you are in any capacity able to **contribute** to the project, whether it
-> is a matter of introducing **changes or new features to the codebase**, or
-> contributing **missing or accurate data** to the project, you can do that by
-> either **Forking the Github repository** & **submitting a Pull Request (PR)**,
-> opening an **issue**, or by **contacting us** directly.
-
 ### Full REST API
 
 The current **REST API** that lies inside the `rest-api/` directory is only
@@ -1125,6 +1118,13 @@ database types such as
 [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server) or
 [Oracle Database](https://www.oracle.com/database), it may be necessary to
 extend the project to support these databases.
+
+> [!TIP]
+> If you are in any capacity able to **contribute** to the project and whish to
+> do so, whether it is a matter of introducing **changes or new features to the
+> codebase**, or contributing **missing or accurate data** to the project, you
+> can do that by either **forking the Github repository** & **submitting a Pull
+> Request (PR)**, opening an **issue**, or by **contacting us** directly.
 
 ## License & Attribution
 

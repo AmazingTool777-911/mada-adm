@@ -765,12 +765,12 @@ workers and a batch size of 50 records per database round-trip._
 > [!WARNING]
 > When using the **compiled executables** and if you want to specify **PKI
 > files** such as a _client certificate_, a _client key_, or a _CA certificate_,
-> you must specify those files using the options that expect **full paths**
-> namely `--redis-cert-path`, `--redis-key-path`, or `--redis-ca-cert-path`
-> instead of the options that expect only **local files** inside of the
-> `redis/.pki` directory namely `--redis-cert-file`, `--redis-key-file`, or
-> `--redis-ca-cert-file` because the local directory `redis/.pki` is no longer
-> accessible by the compiled executables.
+> instead of the providing the options that expect only **local files** inside
+> of the `redis/.pki` directory namely `--redis-cert-file`, `--redis-key-file`,
+> or `--redis-ca-cert-file`, you must specify those files using the options that
+> expect **full paths** such as `--redis-cert-path`, `--redis-key-path`, or
+> `--redis-ca-cert-path` because the local directory `redis/.pki` is **no longer
+> accessible** by the **compiled executables**.
 
 **Queue & Worker Options**
 
@@ -1102,11 +1102,12 @@ underlying districts 2](/readme-images/topo-icon-2.png)
 ![Topological boundaries inconsistencies between the region Analamanga and its
 underlying districts 1](/readme-images/topo-icon-1.png)
 
-> **💡 Note:** If you are in any capacity able to **contribute** to the project,
-> whether it is a matter of introducing **changes to the codebase**, or
+> [!TIP]
+> If you are in any capacity able to **contribute** to the project, whether it
+> is a matter of introducing **changes or new features to the codebase**, or
 > contributing **missing or accurate data** to the project, you can do that by
-> either submitting a **Pull Request (PR)**, opening an **issue**, or by
-> **contacting us** directly.
+> either **Forking the Github repository** & **submitting a Pull Request (PR)**,
+> opening an **issue**, or by **contacting us** directly.
 
 ### Full REST API
 
